@@ -1,0 +1,47 @@
+\documentclass[usenames,svgnames,14pt]{beamer}
+\usepackage[english]{babel}
+\usepackage{
+  fontspec,
+  fontawesome,
+  xcolor,
+  mathabx,
+  listings,
+  lstautogobble,
+  TeXnicalities
+}
+
+\setsansfont{Yanone Kaffeesatz}[
+    UprightFont     = *-Regular ,
+    BoldFont        = *-Bold ,
+    BoldItalicFont  = *-Bold ,
+    BoldSlantedFont = *-Bold ,
+    ItalicFont      = *-Light ,
+    SlantedFont     = *-Light ,
+    SmallCapsFont   = *-Thin
+]
+\graphicspath{{Figures/}}
+\usetheme[style=green]{Z02}
+
+\usetikzlibrary{
+    positioning,
+    shapes,
+}
+\input{ListingsBash}
+
+%===============================================================%
+\title{Introduction to Git}
+\author{Alessandro Sciarra}
+\institute{Z02~--~Software Development Center}
+\titlegraphic{\includegraphics[width=20mm]{LogoCRC}}
+\titlepagelogo{\includegraphics[width=20mm]{LogoGoethe}}
+%===============================================================%
+
+\begin{document}
+
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[plain,noframenumbering]
+    \titlepage
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
+\end{document}

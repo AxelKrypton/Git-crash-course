@@ -1,0 +1,107 @@
+%Colors for listings
+\colorlet{background-color}{gray!20}
+\colorlet{basic-color}{black}
+\colorlet{keywords-color}{Goldenrod}
+\colorlet{comment-color}{red!95!black}
+\colorlet{strings-color}{ForestGreen}
+\colorlet{builtins-color}{MediumBlue!90!black}
+\colorlet{functions-color}{NavyBlue}
+\colorlet{variables-color}{DarkOrange}
+\colorlet{environment-color}{Gray}
+\colorlet{external-color}{SteelBlue}
+
+% https://tex.stackexchange.com/a/34000
+\makeatletter
+\lst@Key{countblanklines}{true}[t]%
+    {\lstKV@SetIf{#1}\lst@ifcountblanklines}
+
+\lst@AddToHook{OnEmptyLine}{%
+    \lst@ifnumberblanklines\else%
+       \lst@ifcountblanklines\else%
+         \advance\c@lstnumber-\@ne\relax%
+       \fi%
+    \fi}
+\makeatother
+
+%listings set
+\lstdefinestyle{MyBash}{
+backgroundcolor=\color{background-color}, % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+breakatwhitespace=false,            % sets if automatic breaks should only happen at whitespace
+breaklines=true,                    % sets automatic line breaking
+captionpos=b,                       % sets the caption-position to bottom
+deletekeywords={...},               % if you want to delete keywords from the given language
+escapeinside={@|}{|@},              % if you want to add LaTeX within your code
+extendedchars=true,                 % lets you use non-ASCII characters; for 8-bits encodings only,
+                                    % does not work with UTF-8
+frame=single,                       % adds a frame around the code
+framerule=0pt,                      % Width of the frame rule
+framesep=3pt,                       % separation around text
+linewidth=\textwidth,               % defines the base line width for listings
+xleftmargin=6mm,                    % Margin left
+xrightmargin=6mm,                   % Margin right
+numbers=left,                       % where to put the line-numbers; possible values are (none, left, right)
+numberblanklines=false,             % suppress numbers on empty lines
+countblanklines=false,              % NOT standard! Avoid counting empty lines: https://tex.stackexchange.com/a/34000
+numbersep=8pt,                      % how far the line-numbers are from the code
+numberstyle=\tiny\color{black},     % the style that is used for the line-numbers
+rulecolor=\color{black},            % if not set, the frame-color may be changed on line-breaks within not-black text
+                                    % (e.g. comments (green here))
+showspaces=false,                   % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+showstringspaces=false,             % underline spaces within strings only
+showtabs=false,                     % show tabs within strings adding particular underscores
+stepnumber=1,                       % the step between two line-numbers. If it's 1, each line will be numbered
+tabsize=2,                          % sets default tabsize to 2 spaces
+title=\lstname,                     % show the filename of files included with \lstinputlisting; also try caption instead of title
+%
+%Base style for this presentation 
+keepspaces=true,                    % keeps spaces in text, useful for keeping indentation of code
+                                    % (possibly needs columns=flexible)
+language=bash,
+basicstyle=\ttfamily\scriptsize\color{basic-color},
+keywordstyle=\color{keywords-color},
+stringstyle=\color{strings-color},
+commentstyle=\color{comment-color},
+morestring=[b][\color{strings-color}]{"},
+morestring=[d][\color{strings-color}]{'},
+moredelim=[is][\color{basic-color}]{|+}{+|}, % I will use this for terminal output
+literate={`}{\textasciigrave}1, % https://tex.stackexchange.com/a/466224/128737
+literate={~}{{\textasciitilde}}1,
+% literate=% literate={<replace>}{<replacement text>}{<width>}
+%   {\#define}{{{\color{CarnationPink}\#define}}}{6}
+%   {\#include}{{{\color{CarnationPink}\#include}}}{7},
+alsoletter=0123456789![]/\{\}.:+, % This to mark the symbols in keyword/emph[5] to be highlighted (otherkeywords does not work i.e. it highlights also in comments!) -> manual at page 45
+morekeywords={if, then, else, elif, fi, case, esac, for, select, while, until, do, done, in, function, time, [[, ]], \{, \}, !, coproc}, %https://askubuntu.com/a/513712
+emph=[1]{},
+emphstyle=[1]{\color{functions-color}}, %Functions
+emph=[2]{},
+emphstyle=[2]{\color{variables-color}}, %Variables
+emph=[4]{PATH, SHELL, IFS, BASH_ALIASES, BASH_REMATCH, PS3, REPLY, HOME, LANGUAGE, EDITOR, PIPESTATUS, PWD, FUNCNEST,
+         DIRSTACK, PWD, OLDPWD, SHELLOPTS, BASHOPTS, TIMEFORMAT, COMP_CWORD, COMP_LINE, COMP_POINT, COMP_TYPE, COMP_KEY,
+         COMP_WORDBREAKS, COMP_WORDS, COMPREPLY, INPUTRC},
+emphstyle=[4]{\color{environment-color}}, %Environment variables
+emph=[5]{alias, bg, bind, break, builtin, cd, command, compgen, complete, continue, declare, dirs, disown, echo, enable, eval,
+         exec, exit, export, false, fc, fg, getopts, hash, help, history, jobs, kill, let, local, logout, popd, printf, pushd, pwd,
+         read, readonly, return, set, shift, shopt, source, suspend, test, times, trap, true, type, typeset, ulimit, umask,
+         % case, if, until, while  % <--- these built-in are keywords and I leave them highlighted as such
+         unalias, unset, wait, :, ., [, ]},
+emphstyle=[5]{\color{builtins-color}}, %Shell built-in
+emph=[6]{man, apropos, ls, rm, g++, chmod, cp, awk, sed, cut, perl, args, date, grep, sleep, tput, seq, cat, wc, sort, uniq, tail,
+         head, sdiff, tar, mktemp, mkdir, ps, emacs, systemd, timeout, parallel, xargs, gnuplot, pdflatex, vi, ping, bash,
+         egrep, shuf, stat, find, fgrep, bc, tr, paste, expr, diff, touch},
+emphstyle=[6]{\color{external-color}}, %(External) commands
+emph=[7]{},
+emphstyle=[7]{\color{variables-color}}, %Class for local variables (usually with bad names)
+emph=[8]{},
+emphstyle=[8]{\color{builtins-color}}, %Class for local commands (usually with bad names)
+%
+%Additional customizations
+belowskip=-7mm,
+aboveskip=3pt,
+autogobble=true, % lstautogobble needed!
+}
+
+\lstnewenvironment{Bash}[1][] %I will rarely use this because putting a $ in it as prompt breaks down TeXclipse highlight syntax!
+    {\lstset{style=MyBash, #1}}
+    {}
+
+\def\bash{\lstinline[style=MyBash, basicstyle=\ttfamily\color{black}]}
