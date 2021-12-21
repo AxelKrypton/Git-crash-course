@@ -12,7 +12,8 @@
 \usetikzlibrary{
     overlay-beamer-styles,
     calc,
-    intersections
+    intersections,
+    decorations.pathreplacing
 }
 
 %---------------------------------------------------------%
@@ -178,9 +179,41 @@
     {\begin{internal@DrawOnNode}*{#1}[#2]}
     {\end{internal@DrawOnNode}}
 
+\newcommand{\Remark}[2][1mm]
+{%
+    \hspace{#1}{\tiny\{~#2~\}}%
+}
+
 \newcommand{\FrameRemark}[2][1-]%
 {%
     \begin{tikzpicture}[remember picture, overlay]
         \node[font=\tiny, anchor=south, visible on=<#1>] at (current page.south) {#2};
     \end{tikzpicture}
 }
+
+\newcommand{\tikzmark}[1]{\tikz[overlay,remember picture, baseline=-0.5ex] \node at (0,0) (#1) {};}
+\NewDocumentCommand{\CurlyRemark}{ O{0.3\textwidth} m m O{align=center,} m}
+{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \path
+        let \p1=(#2),\p2=(#3),\n1={max(\x1,\x2)} in
+        coordinate (rightmost) at (\n1, 0);
+        \draw[draw=Gray, very thick, decorate, decoration={brace,amplitude=6pt}]
+            (#2 -| rightmost) ++(1ex,1ex) -- ($(#3 -| rightmost)+(1ex,-1ex)$) 
+            node[midway, right=3mm, text width=#1, #4] {#5};
+    \end{tikzpicture}
+}
+
+\newcommand{\AlertFrame}[1]%
+{%
+    \begingroup
+    \setbeamercolor{background canvas}{bg=PT}
+    \begin{frame}[c,plain,noframenumbering]{}
+        \begin{tikzpicture}[overlay,remember picture]
+            \node[text depth=0.5ex] at (current page.center)
+                {\usebeamerfont{section title}\usebeamercolor[fg]{section title}#1};
+        \end{tikzpicture}
+    \end{frame}
+    \endgroup
+}
+

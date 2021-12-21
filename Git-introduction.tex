@@ -36,9 +36,16 @@
 \titlepagelogo{\includegraphics[width=20mm]{LogoGoethe}}
 %===============================================================%
 
+\AtBeginSection[] % <- Empty optional argument, do nothing for \section*
+{
+    \begin{frame}[plain, noframenumbering]{}
+         \sectionpage
+    \end{frame}
+}
+
 \begin{document}
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+%===============================================================%
 \begin{frame}[plain,noframenumbering]
     \titlepage
 \end{frame}
@@ -46,12 +53,226 @@
 \begin{frame}{Outline of the talk}
     \tableofcontents[subsectionstyle=hide]
 \end{frame}
+%===============================================================%
+
+
+%===============================================================%
+\section{Why should you use it?}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\AlertFrame{OK, let's do it without git}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{A possible workflow}{Writing a review or a Ph.D. thesis}
+    \vspace{-0.1\textheight}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=east, visible on=<+>, inner xsep=5mm] at (current page.east) {\includegraphics[width=0.55\textwidth]{FinalDoc}};
+    \end{tikzpicture}
+    \setlength{\leftmarginii}{0.5cm}
+    \begin{overlayarea}{\textwidth}{0.5\textheight}
+        \begin{itemize}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How do you make writing experiments?}
+                  \par\begin{onlyenv}<+> % <------ the \par is to avoid vertical shift: https://tex.stackexchange.com/a/449826
+                      \begin{itemize}
+                          \item You make a backup of your file
+                          \item You comment out a block of text in your source
+                          \item If the old version was better, you restore by hand
+                          \item If the new version is better, you clean by hand
+                      \end{itemize}
+                  \end{onlyenv}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How do you create/view checkpoints?}
+                  \par\begin{onlyenv}<+>
+                      \begin{itemize}
+                          \item Create a .tar or .zip file
+                          \item Copy it somewhere and uncompress if needed
+                      \end{itemize}
+                  \end{onlyenv}
+            \item<+-> \textcolor<.-.(1)>{PQ}{Which version did you send to your supervisor/colleagues?}
+                  \par\begin{onlyenv}<+>
+                      \begin{itemize}
+                          \item Put a copy of the PDF file or of the compressed folder somewhere
+                          \item Keep the sent email for later use
+                      \end{itemize}
+                  \end{onlyenv}
+            \item<+-> \PQ{How long did it take to write this section?}
+            \item<.-> \PQ{When did I start writing this chapter?}
+            \item<.-> \PQ{How much did I write on average per day?}
+        \end{itemize}
+    \end{overlayarea}
+    \begin{varblock}{alert}[0.88\textwidth]{}<+>
+        \large\alert{\textbf{Everything by hand, error-prone and big overhead!}}
+    \end{varblock}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Another possible workflow}{Collaborating on a project}
+    \setlength{\leftmarginii}{0.5cm}
+    \begin{overlayarea}{\textwidth}{0.6\textheight}
+        \begin{itemize}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How can you work on the same project?}
+                    \par\begin{onlyenv}<+> % <------ the \par is to avoid vertical shift: https://tex.stackexchange.com/a/449826
+                        \begin{itemize}
+                            \item You work on separate parts at the same time
+                            \item Only one person works at the same time
+                        \end{itemize}
+                    \end{onlyenv}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How do you merge work from other people in the team?}
+                    \par\begin{onlyenv}<+>
+                        \begin{itemize}
+                            \item You send the changed files per email and put them in the folder by hand
+                            \item Copy/Rsync in some shared place the new status of the project
+                            \item If only one person at once works, a compressed archive can be exchanged
+                        \end{itemize}
+                    \end{onlyenv}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How do you work on different machines?}
+                    \par\begin{onlyenv}<+>
+                        \begin{itemize}
+                            \item You don't, use \texttt{SSH}
+                            \item Different machines are as different people, see above
+                        \end{itemize}
+                    \end{onlyenv}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How do you know who did what?}
+                    \par\begin{onlyenv}<+>
+                        \begin{itemize}
+                            \item This information is not important
+                            \item Sending work around per email allows to trace this\ldots
+                            \item Put comments into the source!
+                        \end{itemize}
+                    \end{onlyenv}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How do you give credit to authors?}
+                    \par\begin{onlyenv}<+>
+                        \begin{itemize}
+                            \item Detailed information is not important
+                            \item A rough idea about who worked on what is enough
+                            \item See comments into the source!
+                        \end{itemize}
+                    \end{onlyenv}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How do you go back in history e.g.\ in case of a bug?}
+                    \par\begin{onlyenv}<+->
+                        \begin{itemize}
+                            \item Again, use the archive sent around per email
+                            \item Using a shared place, this is not possible $\;\to\;$ debug!
+                        \end{itemize}
+                    \end{onlyenv}
+        \end{itemize}
+    \end{overlayarea}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north east, visible on=<+>, inner xsep=5mm, inner ysep=2mm] at (current page.north east) {\includegraphics[width=0.3\textwidth]{Head-explosion}};
+    \end{tikzpicture}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\AlertFrame{OK, and how would it be with Git?}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{A possible workflow}{Writing a review or a Ph.D. thesis}
+    %\vspace{-0.1\textheight}
+    \setlength{\leftmarginii}{0.5cm}
+    \begin{customlist}{5mm}
+        \item How do you make writing experiments?
+              \begin{itemize}
+                  \item Just do them (staging/stash area)
+                  \item \texttt{git-branch}
+              \end{itemize}
+        \item How do you create/view checkpoints?
+              \begin{itemize}
+                  \item \texttt{git-log} \quad \texttt{git-tag} \quad \texttt{git-checkout}
+              \end{itemize}
+        \item Which version did you send to your supervisor/colleagues?
+              \begin{itemize}
+                  \item \texttt{git-log} \quad \texttt{git-tag}
+              \end{itemize}
+        \item How long did it take to write this section?\tikzmark{start}
+        \item When did I start writing this chapter?
+        \item How much did I write on average per day?\tikzmark{end}
+    \end{customlist}
+    \CurlyRemark{start}{end}[font=\ttfamily\small]{git-shortlog\\ git-log\\ gitstats$^\star$}
+    \FrameRemark{$^\star$ This is just one of the pletora of libraries to make statistics based on a git repository.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Another possible workflow}{Collaborating on a project}
+    \setlength{\leftmarginii}{0.5cm}
+    \begin{customlist}{5mm}
+        \item How can you work on the same project?
+              \begin{itemize}
+                  \item \texttt{git-pull} \quad \texttt{git-push} \quad \texttt{git-branch}
+              \end{itemize}
+        \item How do you merge work from other people in the team?
+              \begin{itemize}
+                  \item \texttt{git-merge}
+              \end{itemize}
+        \item How do you work on different machines?
+              \begin{itemize}
+                  \item \texttt{git-pull} \quad \texttt{git-push}
+              \end{itemize}
+        \item How do you know who did what?
+              \begin{itemize}
+                  \item \texttt{git-blame}
+              \end{itemize}
+        \item How do you give credit to authors?
+              \begin{itemize}
+                  \item \texttt{git-shortlog}
+              \end{itemize}
+        \item How do you go back in history e.g.\ in case of a bug?
+              \begin{itemize}
+                  \item \texttt{git-checkout} \quad \texttt{git-bisect}
+              \end{itemize}
+    \end{customlist}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Yes, but I have to learn all those commands!}
+    \begin{onlyenv}<1>
+        \begin{center}
+            \tikzmark{figureStart}There are many jokes on the web\ldots\\[1ex]
+            \includegraphics[width=0.75\textwidth]{Git-learning-curve}\\[2ex]
+            \PB{\ldots{}but after all it is about having the correct mental set up!}
+        \end{center}
+        \begin{tikzpicture}[remember picture, overlay]
+            \coordinate (center) at ($(figureStart)-(2.5mm,15mm)$);
+            \draw[thick, PS, rotate around={30:(center)}] (center) ellipse (18mm and 8mm);
+            \node[font=\small, text=PS, anchor=west] at ($(figureStart)+(14mm,-8mm)$) {This makes sense};
+        \end{tikzpicture}
+    \end{onlyenv}
+    \begin{onlyenv}<2>
+        \begin{itemize}
+            \item As any new tool, it needs some practice
+            \item \alert{The short- to long-term payoff is worth the effort}
+            \item It is plenty of \URL[PP]{https://git-scm.com/downloads/guis/}{GUI clients}
+                  \begin{itemize}
+                      \item \URL[PB]{https://www.sourcetreeapp.com/}{Sourcetree:} A Free GIT Client For Windows And Mac
+                      \item \URL[PB]{https://aurees.com/}{Aurees:} Easy-Fast-Free \Remark{Windows, Mac \& Linux}
+                      \item \URL[PB]{https://git-cola.github.io/}{Git-Cola:} Powerful GUI For GIT \Remark{Windows, Mac, Ubuntu \& Linux}
+                      \item{} [\ldots]
+                  \end{itemize}
+            \item You can work in the terminal\\ $\,\to\,$ after this (and next) talk it will be possible!
+        \end{itemize}
+    \end{onlyenv}
+    \FrameRemark{Git was not designed to be user-friendly, but it is by far the most used version control system in the world.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Last but not least}
+    \vspace{0.05\textheight}
+    \begin{varblock}{}[0.95\textwidth]{Which large famous products are developed using Git?}
+        Linux, Homebrew, Windows, Tensorflow, Angular, Inkscape, \ldots
+    \end{varblock}
+    \begin{varblock}{alert}[0.95\textwidth]{And if I do not have so large projects?}<2->
+        It doesn't matter!
+        There are too many advantages having a writing or coding project under a source code management tool.
+        Even alone.
+        \textbf{Simply use one (Git).}
+        \alert{\textbf{Now.}}
+    \end{varblock}
+    \vspace{-0.02\textheight}
+    \begin{varblock}{alert}[0.95\textwidth]{}<3>
+        \small
+        For collaborative projects like maintaining code in a group, handing it over from person to person and so on, Git is simply a must.
+        \textbf{As project leader, you should think about requiring everybody to work in a Git repository.}
+    \end{varblock}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north east, inner xsep=8mm, inner ysep=3mm] at (current page.north east) {\includegraphics[width=0.25\textwidth]{Git-Logo}};
+    \end{tikzpicture}
+\end{frame}
+%===============================================================%
 
 %===============================================================%
 \section{What is Git?}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{Git defined by git}
+\begin{frame}{How does Git define itself?}
     \PrepareURLsymbol[PB]
     \begin{varblock}{quote}[0.95\textwidth]{}[\URL*{https://git-scm.com/}{Git homepage}]
         \guillemotleft
@@ -66,14 +287,6 @@
         \item With speed and efficiency
         \item \alert{Easy to learn}
     \end{enumerate}
-\end{frame}
-%===============================================================%
-
-%===============================================================%
-\section{Why should you use it?}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{B}
-    
 \end{frame}
 %===============================================================%
 
