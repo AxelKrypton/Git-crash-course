@@ -37,9 +37,9 @@ frame=single,                       % adds a frame around the code
 framerule=0pt,                      % Width of the frame rule
 framesep=3pt,                       % separation around text
 linewidth=\textwidth,               % defines the base line width for listings
-xleftmargin=6mm,                    % Margin left
-xrightmargin=6mm,                   % Margin right
-numbers=left,                       % where to put the line-numbers; possible values are (none, left, right)
+xleftmargin=0mm,                    % Margin left
+xrightmargin=0mm,                   % Margin right
+numbers=none,                       % where to put the line-numbers; possible values are (none, left, right)
 numberblanklines=false,             % suppress numbers on empty lines
 countblanklines=false,              % NOT standard! Avoid counting empty lines: https://tex.stackexchange.com/a/34000
 numbersep=8pt,                      % how far the line-numbers are from the code
@@ -87,7 +87,7 @@ emph=[5]{alias, bg, bind, break, builtin, cd, command, compgen, complete, contin
 emphstyle=[5]{\color{builtins-color}}, %Shell built-in
 emph=[6]{man, apropos, ls, rm, g++, chmod, cp, awk, sed, cut, perl, args, date, grep, sleep, tput, seq, cat, wc, sort, uniq, tail,
          head, sdiff, tar, mktemp, mkdir, ps, emacs, systemd, timeout, parallel, xargs, gnuplot, pdflatex, vi, ping, bash,
-         egrep, shuf, stat, find, fgrep, bc, tr, paste, expr, diff, touch},
+         egrep, shuf, stat, find, fgrep, bc, tr, paste, expr, diff, touch, git},
 emphstyle=[6]{\color{external-color}}, %(External) commands
 emph=[7]{},
 emphstyle=[7]{\color{variables-color}}, %Class for local variables (usually with bad names)

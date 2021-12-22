@@ -7,7 +7,10 @@
   mathabx,
   listings,
   lstautogobble,
-  TeXnicalities
+  listofitems,
+  moresize,
+  TeXnicalities,
+  comment
 }
 
 \setsansfont{Yanone Kaffeesatz}[
@@ -43,6 +46,17 @@
     \end{frame}
 }
 
+\tikzset{
+    space/.style={%
+        thick, draw=#1, fill=#1!10, text=#1, rounded corners=1mm, font=\small, text width=14mm, align=center, minimum height=12mm
+    }
+}
+\newcommand{\GitCommand}[5]{%
+    \draw[#1] ($(N#2.south)!#4!(E#2)$) -- node[midway, fill=BGLIGHT, font=\ttfamily\scriptsize] {#5} ($(N#3.south)!#4!(E#3)$);
+}
+\setlength{\leftmarginii}{0.5cm}
+
+
 \begin{document}
 
 %===============================================================%
@@ -55,7 +69,7 @@
 \end{frame}
 %===============================================================%
 
-
+\begin{comment}
 %===============================================================%
 \section{Why should you use it?}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -66,7 +80,6 @@
     \begin{tikzpicture}[remember picture, overlay]
         \node[anchor=east, visible on=<+>, inner xsep=5mm] at (current page.east) {\includegraphics[width=0.55\textwidth]{FinalDoc}};
     \end{tikzpicture}
-    \setlength{\leftmarginii}{0.5cm}
     \begin{overlayarea}{\textwidth}{0.5\textheight}
         \begin{itemize}
             \item<+-> \textcolor<.-.(1)>{PQ}{How do you make writing experiments?}
@@ -103,7 +116,6 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Another possible workflow}{Collaborating on a project}
-    \setlength{\leftmarginii}{0.5cm}
     \begin{overlayarea}{\textwidth}{0.6\textheight}
         \begin{itemize}
             \item<+-> \textcolor<.-.(1)>{PQ}{How can you work on the same project?}
@@ -162,7 +174,6 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{A possible workflow}{Writing a review or a Ph.D. thesis}
     %\vspace{-0.1\textheight}
-    \setlength{\leftmarginii}{0.5cm}
     \begin{customlist}{5mm}
         \item How do you make writing experiments?
               \begin{itemize}
@@ -186,7 +197,6 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Another possible workflow}{Collaborating on a project}
-    \setlength{\leftmarginii}{0.5cm}
     \begin{customlist}{5mm}
         \item How can you work on the same project?
               \begin{itemize}
@@ -242,7 +252,7 @@
             \item You can work in the terminal\\ $\,\to\,$ after this (and next) talk it will be possible!
         \end{itemize}
     \end{onlyenv}
-    \FrameRemark{Git was not designed to be user-friendly, but it is by far the most used version control system in the world.}
+    \FrameRemark{Git was not designed to aim to user-friendliness, but it is by far the most used version control system in the world and hence in continuous evolution.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Last but not least}
@@ -252,13 +262,13 @@
     \end{varblock}
     \begin{varblock}{alert}[0.95\textwidth]{And if I do not have so large projects?}<2->
         It doesn't matter!
-        There are too many advantages having a writing or coding project under a source code management tool.
+        There are too many advantages$^\star$ having a project under a source code management tool.
         Even alone.
         \textbf{Simply use one (Git).}
         \alert{\textbf{Now.}}
     \end{varblock}
     \vspace{-0.02\textheight}
-    \begin{varblock}{alert}[0.95\textwidth]{}<3>
+    \begin{varblock}{alert}[0.95\textwidth]{}<2>
         \small
         For collaborative projects like maintaining code in a group, handing it over from person to person and so on, Git is simply a must.
         \textbf{As project leader, you should think about requiring everybody to work in a Git repository.}
@@ -266,8 +276,10 @@
     \begin{tikzpicture}[remember picture, overlay]
         \node[anchor=north east, inner xsep=8mm, inner ysep=3mm] at (current page.north east) {\includegraphics[width=0.25\textwidth]{Git-Logo}};
     \end{tikzpicture}
+    \FrameRemark{$^\star$ Among many others, in a Git repository you can undo a \texttt{rm} command given by accident on a wrong file.}
 \end{frame}
 %===============================================================%
+\end{comment}
 
 %===============================================================%
 \section{What is Git?}
@@ -288,12 +300,271 @@
         \item \alert{Easy to learn}
     \end{enumerate}
 \end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{How does it work?}
+    \begin{overlayarea}{\textwidth}{0.75\textheight}
+        \begin{itemize}
+            \item \textbf{Repository:} a database containing all versions of the files
+        \end{itemize}
+        \begin{onlyenv}<1>
+            \begin{center}
+                \includegraphics[width=0.8\textwidth, clip, trim=2cm 6mm 2cm 36mm]{Repository}
+            \end{center}
+        \end{onlyenv}
+        \begin{itemize}[<2->]
+            \item Snapshot-based system
+                  \begin{itemize}
+                      \item Snapshots are called commits
+                      \item Commits are named by checksums (also used to ensure data integrity)\\
+                            \Remark{It's impossible to change the contents of any file or directory without Git knowing about it}
+                  \end{itemize}
+        \end{itemize}
+        \begin{onlyenv}<2>
+            \begin{center}
+                  \includegraphics[width=0.75\textwidth]{Snapshots}\\
+                  {\footnotesize\URL[PB]{https://git-scm.com/book/en/v2/Getting-Started-What-is-Git\%3F}{From the Git-Book}}
+            \end{center}
+        \end{onlyenv}
+        \begin{itemize}[<3>]
+            \item Almost every operation is local
+                  \begin{itemize}
+                      \item Working without network connecting
+                      \item Distributed system $\,\to\,$ everyone carries a backup!
+                  \end{itemize}
+        \end{itemize}
+        \PrepareURLsymbol[PB]
+        \small
+        \begin{varblock}{}[0.95\textwidth]{Are you curious to know how Git works bottom-up?}
+            Refer to \URL*{http://ftp.newartisans.com/pub/git.from.bottom.up.pdf}{this 31-pages document}, well written, but not needed at start.
+        \end{varblock}
+    \end{overlayarea}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{An example of Git history}
+    \begin{center}
+        \readlist\SHA{%
+            6d7253af8a986838f78adc25a801cd06897be033,
+            54a94046deeb7117e77f0b6ee984165fedbc2345,
+            09c1b4321589b548be39063c828903901a3e14e7,
+            b924cdb3101220b552cdd92c8c4e7b9eb887a83a,
+            24ffea36e3b6b696cc537fbf05bae8d04c63a92b
+        }
+        \begin{varblock}{example}[0.9\textwidth]{}
+            \small\PS{Every commit is a snapshot of the state of the repository at that point}
+        \end{varblock}
+        \begin{tikzpicture}
+            \pgfmathsetmacro{\radius}{3mm}
+            \pgfmathsetmacro{\dl}{2pt}
+            \foreach \n[count=\i from 1] in {0,2,...,8}{
+                \draw[line width=\dl pt, draw=PB, fill=PP!20] (\n,0) circle (\radius pt);
+                \ifnum\i<5%
+                    \draw[to] (\n cm+\radius pt,0) -- ++(2 cm-2*\radius pt-0.5*\dl pt,0);
+                \fi
+                \node[rotate=90, font=\tiny, anchor=east] at (\n,-0.5) {\SHA[\i]};
+            }
+            \node[font=\small, text width=5ex, align=center, anchor=south, text=PB] at (0,0.5) {First commit};
+            \node[font=\small, text width=3ex, align=center, anchor=south, text=PB] at (8,0.5) {HEAD};
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{The correct abstract mental setup}
+    \begin{uncoverenv}<2->
+        \begin{tikzpicture}[node distance=5mm]
+            \coordinate (N0) at (0,0);
+            \foreach \n/\c [count=\i from 0, count=\ip from 1] in {Stashing area/PQ, Workspace/PS, Staging area/PP, Local repository/PB, Remote repository/PT}{
+                \node[space=\c, right = of N\i] (N\ip) {\n};
+                \draw[very thin] (N\ip) -- coordinate[pos=1] (E\ip) ++(0,-5);
+            }
+            \path coordinate (DNE) at ($(N4.north east)!0.5!(N5.north west)+(0,1)$)
+                  coordinate (DSE) at ($(DNE)-(0,7.1)$)
+                  coordinate (DNW) at ($(N1.north east)!0.5!(N2.north west)+(0,1)$)
+                  coordinate (DSW) at ($(DNW)-(0,7.1)$);
+            \draw[thin, dashed] (DNE) -- (DSE);
+            \draw ($(N1.north west)-(0.1,0)$) -- ++(0,0.2) -| ($(N4.north east)+(0.1,0)$);
+            \node[font=\small, anchor=south, inner sep=0pt] at ($(N1.north)!0.5!(N4.north)+(0,0.4)$) {Local machine};
+            \node[draw=red, very thick, rounded corners=1mm, fill=yellow, text width=0.9\textwidth, align=center, font=\bfseries\large, text=red, visible on=<3>]
+                at ($(N3.south)!0.5!(E3)$) {It's all about having this picture clear in mind and understand how git commands affect it};
+            \begin{onlyenv}<4>
+                \fill[Gray, fill opacity=0.95] (DNW) rectangle ($(DSW)-(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next Z02 Git talk};
+                \fill[Gray, fill opacity=0.95] (DNE) rectangle ($(DSE)+(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next Z02 Git talk};
+            \end{onlyenv}
+        \end{tikzpicture}
+    \end{uncoverenv}
+\end{frame}
 %===============================================================%
 
 %===============================================================%
-\section{How does it work?}
+\section{How to use Git locally?}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{C}
+\begin{frame}[fragile]{Preliminary steps}{Be sure to introduce yourself to Git on \textbf{each} machine from which you work}
+    \vspace{-0.03\textheight}
+    \begin{enumerate}
+        \item It is likely that Git is installed on your machine.
+              \begin{itemize}
+                  \item Check it in a terminal e.g.\ via \,\texttt{git version}
+                  \item If needed, \URL[PB]{https://git-scm.com/book/en/v2/Getting-Started-Installing-Git}{install it}
+              \end{itemize}
+        \item Optionally, \URL[PB]{https://stackoverflow.com/a/18898614}{get/enable autocompletion in the terminal}
+        \item Tell Git who you are and your email address\\
+              {\small$\to\,$ this information will be used to sign your work in history}
+    \end{enumerate}
+    \begin{lstlisting}[style=MyBash, aboveskip=5mm]
+        $ git config --global user.name 'Alessandro Sciarra'
+        $ git config --global user.email 'sciarra@itp.uni-frankfurt.de'
+    \end{lstlisting}
+    \FrameRemark{The dollar symbol \,\texttt{\$}\, denotes the end of the prompt in the terminal. It will be from now on to denote commands to be used in the terminal.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Asking for help about Git}
+    \vspace{-0.05\textheight}
+    \begin{enumerate}
+        \item There are 3 ways in terminal\\[1mm]
+              {\small
+              \begin{tabular}{c@{\;}l@{\quad}c@{\quad}l}
+                  \PP{$\circ$} & \texttt{git help <command>}   & e.g. & \texttt{git help config}   \\
+                  \PP{$\circ$} & \texttt{git <command> --help} & e.g. & \texttt{git config --help} \\
+                  \PP{$\circ$} & \texttt{man git-<command>}    & e.g. & \texttt{man git-config}    \\
+              \end{tabular}}
+        \item List of commands on the \URL[PB]{https://git-scm.com/docs}{official reference}
+        \item Ask Google
+    \end{enumerate}
+    \medskip
+    \PrepareURLsymbol[PQ]
+    \begin{varblock}{alert}[0.9\textwidth]{There is plenty of cheat-sheets online:}
+        \URL*{https://education.github.com/git-cheat-sheet-education.pdf}{GitHub education}
+        \qquad
+        \URL*{https://about.gitlab.com/images/press/git-cheat-sheet.pdf}{GitLab}
+        \qquad
+        \URL*{https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet}{Bitbucket}
+    \end{varblock}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Creating a repository}{It is as simple as running one command}
+    \begin{lstlisting}[style=MyBash]
+        $ git config --get user.name
+        Alessandro Sciarra
+        $ git config --get user.email
+        sciarra@itp.uni-frankfurt.de
+        # Suppose to be in a folder you want to turn into a repository
+        $ pwd
+        |+/home/asciarra/Documents/first-repo+|
+        $ ls -a
+        @|\ttfamily\textcolor{Blue}{.~~..}~~Paper.aux~~Paper.log~~Paper.out~~Paper.pdf~~Paper.tex|@
+    \end{lstlisting}
+    \begin{uncoverenv}<2->
+        \begin{lstlisting}[style=MyBash]
+            $ git init  # <--- Here you go!
+            |+Initialised empty Git repository in ~/Documents/first-repo/.git/+|
+            $ ls -a
+            @|\ttfamily\textcolor{Blue}{.~~..~~.git}~~Paper.aux~~Paper.log~~Paper.out~~Paper.pdf~~Paper.tex|@
+        \end{lstlisting}
+    \end{uncoverenv}
+    \begin{varblock}{alert}[0.9\textwidth]{Do not shoot yourself!}<3>
+        \PQ{Never ever touch by hand the content of the \,\texttt{.git}\, folder.}
+    \end{varblock}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{What comes next?}{\uncover<2->{On your local machine}}
+    \vspace{-0.05\textheight}
+    \begin{center}
+        \begin{tikzpicture}[node distance=25mm]
+            \begin{scope}[scope on=<2->]
+                \coordinate (N0) at (0,0);
+                \foreach \n/\c [count=\i from 0, count=\ip from 1] in {Workspace/PS, Staging area/PP, Local repository/PB}{
+                    \node[space=\c, right = of N\i] (N\ip) {\n};
+                    \draw[very thin] (N\ip) -- coordinate[pos=1] (E\ip) ++(0,-5);
+                }
+            \end{scope}
+            \begin{scope}[scope on=<3>]
+                \node[text=PQ, font=\ttfamily\scriptsize] at ($(N1)!0.5!(N2)$) {git status};
+                \node[text=PQ, font=\ttfamily\scriptsize] at ($(N3.north)+(0,0.3)$) {git log};
+                \GitCommand{fromto,PQ}{1}{2}{0.10}{git diff}
+                \GitCommand{fromto,PQ}{1}{3}{0.25}{git diff HEAD}
+                \GitCommand{fromto,PQ}{2}{3}{0.40}{git diff --staged}
+                \GitCommand{to}{1}{2}{0.60}{git add}
+                \GitCommand{from}{1}{2}{0.75}{git restore --staged}
+                \GitCommand{to}{2}{3}{0.90}{git commit}
+            \end{scope}
+        \end{tikzpicture}
+        \par\medskip
+        \uncover<2->{\small Commands marked in \PQ{dark red} do not change anything in the repository!}
+        \FrameRemark{Git introduced \texttt{git-restore} in v2.23 but this stayed buggy for a while. Use it from v2.27 on, otherwhise use \texttt{git-reset}.}
+    \end{center}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Git status}
+    \begin{lstlisting}[style=MyBash]
+        $ git status 
+        |+On branch master+|
+
+        |+No commits yet+|
+
+        |+Untracked files:+|
+        |+  (use "git add <file>..." to include in what will be committed)+|
+        @|\ttfamily\color{red}~~~~~Paper.aux|@
+        @|\ttfamily\color{red}~~~~~Paper.log|@
+        @|\ttfamily\color{red}~~~~~Paper.out|@
+        @|\ttfamily\color{red}~~~~~Paper.pdf|@
+        @|\ttfamily\color{red}~~~~~Paper.tex|@
+
+        |+nothing added to commit but untracked files present
+        (use "git add" to track)+|
+    \end{lstlisting}
+    \begin{varblock}{alert}[0.95\textwidth]{You do not want to put everything in a repository!}
+        It is possible to tell git to ignore some files, like temporary ones
+    \end{varblock}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Letting Git ignore some files}
+    \begin{lstlisting}[style=MyBash]
+        $ printf '*.%s\n' {aux,log,out,pdf} > .gitignore
+        $ cat .gitignore
+        |+*.aux+|
+        |+*.log+|
+        |+*.out+|
+        |+*.pdf+|
+        $ git status
+        |+On branch master+|
+
+        |+No commits yet+|
+
+        |+Untracked files:+|
+        |+  (use "git add <file>..." to include in what will be committed)+|
+        @|\ttfamily\color{red}~~~~~.gitignore|@
+        @|\ttfamily\color{red}~~~~~Paper.tex|@
+
+        |+nothing added to commit but untracked files present
+        (use "git add" to track)+|
+    \end{lstlisting}
+    \begin{center}
+        \URL[PB]{https://github.com/github/gitignore}{github/gitignore}
+        \qquad
+        \URL[PP]{https://github.com/github/gitignore/blob/main/TeX.gitignore}{for LaTeX projects}
+    \end{center}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Our first commit}
+    
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Our second commit}
+    
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Working and displaying changes}
+    
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Staging partial modification in a file}
+    
+\end{frame}
+%===============================================================%
+
+%===============================================================%
+\section{Summary and conclusions}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{That's \textbf{NOT} all folks}
     
 \end{frame}
 %===============================================================%
