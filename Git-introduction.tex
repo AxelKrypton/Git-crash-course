@@ -8,7 +8,6 @@
   listings,
   lstautogobble,
   listofitems,
-  moresize,
   TeXnicalities,
   comment
 }
@@ -28,6 +27,7 @@
 \usetikzlibrary{
     positioning,
     shapes,
+    bbox
 }
 \input{ListingsBash}
 
@@ -51,9 +51,7 @@
         thick, draw=#1, fill=#1!10, text=#1, rounded corners=1mm, font=\small, text width=14mm, align=center, minimum height=12mm
     }
 }
-\newcommand{\GitCommand}[5]{%
-    \draw[#1] ($(N#2.south)!#4!(E#2)$) -- node[midway, fill=BGLIGHT, font=\ttfamily\scriptsize] {#5} ($(N#3.south)!#4!(E#3)$);
-}
+\newcommand{\ttc}[2]{\texttt{\textcolor{#1}{#2}}}
 \setlength{\leftmarginii}{0.5cm}
 
 
@@ -69,7 +67,6 @@
 \end{frame}
 %===============================================================%
 
-\begin{comment}
 %===============================================================%
 \section{Why should you use it?}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -87,8 +84,8 @@
                       \begin{itemize}
                           \item You make a backup of your file
                           \item You comment out a block of text in your source
-                          \item If the old version was better, you restore by hand
-                          \item If the new version is better, you clean by hand
+                          \item If the old version was better, you restore it by hand
+                          \item If the new version is better, you clean up by hand
                       \end{itemize}
                   \end{onlyenv}
             \item<+-> \textcolor<.-.(1)>{PQ}{How do you create/view checkpoints?}
@@ -118,7 +115,7 @@
 \begin{frame}{Another possible workflow}{Collaborating on a project}
     \begin{overlayarea}{\textwidth}{0.6\textheight}
         \begin{itemize}
-            \item<+-> \textcolor<.-.(1)>{PQ}{How can you work on the same project?}
+            \item<+-> \textcolor<.-.(1)>{PQ}{How can you collaborate on the same project with colleagues?}
                     \par\begin{onlyenv}<+> % <------ the \par is to avoid vertical shift: https://tex.stackexchange.com/a/449826
                         \begin{itemize}
                             \item You work on separate parts at the same time
@@ -166,14 +163,13 @@
         \end{itemize}
     \end{overlayarea}
     \begin{tikzpicture}[remember picture, overlay]
-        \node[anchor=north east, visible on=<+>, inner xsep=5mm, inner ysep=2mm] at (current page.north east) {\includegraphics[width=0.3\textwidth]{Head-explosion}};
+        \node[visible on=<+>] at ($(current page.center)-(0,3mm)$) {\includegraphics[width=0.6\textwidth]{Head-explosion}};
     \end{tikzpicture}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \AlertFrame{OK, and how would it be with Git?}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{A possible workflow}{Writing a review or a Ph.D. thesis}
-    %\vspace{-0.1\textheight}
     \begin{customlist}{5mm}
         \item How do you make writing experiments?
               \begin{itemize}
@@ -198,7 +194,7 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Another possible workflow}{Collaborating on a project}
     \begin{customlist}{5mm}
-        \item How can you work on the same project?
+        \item How can you collaborate on the same project with colleagues?
               \begin{itemize}
                   \item \texttt{git-pull} \quad \texttt{git-push} \quad \texttt{git-branch}
               \end{itemize}
@@ -279,7 +275,6 @@
     \FrameRemark{$^\star$ Among many others, in a Git repository you can undo a \texttt{rm} command given by accident on a wrong file.}
 \end{frame}
 %===============================================================%
-\end{comment}
 
 %===============================================================%
 \section{What is Git?}
@@ -398,7 +393,7 @@
 \section{How to use Git locally?}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Preliminary steps}{Be sure to introduce yourself to Git on \textbf{each} machine from which you work}
-    \vspace{-0.03\textheight}
+    \vspace{-0.02\textheight}
     \begin{enumerate}
         \item It is likely that Git is installed on your machine.
               \begin{itemize}
@@ -409,9 +404,16 @@
         \item Tell Git who you are and your email address\\
               {\small$\to\,$ this information will be used to sign your work in history}
     \end{enumerate}
-    \begin{lstlisting}[style=MyBash, aboveskip=5mm]
+    \begin{lstlisting}[style=MyBash, aboveskip=2mm]
         $ git config --global user.name 'Alessandro Sciarra'
         $ git config --global user.email 'sciarra@itp.uni-frankfurt.de'
+    \end{lstlisting}
+    \begin{enumerate}
+        \setcounter{enumi}{3}
+        \item Set your favourite editor e.g.\ to write commit messages
+    \end{enumerate}
+    \begin{lstlisting}[style=MyBash, aboveskip=2mm]
+        $ git config --global core.editor 'emacs -nw'
     \end{lstlisting}
     \FrameRemark{The dollar symbol \,\texttt{\$}\, denotes the end of the prompt in the terminal. It will be from now on to denote commands to be used in the terminal.}
 \end{frame}
@@ -450,14 +452,14 @@
         $ pwd
         |+/home/asciarra/Documents/first-repo+|
         $ ls -a
-        @|\ttfamily\textcolor{Blue}{.~~..}~~Paper.aux~~Paper.log~~Paper.out~~Paper.pdf~~Paper.tex|@
+        @|\ttc{Blue}{.~~..}~~Paper.aux~~Paper.log~~Paper.out~~Paper.pdf~~Paper.tex|@
     \end{lstlisting}
     \begin{uncoverenv}<2->
         \begin{lstlisting}[style=MyBash]
             $ git init  # <--- Here you go!
             |+Initialised empty Git repository in ~/Documents/first-repo/.git/+|
             $ ls -a
-            @|\ttfamily\textcolor{Blue}{.~~..~~.git}~~Paper.aux~~Paper.log~~Paper.out~~Paper.pdf~~Paper.tex|@
+            @|\ttc{Blue}{.~~..~~.git}~~Paper.aux~~Paper.log~~Paper.out~~Paper.pdf~~Paper.tex|@
         \end{lstlisting}
     \end{uncoverenv}
     \begin{varblock}{alert}[0.9\textwidth]{Do not shoot yourself!}<3>
@@ -466,7 +468,10 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{What comes next?}{\uncover<2->{On your local machine}}
-    \vspace{-0.05\textheight}
+    \newcommand{\GitCommand}[6][midway]{% #### since in frame and command
+        \draw[####2] ($(N####3.south)!####5!(E####3)$) -- node[####1, fill=BGLIGHT, font=\ttfamily\scriptsize] {####6} ($(N####4.south)!####5!(E####4)$);
+    }
+    \vspace{-0.1\textheight}
     \begin{center}
         \begin{tikzpicture}[node distance=25mm]
             \begin{scope}[scope on=<2->]
@@ -479,12 +484,15 @@
             \begin{scope}[scope on=<3>]
                 \node[text=PQ, font=\ttfamily\scriptsize] at ($(N1)!0.5!(N2)$) {git status};
                 \node[text=PQ, font=\ttfamily\scriptsize] at ($(N3.north)+(0,0.3)$) {git log};
+                \node[text=PQ, font=\ttfamily\scriptsize] at ($(N3.north)+(0,0.7)$) {git show};
                 \GitCommand{fromto,PQ}{1}{2}{0.10}{git diff}
-                \GitCommand{fromto,PQ}{1}{3}{0.25}{git diff HEAD}
-                \GitCommand{fromto,PQ}{2}{3}{0.40}{git diff --staged}
-                \GitCommand{to}{1}{2}{0.60}{git add}
-                \GitCommand{from}{1}{2}{0.75}{git restore --staged}
-                \GitCommand{to}{2}{3}{0.90}{git commit}
+                \GitCommand{fromto,PQ}{2}{3}{0.25}{git diff --staged}
+                \GitCommand{to}{1}{2}{0.65}{git add}
+                \GitCommand{from}{1}{2}{0.80}{git restore --staged}
+                \GitCommand{to}{2}{3}{0.95}{git commit}
+                \path[to, PQ] ($($(N3.south)!0.45!(E3)$)!0.65!($(N2.south)!0.45!(E2)$)$) edge[out=180, in=0] ($(N2.south)!0.35!(E2)$);
+                \GitCommand[pos=0.8]{fromto,PQ}{1}{3}{0.45}{git diff HEAD}
+                \node[text=PT] at ($($(N1.south)!0.47!(E1)$)!0.8!($(N3.south)!0.51!(E3)$)$) {\Remark{only tracked files}};
             \end{scope}
         \end{tikzpicture}
         \par\medskip
@@ -502,14 +510,14 @@
 
         |+Untracked files:+|
         |+  (use "git add <file>..." to include in what will be committed)+|
-        @|\ttfamily\color{red}~~~~~Paper.aux|@
-        @|\ttfamily\color{red}~~~~~Paper.log|@
-        @|\ttfamily\color{red}~~~~~Paper.out|@
-        @|\ttfamily\color{red}~~~~~Paper.pdf|@
-        @|\ttfamily\color{red}~~~~~Paper.tex|@
+        @|\ttc{red}{~~~~~Paper.aux}|@
+        @|\ttc{red}{~~~~~Paper.log}|@
+        @|\ttc{red}{~~~~~Paper.out}|@
+        @|\ttc{red}{~~~~~Paper.pdf}|@
+        @|\ttc{red}{~~~~~Paper.tex}|@
 
-        |+nothing added to commit but untracked files present
-        (use "git add" to track)+|
+        |+nothing added to commit but untracked files present+|
+        |+(use "git add" to track)+|
     \end{lstlisting}
     \begin{varblock}{alert}[0.95\textwidth]{You do not want to put everything in a repository!}
         It is possible to tell git to ignore some files, like temporary ones
@@ -531,11 +539,11 @@
 
         |+Untracked files:+|
         |+  (use "git add <file>..." to include in what will be committed)+|
-        @|\ttfamily\color{red}~~~~~.gitignore|@
-        @|\ttfamily\color{red}~~~~~Paper.tex|@
+        @|\ttc{red}{~~~~~.gitignore}|@
+        @|\ttc{red}{~~~~~Paper.tex}|@
 
-        |+nothing added to commit but untracked files present
-        (use "git add" to track)+|
+        |+nothing added to commit but untracked files present+|
+        |+(use "git add" to track)+|
     \end{lstlisting}
     \begin{center}
         \URL[PB]{https://github.com/github/gitignore}{github/gitignore}
@@ -544,30 +552,319 @@
     \end{center}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{Our first commit}
+\begin{frame}[fragile]{Our first commit}
+    \vspace{-0.09\textheight}
+    \begin{overlayarea}{\textwidth}{0.7\textheight}
+        \begin{onlyenv}<1>
+            \centerline{In your terminal}
+            \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-1mm, xrightmargin=-1mm]
+                $ git log
+                |+fatal: your current branch 'master' does not have any commits yet+|
+                $ git add .gitignore
+                $ git status
+                |+On branch master+|
+        
+                |+No commits yet+|
+        
+                |+Changes to be committed:+|
+                |+  (use "git rm --cached <file>..." to unstage)+|
+                @|\ttc{ForestGreen}{~~~~~new file:~~~.gitignore}|@
+        
+                |+Untracked files:+|
+                |+  (use "git add <file>..." to include in what will be committed)+|
+                @|\ttc{red}{~~~~~Paper.tex}|@
+                $ git commit
+            \end{lstlisting}
+        \end{onlyenv}
+        \begin{onlyenv}<2>
+            \centerline{In your favourite editor}
+            \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-3mm, xrightmargin=-3mm]
+                @|\tikz \fill[black] (0,0) rectangle (0.13,0.23);|@
     
+                # Please enter the commit message for your changes. Lines starting
+                # with '#' will be ignored, and an empty message aborts the commit.
+                #
+                # On branch @|\ttc{DarkOrange}{master}|@
+                #
+                # Initial commit
+                #
+                # @|\ttc{Goldenrod}{Changes to be committed:}|@
+                #       new file:   @|\ttc{ForestGreen}{.gitignore}|@
+                #
+                # @|\ttc{Goldenrod}{Untracked files:}|@
+                #       @|\ttc{ForestGreen}{Paper.tex}|@
+                #
+            \end{lstlisting}
+        \end{onlyenv}
+        \begin{onlyenv}<3>
+            \centerline{In your favourite editor}
+            \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-3mm, xrightmargin=-3mm]
+                |+Add .gitignore file for TeX project+|
+    
+                # Please enter the commit message for your changes. Lines starting
+                # with '#' will be ignored, and an empty message aborts the commit.
+                #
+                # On branch @|\ttc{DarkOrange}{master}|@
+                #
+                # Initial commit
+                #
+                # @|\ttc{Goldenrod}{Changes to be committed:}|@
+                #       new file:   @|\ttc{ForestGreen}{.gitignore}|@
+                #
+                # @|\ttc{Goldenrod}{Untracked files:}|@
+                #       @|\ttc{ForestGreen}{Paper.tex}|@
+                #
+            \end{lstlisting}
+        \end{onlyenv}
+        \begin{onlyenv}<4>
+            \centerline{In your terminal}
+            \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-2mm, xrightmargin=-2mm]
+                $ git log
+                |+fatal: your current branch 'master' does not have any commits yet+|
+                $ git add .gitignore
+                $ git status
+                |+On branch master+|
+        
+                |+No commits yet+|
+        
+                |+Changes to be committed:+|
+                |+  (use "git rm --cached <file>..." to unstage)+|
+                @|\ttfamily\color{ForestGreen}~~~~~new file:~~~.gitignore|@
+        
+                |+Untracked files:+|
+                |+  (use "git add <file>..." to include in what will be committed)+|
+                @|\ttfamily\color{red}~~~~~Paper.tex|@
+                $ git commit
+                # Your editor opens -> type commit message, save and exit
+                |+[master (root-commit) bb8c78b] Add .gitignore file for TeX project+|
+                |+ 1 file changed, 4 insertions(+)+|
+                |+ create mode 100644 .gitignore+|
+            \end{lstlisting}
+        \end{onlyenv}
+    \end{overlayarea}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{Our second commit}
-    
+\begin{frame}[fragile]{Inspecting history}
+    \begin{lstlisting}[style=MyBash, belowskip=-4mm]
+        $ git log
+        |+commit bb8c78b68075dacf8467420bc00867c73ef5ba8c (HEAD -> master)+|
+        |+Author: Alessandro Sciarra <asciarra@fias.uni-frankfurt.de>+|
+        |+Date:   Thu Dec 23 10:13:05 2021 +0100+|
+
+        |+    Add .gitignore file for TeX project+|
+        $ git log --oneline
+        |+bb8c78b (HEAD -> master) Add .gitignore file for LaTeX project+|
+    \end{lstlisting}
+    \centerline{Use a pager to avoid polluting terminal}
+    \begin{lstlisting}[style=MyBash, aboveskip=2mm]
+        $ git config --global core.pager 'less -+$LESS -R'
+    \end{lstlisting}
+    \medskip
+    \begin{varblock}{}[0.8\textwidth]{}
+        Use \;\PB{\texttt{git show}}\; or \;\PB{\texttt{git show <SHA1>}}\; to inspect what has been done in last or given commit
+    \end{varblock}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{Working and displaying changes}
-    
+\begin{frame}[fragile]{Our second commit}
+    \begin{lstlisting}[style=MyBash]
+        $ git status
+        |+On branch master+|
+        |+Untracked files:+|
+        |+  (use "git add <file>..." to include in what will be committed)+|
+            @|\ttc{red}{Paper.tex}|@
+
+        |+nothing added to commit but untracked files present+|
+        |+(use "git add" to track)+|
+        $ git add Paper.tex # Always add to the staging area before committing!
+        $ git status 
+        |+On branch master+|
+        |+Changes to be committed:+|
+        |+  (use "git restore --staged <file>..." to unstage)+|
+               @|\ttc{ForestGreen}{new file:   Paper.tex}|@
+        $ git commit -m 'Add paper main document'
+        |+[master 9c6154d] Add paper main document+|
+        |+ 1 file changed, 147 insertions(+)+|
+        |+ create mode 100644 Paper.tex+|
+    \end{lstlisting}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{Staging partial modification in a file}
-    
+\begin{frame}[fragile]{Use good commit messages}
+    \begin{lstlisting}[style=MyBash]
+        $ git log --oneline
+        |+9c6154d (HEAD -> master) Add paper main document+|
+        |+bb8c78b Add .gitignore file for LaTeX project+|
+    \end{lstlisting}
+    \begin{itemize}
+        \item Write them like a email to yourself / the other developers\\
+              $\to\;$ Subject line + body, follow \URL[PB]{https://p5v.medium.com/what-s-with-the-50-72-rule-8a906f61f09c}{the 50/72 rule} 
+        \item Subject: Summarize what has been done\\
+              $\to\;$ \alert{\textbf{Use present tense and no period at the end!}}
+        \item Body: \PP{After empty line}, document why you made the changes\\[-0.5ex]
+              \phantom{Bo}$\drsh$\Remark{add one only if needed}
+    \end{itemize}
+    \begin{varblock}{alert}[0.98\textwidth]{Good commits}
+        Commit small and conceptually separated changes, commit often and do not add binary files to your repository.
+    \end{varblock}
+    \FrameRemark{In coding projects, although not always possible/trivial, try to commit working/compiling code.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Working and displaying changes}
+    \vspace{-0.0\textheight}
+    \begin{overlayarea}{\textwidth}{0.7\textheight}
+        \begin{onlyenv}<1>
+            \centerline{In your terminal}
+            \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-6mm, xrightmargin=-6mm]
+                # Make some changes
+                $ git status
+                |+On branch master+|
+                |+Changes not staged for commit:+|
+                |+  (use "git add <file>..." to update what will be committed)+|
+                |+  (use "git restore <file>..." to discard changes in working directory)+|
+                    @|\ttc{red}{modified:   Paper.tex}|@
+                
+                |+no changes added to commit (use "git add" and/or "git commit -a")+|
+                $ git diff
+            \end{lstlisting}
+        \end{onlyenv}
+        \begin{onlyenv}<2>
+            \centerline{In your pager, e.g.\ \bash|less|}
+            \begin{lstlisting}[style=MyBash, aboveskip=2mm]
+                |+diff --git a/Paper.tex b/Paper.tex+|
+                |+index 3c408e5..3669114 100644+|
+                |+--- a/Paper.tex+|
+                |++++ b/Paper.tex+|
+                @|\ttc{DarkTurquoise}{@@ -42,7 +42,7 @@}|@ |+pdftitle={LaTeX Seminar for PhD students}+|
+                |+     {Sprecher \& Seminarleiter}%+|
+                |+ }+|
+                
+                @|\ttc{red}{-\textbackslash date\{\textbackslash \today\}}|@
+                @|\ttc{ForestGreen}{+\textbackslash date\{23. Dezember 2021\}}|@
+                
+                |+ \newcommand{\etc}{etc.}+|
+                |+ \newcommand{\zB}{z.B.}+|
+            \end{lstlisting}
+        \end{onlyenv}
+        \begin{onlyenv}<3>
+            \centerline{In your terminal}
+            \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-6mm, xrightmargin=-6mm]
+                # Make some changes
+                $ git status
+                |+On branch master+|
+                |+Changes not staged for commit:+|
+                |+  (use "git add <file>..." to update what will be committed)+|
+                |+  (use "git restore <file>..." to discard changes in working directory)+|
+                    @|\ttc{red}{modified:   Paper.tex}|@
+                
+                |+no changes added to commit (use "git add" and/or "git commit -a")+|
+                $ git diff
+                $ git diff --staged  # Nothing in the staging area!
+                $ git add Paper.tex
+                $ git diff           # No changes anymore in the workspace!
+                $ git diff --staged  # Our changes are now staged
+                $ git commit -m 'Fix final date for main document'
+                # ...
+            \end{lstlisting}
+        \end{onlyenv}
+    \end{overlayarea}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{What else can I easily explore?}
+    \begin{itemize}
+        \item Stage all tracked modified files at once\\[1mm]
+              \begin{minipage}{\linewidth}
+                  \begin{lstlisting}[style=MyBash]
+                      git add -u
+                  \end{lstlisting}
+              \end{minipage}
+        \item Stage partial modification in a file\\[1mm]
+              \begin{minipage}{\linewidth}
+                  \begin{lstlisting}[style=MyBash]
+                      git add -p
+                  \end{lstlisting}
+              \end{minipage}
+        \item Define your aliases\\[1mm]
+              \begin{minipage}{\linewidth}
+                  \begin{lstlisting}[style=MyBash]
+                      git config --global alias.unstage 'reset HEAD --'
+                      # From now on, you can use 'git unstage'
+                  \end{lstlisting}
+              \end{minipage}
+        \item Let git correct you when you mistype$^\star$\\[1mm]
+              \begin{minipage}{\linewidth}
+                  \begin{lstlisting}[style=MyBash]
+                      git config --global help.autocorrect 1
+                  \end{lstlisting}
+              \end{minipage}
+        \item Change/correct your last commit message
+              \begin{minipage}{\linewidth}
+                  \begin{lstlisting}[style=MyBash]
+                      git commit --amend
+                  \end{lstlisting}
+              \end{minipage}
+    \end{itemize}
+    \FrameRemark{$^\star$ If you want a friend to correct your mistyped last command \textbf{in general} in the terminal, check-out \URL*{https://github.com/nvbn/thefuck}{this hilarious project}.}
 \end{frame}
 %===============================================================%
 
 %===============================================================%
 \section{Summary and conclusions}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Your workflow from now on, right?}
+    \begin{center}
+        \begin{tikzpicture}[node distance=3mm, bezier bounding box] % \usetikzlibrary{bbox}
+            \coordinate (N0) at (0,0);
+            \foreach \n/\c [count=\i from 0, count=\ip from 1] in {Work/PS, git status git diff/PP, git add/PB, git commit/PT}{
+                \begin{scope}[scope on=<\ip->]
+                    \node[space=\c, below = of N\i, xshift=25mm] (N\ip) {\n};
+                    \ifnum\i>0%
+                        \path[thick, to] (N\i.east) edge[out=0, in=90] (N\ip.north);
+                    \fi
+                \end{scope}
+            }
+            \path[visible on=<5->, thick, dotted, to] (N4.west) edge[out=180, in=180, looseness=1.6] (N2.west);
+            \path[visible on=<6->, thick, to] (N4.south) edge[out=270, in=180, looseness=1.3] (N1.west);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{That's \textbf{NOT} all folks}
-    
+    \vspace{0.02\textheight}
+    \begin{enumerate}[<+->]
+        \item Start using Git.
+              \alert{\textbf{Now.}}
+              Not tomorrow or next week, today!\\
+              $\to\;$ Repeat what done on these slides
+        \item Was anything unclear?
+              Do you get stuck at some point?\\
+              $\to\;$ Drop me \PP{\href{mailto:sciarra@itp.uni-frankfurt.de}{{\small\faEnvelope}\;an email}}
+        \item Git is much more than this!\\
+              $\to\;$ Come to next Z02 talk: \alert{\guillemotleft Let's git \textbf{together}\tikzmark{tg}\guillemotright}
+    \end{enumerate}
+    \begin{tikzpicture}[remember picture, overlay, scope on=<.->]
+        \node[anchor=west, space=PT, text width=18mm] (content) at ($(tg)+(0.5,-0.8)$) {
+            git clone\\
+            git branch\\
+            git switch\\
+            git checkout\\
+            git merge\\
+            git pull\\
+            git push
+        };
+        \path[to, shorter={0mm}{1mm}] ($(tg)-(0.6,0.25)$) edge[out=270, in=180] (content.west);
+    \end{tikzpicture}
+    \par\vspace{0.02\textheight}
+    \begin{uncoverenv}<+->
+        \begin{tikzpicture}[remember picture, overlay]
+            \node[anchor=north east, cloud, aspect=3, cloud puffs=15, draw=PB, fill=PP!20, text=PB]
+                at ($(current page.north east)+(-14mm,-6mm)$) {Thank you!};
+        \end{tikzpicture}
+        \begin{minipage}{0.8\textwidth}
+            \begin{center}
+                \large\bfseries\PQ{Believe me, it's worth it!}
+            \end{center}
+        \end{minipage}
+    \end{uncoverenv}
 \end{frame}
 %===============================================================%
-
 
 \end{document}
