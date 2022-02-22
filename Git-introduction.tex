@@ -33,6 +33,7 @@
 
 %===============================================================%
 \title{Introduction to Git}
+\date{25 February 2022}
 \author{Alessandro Sciarra}
 \institute{Z02~--~Software Development Center}
 \titlegraphic{\includegraphics[width=20mm]{LogoCRC}}
@@ -303,7 +304,14 @@
         \end{itemize}
         \begin{onlyenv}<1>
             \begin{center}
-                \includegraphics[width=0.8\textwidth, clip, trim=2cm 6mm 2cm 36mm]{Repository}
+                \begin{tikzpicture}
+                    \node (fig) {\includegraphics[width=0.8\textwidth, clip, trim=2cm 6mm 2cm 36mm]{Repository}};
+                    \begin{DrawOnNode}{fig}
+                        \fill[BGLIGHT] (0.3,0.9) rectangle (0.8,0.75);
+                        \draw[from] (0.33,0.84) -- node[pos=1, right, text=PS] {Workspace} ++(0.285,0);
+                        \draw[from] (0.44,0.56) -- node[pos=1, right, text=Navy, font=\small] {Local repository} ++(0.175,0);
+                    \end{DrawOnNode}
+                \end{tikzpicture}
             \end{center}
         \end{onlyenv}
         \begin{itemize}[<2->]
@@ -467,10 +475,10 @@
     \end{varblock}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{What comes next?}{\uncover<2->{On your local machine}}
-    \newcommand{\GitCommand}[6][midway]{% #### since in frame and command
-        \draw[####2] ($(N####3.south)!####5!(E####3)$) -- node[####1, fill=BGLIGHT, font=\ttfamily\scriptsize] {####6} ($(N####4.south)!####5!(E####4)$);
-    }
+\newcommand{\GitCommand}[6][midway]{%
+    \draw[#2] ($(N#3.south)!#5!(E#3)$) -- node[#1, fill=BGLIGHT, font=\ttfamily\scriptsize] {#6} ($(N#4.south)!#5!(E#4)$);
+}
+\begin{frame}<1-3>[label=gitLocal]{\alt<1-3>{What comes next?}{Back to our mental picture}}{\only<2->{On your local machine}}
     \vspace{-0.1\textheight}
     \begin{center}
         \begin{tikzpicture}[node distance=25mm]
@@ -481,7 +489,7 @@
                     \draw[very thin] (N\ip) -- coordinate[pos=1] (E\ip) ++(0,-5);
                 }
             \end{scope}
-            \begin{scope}[scope on=<3>]
+            \begin{scope}[scope on=<3->]
                 \node[text=PQ, font=\ttfamily\scriptsize] at ($(N1)!0.5!(N2)$) {git status};
                 \node[text=PQ, font=\ttfamily\scriptsize] at ($(N3.north)+(0,0.3)$) {git log};
                 \node[text=PQ, font=\ttfamily\scriptsize] at ($(N3.north)+(0,0.7)$) {git show};
@@ -497,13 +505,13 @@
         \end{tikzpicture}
         \par\medskip
         \uncover<2->{\small Commands marked in \PQ{dark red} do not change anything in the repository!}
-        \FrameRemark{Git introduced \texttt{git-restore} in v2.23 but this stayed buggy for a while. Use it from v2.27 on, otherwhise use \texttt{git-reset}.}
+        \FrameRemark[3-]{Git introduced \texttt{git-restore} in v2.23 but this stayed buggy for a while. Use it from v2.27 on, otherwhise use \texttt{git-reset}.}
     \end{center}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Git status}
     \begin{lstlisting}[style=MyBash]
-        $ git status 
+        $ git status
         |+On branch master+|
 
         |+No commits yet+|
@@ -563,13 +571,13 @@
                 $ git add .gitignore
                 $ git status
                 |+On branch master+|
-        
+
                 |+No commits yet+|
-        
+
                 |+Changes to be committed:+|
                 |+  (use "git rm --cached <file>..." to unstage)+|
                 @|\ttc{ForestGreen}{~~~~~new file:~~~.gitignore}|@
-        
+
                 |+Untracked files:+|
                 |+  (use "git add <file>..." to include in what will be committed)+|
                 @|\ttc{red}{~~~~~Paper.tex}|@
@@ -579,8 +587,8 @@
         \begin{onlyenv}<2>
             \centerline{In your favourite editor}
             \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-3mm, xrightmargin=-3mm]
-                @|\tikz \fill[black] (0,0) rectangle (0.13,0.23);|@
-    
+                @|\raisebox{-0.5pt}{\tikz[] \fill[black] (0,0) rectangle (0.13,0.23);}|@
+
                 # Please enter the commit message for your changes. Lines starting
                 # with '#' will be ignored, and an empty message aborts the commit.
                 #
@@ -599,8 +607,8 @@
         \begin{onlyenv}<3>
             \centerline{In your favourite editor}
             \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-3mm, xrightmargin=-3mm]
-                |+Add .gitignore file for TeX project+|
-    
+                |+Add .gitignore file for TeX project+|@|\,\raisebox{-0.5pt}{\tikz \fill[black] (0,0) rectangle (0.13,0.23);}|@
+
                 # Please enter the commit message for your changes. Lines starting
                 # with '#' will be ignored, and an empty message aborts the commit.
                 #
@@ -624,13 +632,13 @@
                 $ git add .gitignore
                 $ git status
                 |+On branch master+|
-        
+
                 |+No commits yet+|
-        
+
                 |+Changes to be committed:+|
                 |+  (use "git rm --cached <file>..." to unstage)+|
                 @|\ttfamily\color{ForestGreen}~~~~~new file:~~~.gitignore|@
-        
+
                 |+Untracked files:+|
                 |+  (use "git add <file>..." to include in what will be committed)+|
                 @|\ttfamily\color{red}~~~~~Paper.tex|@
@@ -675,8 +683,9 @@
 
         |+nothing added to commit but untracked files present+|
         |+(use "git add" to track)+|
-        $ git add Paper.tex # Always add to the staging area before committing!
-        $ git status 
+        $ git add Paper.tex # Always add to the staging
+                            # area before committing!
+        $ git status
         |+On branch master+|
         |+Changes to be committed:+|
         |+  (use "git restore --staged <file>..." to unstage)+|
@@ -696,7 +705,7 @@
     \end{lstlisting}
     \begin{itemize}
         \item Write them like a email to yourself / the other developers\\
-              $\to\;$ Subject line + body, follow \URL[PB]{https://p5v.medium.com/what-s-with-the-50-72-rule-8a906f61f09c}{the 50/72 rule} 
+              $\to\;$ Subject line + body, follow \URL[PB]{https://p5v.medium.com/what-s-with-the-50-72-rule-8a906f61f09c}{the 50/72 rule}
         \item Subject: Summarize what has been done\\
               $\to\;$ \alert{\textbf{Use present tense and no period at the end!}}
         \item Body: \PP{After empty line}, document why you made the changes\\[-0.5ex]
@@ -707,6 +716,8 @@
     \end{varblock}
     \FrameRemark{In coding projects, although not always possible/trivial, try to commit working/compiling code.}
 \end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\againframe<4>[noframenumbering, plain]{gitLocal}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Working and displaying changes}
     \vspace{-0.0\textheight}
@@ -721,7 +732,7 @@
                 |+  (use "git add <file>..." to update what will be committed)+|
                 |+  (use "git restore <file>..." to discard changes in working directory)+|
                     @|\ttc{red}{modified:   Paper.tex}|@
-                
+
                 |+no changes added to commit (use "git add" and/or "git commit -a")+|
                 $ git diff
             \end{lstlisting}
@@ -736,10 +747,10 @@
                 @|\ttc{DarkTurquoise}{@@ -42,7 +42,7 @@}|@ |+pdftitle={LaTeX Seminar for PhD students}+|
                 |+     {Sprecher \& Seminarleiter}%+|
                 |+ }+|
-                
+
                 @|\ttc{red}{-\textbackslash date\{\textbackslash \today\}}|@
                 @|\ttc{ForestGreen}{+\textbackslash date\{23. Dezember 2021\}}|@
-                
+
                 |+ \newcommand{\etc}{etc.}+|
                 |+ \newcommand{\zB}{z.B.}+|
             \end{lstlisting}
@@ -754,14 +765,14 @@
                 |+  (use "git add <file>..." to update what will be committed)+|
                 |+  (use "git restore <file>..." to discard changes in working directory)+|
                     @|\ttc{red}{modified:   Paper.tex}|@
-                
+
                 |+no changes added to commit (use "git add" and/or "git commit -a")+|
                 $ git diff
                 $ git diff --staged  # Nothing in the staging area!
                 $ git add Paper.tex
                 $ git diff           # No changes anymore in the workspace!
                 $ git diff --staged  # Our changes are now staged
-                $ git commit -m 'Fix final date for main document'
+                $ git commit -m 'Fix date for main document'
                 # ...
             \end{lstlisting}
         \end{onlyenv}
