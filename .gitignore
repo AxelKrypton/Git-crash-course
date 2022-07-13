@@ -279,3 +279,9 @@ TSWLatexianTemp*
 #Eclipse
 /tmp/
 .project
+
+#Mac
+.DS_Store
+
+# Exclude other files
+Documentation
