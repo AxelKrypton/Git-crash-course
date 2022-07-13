@@ -16,3 +16,8 @@ We are now ready to learn how to use Git to collaborate in the same project with
 
 Knowing most of git commands, it is now time to bring our git usage to another level.
 A very common branching pattern is here introduced and some common situation discussed.
+
+
+## Note about LaTeX compilation
+
+If you wish to compile LaTeX source code, the `TeXnicalities` package and the used beamer theme are needed and can be found [here](https://github.com/AxelKrypton/TeXnicalities).
