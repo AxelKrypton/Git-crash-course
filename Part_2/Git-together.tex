@@ -9,7 +9,7 @@
   lstautogobble,
   listofitems,
   TeXnicalities,
-  comment
+  animate,comment
 }
 
 \setsansfont{Yanone Kaffeesatz}[
@@ -52,11 +52,12 @@
         thick, draw=#1, fill=#1!10, text=#1, rounded corners=1mm, font=\small, text width=14mm, align=center, minimum height=12mm
     }
 }
-\newcommand{\ttc}[2]{\texttt{\textcolor{#1}{#2}}}
+\PrepareURLsymbol[PB]
+\newcommand{\ttc}[2]{\texttt{\textcolor{#1}{#2}}}%
 \setlength{\leftmarginii}{0.5cm}
 \newcommand{\then}{\raisebox{2pt}{$\;\drsh\;$}}
 
-% Taken from
+% Taken from https://tex.stackexchange.com/a/51458/128737
 \makeatletter
 \patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
 \makeatother
@@ -72,6 +73,8 @@
     \tableofcontents[subsectionstyle=hide]
 \end{frame}
 %===============================================================%
+
+
 
 %===============================================================%
 \section{A short recap from last time}
@@ -128,7 +131,16 @@
     \end{center}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{The complete correct abstract mental setup}
+\newsavebox{\lstclonebox}
+\begin{frame}<1-3>[fragile,label=MentalPicture]
+    \frametitle<1-3>{The complete correct abstract mental setup}
+    \frametitle<4->{Cloning a remote repository}
+    \begin{lrbox}{\lstclonebox}
+        \begin{lstlisting}[style=MyBash]
+            # Clone, i.e. download, a remote repository in present directory
+            $ git clone |+<path-or-url-to-repository> [<optional-folder-name>]+|
+        \end{lstlisting}
+    \end{lrbox}
     \begin{tikzpicture}[node distance=5mm]
         \coordinate (N0) at (0,0);
         \foreach \n/\c [count=\i from 0, count=\ip from 1] in {Stashing area/PQ, Workspace/PS, Staging area/PP, Local repository/PB, Remote repository/PT}{
@@ -148,12 +160,16 @@
             \fill[Gray, fill opacity=0.95] (DNW) rectangle ($(DSW)-(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next Z02 Git talk};
             \fill[Gray, fill opacity=0.95] (DNE) rectangle ($(DSE)+(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next Z02 Git talk};
         \end{onlyenv}
-        \node at ($(DSW)!0.5!(DSE)-(0,0.3)$) {\alt<1>{What we explored last time}{Today we'll complete the picture}};
+        \node[visible on=<1-3>] at ($(DSW)!0.5!(DSE)-(0,0.3)$) {\alt<1>{What we explored last time}{Today we'll complete the picture}};
+        % Second slide
+        \fill[Gray, fill opacity=0.98, visible on=<4>] ($(DNW)-(2.3,0)$) rectangle ($(DSE)-(0,0)$) node[pos=0.5, rotate=37, text=BGLIGHT, font=\large\bfseries] {Nothing existing before cloning the remote repository};
+        \node[visible on=<5>] at ($(N3.south)!0.5!(E3)-(0.1,0)$) {\usebox{\lstclonebox}};
     \end{tikzpicture}
 \end{frame}
 %===============================================================%
 
 
+%\begin{comment}
 %===============================================================%
 \section{Using branches}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -164,7 +180,11 @@
             \item Branches store \textbf{different versions of your project}
             \item Technically just pointers to a commit\\[2\itemsep]
                   \begin{onlyenv}<1>
-                      \includegraphics[width=0.88\textwidth]{Branches}
+                      \begin{tikzpicture}
+                          \node (fig) {\includegraphics[width=0.88\textwidth]{Branches}};
+                          \node[anchor=south west, font=\footnotesize] at ($(fig.south west)+(0,0.2)$)
+                              {Picture taken from \URL*{https://www.atlassian.com/git/tutorials/using-branches}{Bitbucket branches tutorial}};
+                      \end{tikzpicture}
                   \end{onlyenv}
             \item<2-> They enable parallel development
                   \begin{itemize}
@@ -187,13 +207,13 @@
     \begin{lstlisting}[style=MyBash]
         # List all existing local branches
         $ git branch
-        * @|\color{strings-color}main|@
+        * |-main-|
     \end{lstlisting}
     \begin{lstlisting}[style=MyBash]
         # Create a new branch
         $ git branch new-branch
         $ git branch
-        * @|\color{strings-color}main|@
+        * |-main-|
         |+  new-branch+|
     \end{lstlisting}
     \begin{lstlisting}[style=MyBash]
@@ -201,7 +221,7 @@
         $ git branch -d new-branch
         |+Deleted branch new-branch (was a45b032).+|
         $ git branch
-        * @|\color{strings-color}main|@
+        * |-main-|
     \end{lstlisting}
     \begin{varblock}{alert}[\textwidth]{Git is safe}
         \small
@@ -219,13 +239,13 @@
         \begin{lstlisting}[style=MyBash]
             # Switching to another branch
             $ git branch
-            * @|\color{strings-color}main|@
+            * |-main-|
             |+  new-branch+|
             $ git switch new-branch
             |+Switched to branch 'new-branch'+|
             $ git branch
             |+  main+|
-            * @|\color{strings-color}new-branch|@
+            * |-new-branch-|
         \end{lstlisting}
         \begin{varblock}{alert}[\textwidth]{Git is safe}<only@1>
             \small
@@ -237,7 +257,7 @@
                 $ git switch -c another-branch
                 |+Switched to a new branch 'another-branch'+|
                 $ git branch
-                * @|\color{strings-color}another-branch|@
+                * |-another-branch-|
                 |+  main+|
             \end{lstlisting}
         \end{onlyenv}
@@ -258,30 +278,29 @@
     \begin{varblock}{alert}[0.65\textwidth]{}
         \alert{Git is safe, conflicts are not a bad thing!}
     \end{varblock}
-
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Different types of merge}
-%    \resizebox{1.1\textwidth}{!}{
     \hspace*{-3mm}
-            \begin{tikzpicture}[node distance=4mm]
-                \node (3W1) {\includegraphics[width=0.42\textwidth]{Merge-3way_before}};
-                \node[below = 1mm of 3W1.south west, anchor=north west] (3W2) {\includegraphics[width=0.52\textwidth]{Merge-3way_then}};
-                \node[left  = of 3W1] (FF1) {\includegraphics[width=0.38\textwidth]{Merge-FF_before}};
-                \node[left  = of 3W2] (FF2) {\includegraphics[width=0.38\textwidth]{Merge-FF_then}};
-                \begin{scope}[every node/.style={font=\small}]
-                    \node[left = 2mm of FF1] (BL) {\rotatebox{90}{Before}};
-                    \node[left = 2mm of FF2] (AL) {\rotatebox{90}{After}};
-                    \node[above = 34mm of 3W2] (3WL) {Three-way merge};
-                    \node at (3WL -| FF1) (FFL) {Fast-forward merge};
-                \end{scope}
-                \draw ({$(FF1.east)!0.5!(3W1.west)$} |- FFL.north) -- ({$(FF1.east)!0.5!(3W1.west)$} |- 3W2.south);
-                \draw ({$(FF1.south)!0.5!(FF2.north)$} -| AL.west) -- ({$(FF1.south)!0.5!(FF2.north)$} -| 3W2.east);
-            \end{tikzpicture}
-%        }
+    \begin{tikzpicture}[node distance=4mm]
+        \node (3W1) {\includegraphics[width=0.42\textwidth]{Merge-3way_before}};
+        \node[below = 1mm of 3W1.south west, anchor=north west] (3W2) {\includegraphics[width=0.52\textwidth]{Merge-3way_then}};
+        \node[left  = of 3W1] (FF1) {\includegraphics[width=0.38\textwidth]{Merge-FF_before}};
+        \node[left  = of 3W2] (FF2) {\includegraphics[width=0.38\textwidth]{Merge-FF_then}};
+        \begin{scope}[every node/.style={font=\small}]
+            \node[left = 2mm of FF1] (BL) {\rotatebox{90}{Before}};
+            \node[left = 2mm of FF2] (AL) {\rotatebox{90}{After}};
+            \node[above = 34mm of 3W2] (3WL) {Three-way merge};
+            \node at (3WL -| FF1) (FFL) {Fast-forward merge};
+        \end{scope}
+        \draw ({$(FF1.east)!0.5!(3W1.west)$} |- FFL.north) -- ({$(FF1.east)!0.5!(3W1.west)$} |- 3W2.south);
+        \draw ({$(FF1.south)!0.5!(FF2.north)$} -| AL.west) -- ({$(FF1.south)!0.5!(FF2.north)$} -| 3W2.east);
+    \end{tikzpicture}
+    \FrameRemark{Pictures taken from \URL*{https://www.atlassian.com/git/tutorials/using-branches/git-merge}{Bitbucket git-merge tutorial}.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Git merge: How does it work?}
+    \vspace{-3mm}
     \setlength{\leftmargini}{5mm}
     \begin{enumerate}
         \item If possible, Git performs a fast-forward merge
@@ -308,11 +327,12 @@
         CONFLICT (content): Merge conflict in <file>
         Automatic merge failed; fix conflicts and then commit the result.+|
     \end{lstlisting}
+    \vspace{3mm}
     \begin{enumerate}
+        \small
         \item Run \,\texttt{git status}\, to see \alert{unmerged paths}
         \item Find problematic hunks in files that contain conflicts\\
               \then Look for delimiters in the files:
-%              {\footnotesize\ttfamily\begin{tabular}{c} <<<<<<<\\ =======\\ >>>>>>>\\ \end{tabular}}
               {~\footnotesize\texttt{<<<<<<<},\; \texttt{=======},\; \texttt{>>>>>>>}}
         \item Remove delimiters and adjust content
         \item Check the project works (e.g. compile, run tests)
@@ -323,12 +343,266 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \AlertFrame{Live example!}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[plain]{}
+    \centering
+    \vfill
+    \animategraphics[loop,autoplay,width=0.8\paperwidth]{20}{../Figures/Wow/Wow-}{0}{100}
+    \vfill
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 %===============================================================%
-
+%\end{comment}
 
 %===============================================================%
 \section{Working with remote repositories}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\againframe<4->{MentalPicture}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Cloning a remote repository}
+    \begin{lstlisting}[style=MyBash, xleftmargin=-1mm, xrightmargin=-1mm]
+        # Clone the repository of this course
+        $ ls
+        $ git clone git@github.com:AxelKrypton/Git-crash-course.git
+        |+Cloning into 'Git-crash-course'...
+        remote: Enumerating objects: 82, done.
+        remote: Counting objects: 100% (66/66), done.
+        remote: Compressing objects: 100% (47/47), done.
+        remote: Total 82 (delta 26), reused 52 (delta 18), pack-reused 16
+        Receiving objects: 100% (82/82), 4.47 MiB | 4.49 MiB/s, done.
+        Resolving deltas: 100% (29/29), done.+|
+        $ ls
+        @|\ttc{Blue}{Git-crash-course}|@
+    \end{lstlisting}
+    \begin{varblock}{}[0.75\textwidth]{}
+        The local repository is aware of the remote one!
+    \end{varblock}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Git remote}
+    \vspace{-3mm}
+    \begin{varblock}{}[0.6\textwidth]{}
+        In the local repository, the remote one is (by default) referred as \textbf{origin}
+    \end{varblock}
+    \begin{lstlisting}[style=MyBash, xleftmargin=-1mm, xrightmargin=-1mm]
+        # Check out the remote information
+        $ cd Git-crash-course
+        $ git remote
+        origin
+        $ git remote -v
+        |+origin    git@github.com:AxelKrypton/Git-crash-course.git (fetch)
+        origin    git@github.com:AxelKrypton/Git-crash-course.git (push)+|
+        $ git remote rename origin GitHub
+        $ git remote
+        |+GitHub+|
+        # A repository can have multiple remote locations
+        $ git remote add MyServer <url-to-new-remote>
+        $ git remote
+        |+GitHub
+        MyServer+|
+    \end{lstlisting}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{First interactions with the remote repository}
+    \begin{lstlisting}[style=MyBash]
+        $ git branch -r
+        @|\ttc{red!92!black}{~~origin/HEAD}|@ -> origin/main
+        @|\ttc{red!92!black}{~~origin/main}|@
+        @|\ttc{red!92!black}{~~origin/experiment}|@
+        $ git branch -a
+        * |-main-|
+        @|\ttc{red!92!black}{~~remotes/origin/HEAD}|@ -> origin/main
+        @|\ttc{red!92!black}{~~remotes/origin/main}|@
+        @|\ttc{red!92!black}{~~remotes/origin/experiment}|@
+    \end{lstlisting}
+    \begin{lstlisting}[style=MyBash]
+        # Switch to a new branch that mirrors the state of a remote one
+        $ git switch experiment
+        |+Branch 'experiment' set up to track remote branch 'experiment' from 'origin'.
+        Switched to a new branch 'experiment'+|
+        $ git branch -vv
+        * |-experiment-|    a1d62e63 [@|\ttc{Blue}{origin/experiment}|@] last-commit-message
+        |+  main+|         a1d62e63 [@|\ttc{Blue}{origin/main}|@] last-commit-message
+    \end{lstlisting}
+    \medskip
+    \centerline{We'll come back to the idea of tracking in a moment!}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Fetching and pulling}
+    \vspace{-3mm}
+    \begin{overlayarea}{\textwidth}{0.7\textheight}
+        \begin{varblock}{}[\textwidth]{}
+            When collaborating in a project, the remote repository will in general change because of other people's work
+        \end{varblock}
+        \vspace{3mm}
+        \begin{onlyenv}<1>
+            \begin{lstlisting}[style=MyBash]
+                $ git fetch <remote-name>
+            \end{lstlisting}
+            \begin{itemize}
+                \item Information about the remote repository (e.g.\ branches) can be updated by fetching from a remote
+                \item \alert{Fetching does not change the local workspace!}
+            \end{itemize}
+        \end{onlyenv}
+        \begin{onlyenv}<2>
+            \begin{lstlisting}[style=MyBash]
+                $ git pull <remote-name> <remote-branch-name>
+            \end{lstlisting}
+            \begin{itemize}
+                \item Pulling instead is updating both the information about the remote repository and the local workspace
+                \item \alert{Git pull is actual a shortcut to do a fetch followed by a merge with a remote branch}
+            \end{itemize}
+        \end{onlyenv}
+    \end{overlayarea}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Fetching and pulling: Examples}
+    \begin{onlyenv}<1>
+        \begin{lstlisting}[style=MyBash]
+            # If there is only one remote, you can omit it
+            $ git fetch origin
+            |+a1e8fb5..45e66a4 main -> origin/main
+            a1e8fb5..9e8ab1c develop -> origin/develop
+            * [new branch] some-feature -> origin/some-feature+|
+            # To remove locally references to remote deleted branches:
+            $ git fetch --prune
+            |+From github.com:AxelKrypton/Git-crash-course
+            - [deleted]           (none)     -> origin/experiment+|
+        \end{lstlisting}
+        \begin{lstlisting}[style=MyBash]
+            # Be sure to be on the correct branch before pulling
+            $ git branch
+            * |-main-|
+            $ git pull origin main
+            |+From github.com:AxelKrypton/Git-crash-course
+            * branch            main       -> FETCH_HEAD
+            Already up to date.+|
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{onlyenv}<2>
+        \begin{varblock}{}[\textwidth]{}
+            If you created commits on the present branch, pulling it from remote will perform a merge and, if this is not a fast-forward merge, the editor to make a commit with an auto-generated message will be displayed to you. \alert{Conflicts might occur as well.}
+        \end{varblock}
+        \begin{lstlisting}[style=MyBash]
+            $ git log --oneline
+            |+a45b032 (HEAD -> main) Some work done locally on main
+            6e5ea4b (origin/main, origin/HEAD) Last commit pulled
+            236d4af Previous history+|
+            # If I now pull and some new commit exists after 6e5ea4b
+            #  => a 3-way merge occurs and the editor will open
+            $ git pull origin master
+            |+[...]+|
+        \end{lstlisting}
+    \end{onlyenv}
+    \FrameRemark{These 3-way merge commits because of pulling operations are not ideal and next time we'll learn how to avoid them.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Pushing your own work}
+    \vspace{-3mm}
+    \begin{itemize}
+        \item To push means to make the changes done in the local repository available in the remote one, i.e. to update a remote branch with a local one
+        \item Only changes that are committed are pushed
+        \item If the remote and the local history diverge (i.e. you forgot to pull before committing), the push operation will be rejected
+    \end{itemize}
+    \begin{varblock}{alert}[\textwidth]{}
+        \alert{Push before saying to your collaborators you did some changes!}
+    \end{varblock}
+    \begin{lstlisting}[style=MyBash]
+        $ git push origin main
+        |+[...]+|
+        # To delete remote branches 'git push' is also used:
+        $ git push <remote-name> --delete <branch_name>
+    \end{lstlisting}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{How does this fit into our mental picture?}
+    \vspace{-0.1\textheight}
+    \begin{center}
+        \begin{tikzpicture}[node distance=5mm]
+            \begin{scope}[scope on=<1->]
+                \foreach \n/\c [count=\i from 0, count=\ip from 1] in {Stashing area/PQ, Workspace/PS, Staging area/PP, Local repository/PB, Remote repository/PT}{
+                    \node[space=\c, right = of N\i] (N\ip) {\n};
+                    \draw[very thin] (N\ip) -- coordinate[pos=1] (E\ip) ++(0,-5);
+                }
+                \path coordinate (DNE) at ($(N4.north east)!0.5!(N5.north west)+(0,1)$)
+                      coordinate (DSE) at ($(DNE)-(0,7.1)$)
+                      coordinate (DNW) at ($(N1.north east)!0.5!(N2.north west)+(0,1)$)
+                      coordinate (DSW) at ($(DNW)-(0,7.1)$);
+                %\draw[thin, dashed] (DNE) -- (DSE);
+                \draw ($(N1.north west)-(0.1,0)$) -- ++(0,0.2) -| ($(N4.north east)+(0.1,0)$);
+                \node[font=\small, anchor=south, inner sep=0pt] at ($(N1.north)!0.5!(N4.north)+(0,0.4)$) {Local machine};
+            \end{scope}
+            \begin{scope}[scope on=<2->]
+                \node[text=PQ, font=\ttfamily\scriptsize] at ($(N5.north)+(0,0.3)$) {git remote};
+                \GitCommand{from}{4}{5}{0.20}{git fetch}
+                \GitCommand{from}{2}{4}{0.40}{git merge origin/[...]}
+                \GitCommand{from}{2}{5}{0.60}{git pull <remote> <branch>}
+                \GitCommand{to}{4}{5}{0.80}{git push}
+            \end{scope}
+        \end{tikzpicture}
+        \par\medskip
+        \uncover<2>{\small \alert{Keep in mind that it is very tough (if not impossible) to undo these commands.}}
+    \end{center}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Few words about tracking branches}
+    \vspace{-8mm}
+    \begin{overlayarea}{\textwidth}{0.85\textheight}
+        \begin{varblock}{alert}[\textwidth]{A convenient feature}
+            It is possible to make a default association between a local and a remote branch which is used for pull and push operations!
+        \end{varblock}
+        \begin{onlyenv}<1>
+            \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
+                $ git branch -a -vv
+                |+  exp1              6e5ea4b Commit msg
+                  exp2              6e5ea4b Commit msg+|
+                * |-main-|              6e5ea4b [@|\ttc{Blue}{origin/main}|@] Commit msg
+                |+  +|@|\ttc{red!92!black}{remotes/origin/HEAD}|@ -> origin/main
+                |+  +|@|\ttc{red!92!black}{remotes/origin/main}|@ 6e5ea4b Commit msg
+                |+  +|@|\ttc{red!92!black}{remotes/origin/exp1}|@ 6e5ea4b Commit msg
+            \end{lstlisting}
+            \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
+                # First possibility (when remote branch already exists)
+                $ git switch exp1
+                |+Switched to branch 'exp1'+|
+                $ git branch --set-upstream-to=origin/exp1
+                |+Branch 'exp1' set up to track remote branch 'exp1' from 'origin'.+|
+            \end{lstlisting}
+        \end{onlyenv}
+        \begin{overlayarea}{\textwidth}{0.35\textheight}
+            \vspace{-2mm}
+            \begin{onlyenv}<2>
+                \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
+                    # Second possibility (even without remote branch, yet)
+                    $ git switch exp2
+                    |+Switched to branch 'exp2'+|
+                    $ git push -u origin exp2
+                    |+[...]
+                    To github.com:AxelKrypton/Git-crash-course.git
+                    * [new branch]      exp2 -> exp2
+                    Branch 'exp2' set up to track remote branch 'exp2' from 'origin'.+|
+                \end{lstlisting}
+            \end{onlyenv}
+            \begin{onlyenv}<3>
+                \begin{varblock}{}[\textwidth]{Between tracking branches}
+                    \PB{It is then possible to simply use \textbf{\PP{git pull}} and \textbf{\PP{git push}} commands!}
+                \end{varblock}
+            \end{onlyenv}
+        \end{overlayarea}
+        \begin{onlyenv}<2->
+            \vspace{-5pt}
+            \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
+                # Check branch tracking associations
+                $ git branch -vv
+                  exp1              6e5ea4b [@|\ttc{Blue}{origin/exp1}|@] Commit msg
+                * |-exp2-|              6e5ea4b [@|\ttc{Blue}{origin/exp2}|@] Commit msg
+                  main              6e5ea4b [@|\ttc{Blue}{origin/main}|@] Commit msg
+            \end{lstlisting}
+        \end{onlyenv}
+    \end{overlayarea}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
 %git clone
 %git fetch
 %git pull

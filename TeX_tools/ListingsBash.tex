@@ -53,7 +53,7 @@ stepnumber=1,                       % the step between two line-numbers. If it's
 tabsize=2,                          % sets default tabsize to 2 spaces
 title=\lstname,                     % show the filename of files included with \lstinputlisting; also try caption instead of title
 %
-%Base style for this presentation 
+%Base style for this presentation
 keepspaces=true,                    % keeps spaces in text, useful for keeping indentation of code
                                     % (possibly needs columns=flexible)
 language=bash,
@@ -63,6 +63,7 @@ stringstyle=\color{strings-color},
 commentstyle=\color{comment-color},
 morestring=[b][\color{strings-color}]{"},
 morestring=[d][\color{strings-color}]{'},
+moredelim=[is][\color{strings-color}]{|-}{-|}, % I will use this for present git branch
 moredelim=[is][\color{basic-color}]{|+}{+|}, % I will use this for terminal output
 literate={`}{\textasciigrave}1, % https://tex.stackexchange.com/a/466224/128737
 literate={~}{{\textasciitilde}}1,
