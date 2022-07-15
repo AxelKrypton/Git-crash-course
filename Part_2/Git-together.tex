@@ -9,7 +9,8 @@
   lstautogobble,
   listofitems,
   TeXnicalities,
-  animate,comment
+  media9,
+  array
 }
 
 \setsansfont{Yanone Kaffeesatz}[
@@ -30,6 +31,7 @@
     bbox
 }
 \input{../Tex_tools/ListingsBash}
+%\includeonlyframes{current}
 
 %===============================================================%
 \title{Let's Git together}
@@ -50,12 +52,16 @@
 \tikzset{
     space/.style={%
         thick, draw=#1, fill=#1!10, text=#1, rounded corners=1mm, font=\small, text width=14mm, align=center, minimum height=12mm
-    }
+    },
+    commit/.style={circle, draw, very thick, fill=#1, minimum size=5mm},
+    branch/.style={rounded corners=1mm, fill=#1, draw, very thick, font=\small},
+    pin/.style={to, thick, shorter={1pt}{1pt}}
 }
 \PrepareURLsymbol[PB]
 \newcommand{\ttc}[2]{\texttt{\textcolor{#1}{#2}}}%
 \setlength{\leftmarginii}{0.5cm}
 \newcommand{\then}{\raisebox{2pt}{$\;\drsh\;$}}
+
 
 % Taken from https://tex.stackexchange.com/a/51458/128737
 \makeatletter
@@ -169,21 +175,36 @@
 %===============================================================%
 
 
-%\begin{comment}
 %===============================================================%
 \section{Using branches}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{A key feature of Git}
+\begin{frame}[label=current]{A key feature of Git}
     \vspace{-5mm}
     \begin{overlayarea}{\textwidth}{0.7\textheight}
         \begin{itemize}
             \item Branches store \textbf{different versions of your project}
             \item Technically just pointers to a commit\\[2\itemsep]
                   \begin{onlyenv}<1>
+                      \vspace{2mm}
                       \begin{tikzpicture}
-                          \node (fig) {\includegraphics[width=0.88\textwidth]{Branches}};
-                          \node[anchor=south west, font=\footnotesize] at ($(fig.south west)+(0,0.2)$)
-                              {Picture taken from \URL*{https://www.atlassian.com/git/tutorials/using-branches}{Bitbucket branches tutorial}};
+                          \draw[very thick] (0,0) -- (5.2,0) (5.2,-1.2) -- (7.6,-1.2);
+                          \foreach \x [count=\i from 1] in {0,2,3.2,5.2}{
+                              \node[commit=PS!50] (M\i) at (\x,0) {};
+                          }
+                          \foreach \x [count=\i from 1] in {5.2,6.4,7.6}{
+                              \node[commit=PP!70] (B\i) at (\x,-1.2) {};
+                          }
+                          \node[commit=PT!80] (L) at (2,1.2) {};
+                          % Branch labels
+                          \node[above = of L, branch=PT!80] (BrA) {Feature A};
+                          \node[above = of M4, branch=PS!50] (BrM) {Main};
+                          \node[above = of B3, branch=PP!70] (BrB) {Feature B};
+                          % Complete paths
+                          \path[very thick] (0.7,0) edge[out=0, in=180] (L.west);
+                          \path[very thick] (3.9,0) edge[out=0, in=180] (B1.west);
+                          \draw[pin] (BrA.south) -- (L.north);
+                          \draw[pin] (BrM.south) -- (M4.north);
+                          \draw[pin] (BrB.south) -- (B3.north);
                       \end{tikzpicture}
                   \end{onlyenv}
             \item<2-> They enable parallel development
@@ -239,13 +260,13 @@
         \begin{lstlisting}[style=MyBash]
             # Switching to another branch
             $ git branch
-            * |-main-|
+            |+*+| |-main-|
             |+  new-branch+|
             $ git switch new-branch
             |+Switched to branch 'new-branch'+|
             $ git branch
             |+  main+|
-            * |-new-branch-|
+            |+*+| |-new-branch-|
         \end{lstlisting}
         \begin{varblock}{alert}[\textwidth]{Git is safe}<only@1>
             \small
@@ -257,7 +278,7 @@
                 $ git switch -c another-branch
                 |+Switched to a new branch 'another-branch'+|
                 $ git branch
-                * |-another-branch-|
+                |+*+| |-another-branch-|
                 |+  main+|
             \end{lstlisting}
         \end{onlyenv}
@@ -271,7 +292,7 @@
         \item This is automatically done by Git in a clever way
         \item When Git does not know how to merge the content of some file, it will create a conflict
         \item If conflicts occur, the merge will not automatically finish
-        \item A merge can be aborted
+        \item A merge can be aborted in case of conflicts with the \texttt{--abort option}
         \item To fix conflicts, open and manually adjust files where Git failed
     \end{itemize}
     \medskip
@@ -280,23 +301,59 @@
     \end{varblock}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\newcommand{\commits}[2]{%
+    \draw[very thick] (#1) -- ($(#1)+(2.5,0)$) edge[out=0, in=180] ($(#1)+(3.5,1)$);
+    \draw[very thick] ($(#1)+(3.5,1)$) -- ($(#1)+(5,1)$);
+    \foreach \dx/\dy [count=\i from 1] in {0/0, 1/0, 2/0, 4/1, 5/1}{
+        \ifnum\i=#2
+            \def\col{PS!50}
+        \else
+            \def\col{white}
+        \fi
+        \node[commit=\col] (C\i) at ($(#1)+(\dx,\dy)$) {};
+    }
+}
+
 \begin{frame}{Different types of merge}
-    \hspace*{-3mm}
-    \begin{tikzpicture}[node distance=4mm]
-        \node (3W1) {\includegraphics[width=0.42\textwidth]{Merge-3way_before}};
-        \node[below = 1mm of 3W1.south west, anchor=north west] (3W2) {\includegraphics[width=0.52\textwidth]{Merge-3way_then}};
-        \node[left  = of 3W1] (FF1) {\includegraphics[width=0.38\textwidth]{Merge-FF_before}};
-        \node[left  = of 3W2] (FF2) {\includegraphics[width=0.38\textwidth]{Merge-FF_then}};
-        \begin{scope}[every node/.style={font=\small}]
-            \node[left = 2mm of FF1] (BL) {\rotatebox{90}{Before}};
-            \node[left = 2mm of FF2] (AL) {\rotatebox{90}{After}};
-            \node[above = 34mm of 3W2] (3WL) {Three-way merge};
-            \node at (3WL -| FF1) (FFL) {Fast-forward merge};
-        \end{scope}
-        \draw ({$(FF1.east)!0.5!(3W1.west)$} |- FFL.north) -- ({$(FF1.east)!0.5!(3W1.west)$} |- 3W2.south);
-        \draw ({$(FF1.south)!0.5!(FF2.north)$} -| AL.west) -- ({$(FF1.south)!0.5!(FF2.north)$} -| 3W2.east);
-    \end{tikzpicture}
-    \FrameRemark{Pictures taken from \URL*{https://www.atlassian.com/git/tutorials/using-branches/git-merge}{Bitbucket git-merge tutorial}.}
+    \vspace{3mm}
+    \resizebox{\textwidth}{!}{
+        \begin{tikzpicture}
+            \path coordinate (FF1S) at (0,0)
+                  coordinate (FF2S) at (0,-4.5)
+                  coordinate (3W1S) at (7,0)
+                  coordinate (3W2S) at (7,-4.5);
+            % Fast-forward before
+            \commits{FF1S}{3}
+            \draw[pin] ($(C3.north)+(0,1)$) -- node[pos=0, anchor=south,  branch=PS!50] (M) {Main} ++(0,-1);
+            \draw[pin] ($(C5.north)+(0,1)$) -- node[pos=0, anchor=south,  branch=PP!50] (F) {Feature} ++(0,-1);
+            \node[font=\large] (BL) at ($(FF1S)!0.5!(FF1S |- F)-(2,0)$) {\rotatebox{90}{Before merge}};
+            \node[font=\Large] (FFL) at ($(FF1S |- F)!0.5!(F)+(0,1.5)$) {Fast-forward merge};
+            % Fast-forward after
+            \commits{FF2S}{5}
+            \draw[pin] ($(C5.south)-(0,1)$) -- node[pos=0, anchor=north,  branch=PS!50] (M) {Main} ++(0,1);
+            \draw[pin] ($(C5.north)+(0,1)$) -- node[pos=0, anchor=south,  branch=PP!50] (F) {Feature} ++(0,-1);
+            \node[font=\large] (AL) at ($(FF2S |- M)!0.5!(FF2S |- F)-(2,0)$) {\rotatebox{90}{After merge}};
+            % 3-way before
+            \commits{3W1S}{0}
+            \draw[pin] ($(C5.north)+(0,1)$) -- node[pos=0, anchor=south,  branch=PP!50] (F) {Feature} ++(0,-1);
+            \draw[very thick] ($(3W1S)+(2.5,0)$) -- ++(1.5,0);
+            \node[commit=PS!50] (C6) at ($(3W1S)+(4,0)$) {};
+            \draw[pin] ($(C6.east)+(1,0)$) -- node[pos=0, anchor=west,  branch=PS!50] (M) {Main} ++(-1,0);
+            % 3-way after
+            \commits{3W2S}{0}
+            \draw[pin] ($(C5.north)+(0,1)$) -- node[pos=0, anchor=south,  branch=PP!50] (F) {Feature} ++(0,-1);
+            \draw[very thick] ($(3W2S)+(2.5,0)$) -- ++(4.5,0);
+            \draw[very thick] ($(3W2S)+(5.25,1)$) -- ($(3W2S)+(5.5,1)$) edge[out=0, in=180] ($(3W2S)+(6.5,0)$);
+            \node[commit=white]      at ($(3W2S)+(4,0)$) {};
+            \node[commit=PS!50] (C7) at ($(3W2S)+(7,0)$) {};
+            \draw[pin] ($(C7.north)+(0,1)$) -- node[pos=0, anchor=south,  branch=PS!50] (M) {Main} ++(0,-1);
+            \node[font=\Large] (3WL) at ({$(3W2S)!0.5!(C7)$} |- FFL) {Three-way merge};
+            % Final lines
+            \draw (6.25,4.5) -- (6.25,-6);
+            \draw (-2.5,-1) -- ++(17,0);
+        \end{tikzpicture}
+    }
+    \FrameRemark{The \alert{three}-way nomenclature comes from the fact that Git uses three commits to generate the merge commit: the two branch tips and their common ancestor.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Git merge: How does it work?}
@@ -344,15 +401,19 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \AlertFrame{Live example!}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}[plain]{}
+\begin{frame}[plain, noframenumbering, label=Wow]{}
     \centering
     \vfill
-    \animategraphics[loop,autoplay,width=0.8\paperwidth]{20}{../Figures/Wow/Wow-}{0}{100}
+    \includemedia[width=0.6\paperwidth,
+                  totalheight=0.6\paperheight,
+                  activate=pageopen,
+                  addresource=../Figures/Wow.mp4]{\includegraphics[width=0.6\paperwidth]{Wow-cover}}{VPlayer.swf}
     \vfill
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
 %===============================================================%
-%\end{comment}
+
 
 %===============================================================%
 \section{Working with remote repositories}
@@ -388,7 +449,7 @@
         # Check out the remote information
         $ cd Git-crash-course
         $ git remote
-        origin
+        |+origin+|
         $ git remote -v
         |+origin    git@github.com:AxelKrypton/Git-crash-course.git (fetch)
         origin    git@github.com:AxelKrypton/Git-crash-course.git (push)+|
@@ -406,14 +467,14 @@
 \begin{frame}[fragile]{First interactions with the remote repository}
     \begin{lstlisting}[style=MyBash]
         $ git branch -r
-        @|\ttc{red!92!black}{~~origin/HEAD}|@ -> origin/main
-        @|\ttc{red!92!black}{~~origin/main}|@
-        @|\ttc{red!92!black}{~~origin/experiment}|@
+        |*  origin/HEAD*||+ -> origin/main+|
+        |*  origin/main*|
+        |*  origin/experiment*|
         $ git branch -a
-        * |-main-|
-        @|\ttc{red!92!black}{~~remotes/origin/HEAD}|@ -> origin/main
-        @|\ttc{red!92!black}{~~remotes/origin/main}|@
-        @|\ttc{red!92!black}{~~remotes/origin/experiment}|@
+        |+*+| |-main-|
+        |*  remotes/origin/HEAD*||+ -> origin/main+|
+        |*  remotes/origin/main*|
+        |*  remotes/origin/experiment*|
     \end{lstlisting}
     \begin{lstlisting}[style=MyBash]
         # Switch to a new branch that mirrors the state of a remote one
@@ -421,8 +482,8 @@
         |+Branch 'experiment' set up to track remote branch 'experiment' from 'origin'.
         Switched to a new branch 'experiment'+|
         $ git branch -vv
-        * |-experiment-|    a1d62e63 [@|\ttc{Blue}{origin/experiment}|@] last-commit-message
-        |+  main+|         a1d62e63 [@|\ttc{Blue}{origin/main}|@] last-commit-message
+        |+*+| |-experiment-|    |+a1d62e63 [+|@|\ttc{Blue}{origin/experiment}|@|+] last-commit-message+|
+        |+  main+|          |+a1d62e63 [+|@|\ttc{Blue}{origin/main}|@|+] last-commit-message+|
     \end{lstlisting}
     \medskip
     \centerline{We'll come back to the idea of tracking in a moment!}
@@ -488,8 +549,8 @@
             |+a45b032 (HEAD -> main) Some work done locally on main
             6e5ea4b (origin/main, origin/HEAD) Last commit pulled
             236d4af Previous history+|
-            # If I now pull and some new commit exists after 6e5ea4b
-            #  => a 3-way merge occurs and the editor will open
+            # If I now pull and some new commit exists remotely after
+            # 6e5ea4b, a 3-way merge occurs and the editor will open
             $ git pull origin master
             |+[...]+|
         \end{lstlisting}
@@ -515,34 +576,44 @@
     \end{lstlisting}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{How does this fit into our mental picture?}
+\begin{frame}<1-2>[label=PictureCommands]
+    \frametitle<1-2>{How does this fit into our mental picture?}
+    \frametitle<3->{Let's complete our mental picture}
     \vspace{-0.1\textheight}
-    \begin{center}
-        \begin{tikzpicture}[node distance=5mm]
-            \begin{scope}[scope on=<1->]
-                \foreach \n/\c [count=\i from 0, count=\ip from 1] in {Stashing area/PQ, Workspace/PS, Staging area/PP, Local repository/PB, Remote repository/PT}{
-                    \node[space=\c, right = of N\i] (N\ip) {\n};
-                    \draw[very thin] (N\ip) -- coordinate[pos=1] (E\ip) ++(0,-5);
-                }
-                \path coordinate (DNE) at ($(N4.north east)!0.5!(N5.north west)+(0,1)$)
-                      coordinate (DSE) at ($(DNE)-(0,7.1)$)
-                      coordinate (DNW) at ($(N1.north east)!0.5!(N2.north west)+(0,1)$)
-                      coordinate (DSW) at ($(DNW)-(0,7.1)$);
-                %\draw[thin, dashed] (DNE) -- (DSE);
-                \draw ($(N1.north west)-(0.1,0)$) -- ++(0,0.2) -| ($(N4.north east)+(0.1,0)$);
-                \node[font=\small, anchor=south, inner sep=0pt] at ($(N1.north)!0.5!(N4.north)+(0,0.4)$) {Local machine};
-            \end{scope}
-            \begin{scope}[scope on=<2->]
-                \node[text=PQ, font=\ttfamily\scriptsize] at ($(N5.north)+(0,0.3)$) {git remote};
-                \GitCommand{from}{4}{5}{0.20}{git fetch}
-                \GitCommand{from}{2}{4}{0.40}{git merge origin/[...]}
-                \GitCommand{from}{2}{5}{0.60}{git pull <remote> <branch>}
-                \GitCommand{to}{4}{5}{0.80}{git push}
-            \end{scope}
-        \end{tikzpicture}
-        \par\medskip
-        \uncover<2>{\small \alert{Keep in mind that it is very tough (if not impossible) to undo these commands.}}
-    \end{center}
+    \begin{overlayarea}{\textwidth}{0.75\textheight}
+        \begin{center}
+            \begin{tikzpicture}[node distance=5mm]
+                \begin{scope}[scope on=<1->]
+                    \foreach \n/\c [count=\i from 0, count=\ip from 1] in {Stashing area/PQ, Workspace/PS, Staging area/PP, Local repository/PB, Remote repository/PT}{
+                        \node[space=\c, right = of N\i] (N\ip) {\n};
+                        \draw[very thin] (N\ip) -- coordinate[pos=1] (E\ip) ++(0,-5);
+                    }
+                    \path coordinate (DNE) at ($(N4.north east)!0.5!(N5.north west)+(0,1)$)
+                          coordinate (DSE) at ($(DNE)-(0,7.1)$)
+                          coordinate (DNW) at ($(N1.north east)!0.5!(N2.north west)+(0,1)$)
+                          coordinate (DSW) at ($(DNW)-(0,7.1)$);
+                    %\draw[thin, dashed] (DNE) -- (DSE);
+                    \draw ($(N1.north west)-(0.1,0)$) -- ++(0,0.2) -| ($(N4.north east)+(0.1,0)$);
+                    \node[font=\small, anchor=south, inner sep=0pt] at ($(N1.north)!0.5!(N4.north)+(0,0.4)$) {Local machine};
+                \end{scope}
+                \begin{scope}[scope on=<2->]
+                    \node[text=PQ, font=\ttfamily\scriptsize] at ($(N5.north)+(0,0.3)$) {git remote};
+                    \GitCommand{from}{4}{5}{0.15}{git fetch}
+                    \GitCommand{from}{2}{4}{0.35}{git merge origin/[...]}
+                    \GitCommand{from}{2}{5}{0.55}{git pull <remote> <branch>}
+                    \GitCommand{to}{4}{5}{0.75}{git push}
+                \end{scope}
+                \begin{scope}[scope on=<4->, every node/.style={fill=BGLIGHT}]
+                    \node[text=PQ, font=\ttfamily\scriptsize] at ($(N1.south)-(0,0.4)$) {git stash list};
+                    \node[font=\ttfamily\scriptsize] at ($(N1.south)-(0,0.8)$) {git stash drop};
+                    \GitCommand{from}{1}{2}{0.75}{git stash}
+                    \GitCommand{to}{1}{2}{0.95}{\begin{tabular}{@{}c@{}}git stash\\ pop\end{tabular}}
+                \end{scope}
+            \end{tikzpicture}
+            \only<2>{\small \alert{Keep in mind that it is very tough (if not impossible) to undo these commands.}}
+            \only<4>{\small \alert{This sketch together with that of last time will help you daily!}}
+        \end{center}
+    \end{overlayarea}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Few words about tracking branches}
@@ -554,12 +625,12 @@
         \begin{onlyenv}<1>
             \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
                 $ git branch -a -vv
-                |+  exp1              6e5ea4b Commit msg
-                  exp2              6e5ea4b Commit msg+|
-                * |-main-|              6e5ea4b [@|\ttc{Blue}{origin/main}|@] Commit msg
-                |+  +|@|\ttc{red!92!black}{remotes/origin/HEAD}|@ -> origin/main
-                |+  +|@|\ttc{red!92!black}{remotes/origin/main}|@ 6e5ea4b Commit msg
-                |+  +|@|\ttc{red!92!black}{remotes/origin/exp1}|@ 6e5ea4b Commit msg
+                |+  exp1                6e5ea4b Commit msg
+                  exp2                6e5ea4b Commit msg+|
+                |+*+| |-main-|                |+6e5ea4b [+|@|\ttc{Blue}{origin/main}|@|+] Commit msg+|
+                |*  remotes/origin/HEAD*| |+-> origin/main+|
+                |*  remotes/origin/main*| |+6e5ea4b Commit msg+|
+                |*  remotes/origin/exp1*| |+6e5ea4b Commit msg+|
             \end{lstlisting}
             \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
                 # First possibility (when remote branch already exists)
@@ -584,7 +655,8 @@
                 \end{lstlisting}
             \end{onlyenv}
             \begin{onlyenv}<3>
-                \begin{varblock}{}[\textwidth]{Between tracking branches}
+                \vspace{-1mm}
+                \begin{varblock}{}[0.5\textwidth]{Between tracking branches}
                     \PB{It is then possible to simply use \textbf{\PP{git pull}} and \textbf{\PP{git push}} commands!}
                 \end{varblock}
             \end{onlyenv}
@@ -594,55 +666,185 @@
             \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
                 # Check branch tracking associations
                 $ git branch -vv
-                  exp1              6e5ea4b [@|\ttc{Blue}{origin/exp1}|@] Commit msg
-                * |-exp2-|              6e5ea4b [@|\ttc{Blue}{origin/exp2}|@] Commit msg
-                  main              6e5ea4b [@|\ttc{Blue}{origin/main}|@] Commit msg
+                |+  exp1              6e5ea4b [+|@|\ttc{Blue}{origin/exp1}|@|+] Commit msg+|
+                |+*+| |-exp2-|              |+6e5ea4b [+|@|\ttc{Blue}{origin/exp2}|@|+] Commit msg+|
+                |+  main              6e5ea4b [+|@|\ttc{Blue}{origin/main}|@|+] Commit msg+|
             \end{lstlisting}
         \end{onlyenv}
     \end{overlayarea}
 \end{frame}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-
-%git clone
-%git fetch
-%git pull
-%git push
-%===============================================================%
-
-
-%===============================================================%
-\section{A bare repository}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 %===============================================================%
 
 
 %===============================================================%
 \section{The stashing area}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{What if I want neither to commit nor to restore?}
+    \begin{varblock}{}[\textwidth]{From Git documentation}
+        Often, when you’ve been working on part of your project, things are in a messy state and you want to switch branches for a bit to work on something else. The problem is, you don’t want to do a commit of half-done work just so you can get back to this point later. The answer to this issue is \textbf{\PP{the git}} stash command.
+    \end{varblock}
+    \setlength{\leftmargini}{4mm}
+    \begin{itemize}
+        \item \alert{Tracked files and staged changes} can be moved to the \textbf{stashing area}
+        \item The stashing area is a stack$^\star$ of unfinished changes to be used later (or discarded) even on different branches
+        \item From 2018 on it is possible to stash only some files/changes
+    \end{itemize}
+    \FrameRemark{$^\star$Although if people still refer to the stashing area as a stack, the last-in-first-out principle is not anymore a must and item in the middle of the stack can be used.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\againframe<3->{PictureCommands}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{A taste about stashing}
+    \begin{lstlisting}[style=MyBash, xleftmargin=-2mm, xrightmargin=-2mm]
+        $ git log -n1 --oneline
+        |+b3092cc (HEAD -> main, origin/main, origin/HEAD) Last commit+|
+        $ git status -s
+        |-M-|  |+Part_2/Git-together.pdf+| # Staged for commit
+        |* M*| |+Part_2/Git-together.tex+| # Modified but not staged
+    \end{lstlisting}
+    \begin{lstlisting}[style=MyBash, xleftmargin=-2mm, xrightmargin=-2mm]
+        $ git stash list
+        |+stash@{0}: WIP on exp1: a3edd5f Epic fail+|
+        # Stash present work, 'git stash' defaults to 'git stash push'
+        $ git stash
+        |+Saved working directory and index state WIP on main: b3092cc [...]+|
+        $ git stash list
+        |+stash@{0}: WIP on main: b3092cc Last commit
+        stash@{1}: WIP on exp1: a3edd5f Epic fail+|
+    \end{lstlisting}
+    \begin{lstlisting}[style=MyBash, xleftmargin=-2mm, xrightmargin=-2mm]
+        # Let's get back our work (in general conflicts are possible)
+        $ git stash pop
+        |+[...]+| # <- new status of the repository
+        |+Dropped refs/stash@{0} (25d8510240cdb562be3d3a7bd22be28ffa5a29e3)+|
+        # If conflicts occur, no stash is dropped
+        #  => use 'git stash drop' after having resolved them
+    \end{lstlisting}
+    \FrameRemark{
+        \begin{tabular}{c}
+            Using \,\texttt{apply}\, instead of \,\texttt{pop}\, the entry in the stash list untouched.\\
+            You can also \,\texttt{apply}, \,\texttt{pop}, \,\texttt{drop}, etc. any stash in the list referring it as \bash|"stash@\{n\}"| or simply as \,\texttt{n}\, (from Git v2.11).
+        \end{tabular}
+    }
+\end{frame}
+%===============================================================%
+
+
+%===============================================================%
+\section{Bare repositories}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{There are two types of repositories}
+    \begin{enumerate}
+        \item \textbf{\PB{Non-bare repositories:}} Meant for working
+        \item<2> \textbf{\PB{Bare repositories:}} Meant for sharing\\
+                 {\then\footnotesize a repository that doesn’t contain a working directory}
+    \end{enumerate}
+    \begin{center}
+        \begin{tikzpicture}
+            \node (fig) {\includegraphics[width=0.8\textwidth, clip, trim=2cm 6mm 2cm 36mm]{Repository}};
+            \begin{DrawOnNode}{fig}
+                \fill[BGLIGHT] (0.3,0.9) rectangle (0.8,0.75);
+                \draw[from] (0.33,0.84) -- node[pos=1, right, text=PS] {Workspace} ++(0.285,0);
+                \draw[from] (0.44,0.56) -- node[pos=1, right, text=Navy, font=\small] {Local repository} ++(0.175,0);
+                \draw[visible on=<2>, alert, thick] (0.26,0.48) rectangle (0.9,0.65) node[pos=0.5, above=0.06, font=\small]{Similar content as a bare repository};
+            \end{DrawOnNode}
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{How to create and use bare repositories?}
+    \setlength{\leftmarginii}{8mm}
+    \vspace{-6mm}
+    \begin{overlayarea}{\textwidth}{0.8\textheight}
+        \begin{onlyenv}<1>
+            \vspace{1mm}
+            \begin{itemize}
+                \item By default it is not possible to push to a bare repository
+                \item If you create a new repository in the browser on a platform like e.g. GitHub, you will not notice it, but a bare one will be created
+                \item \alert{Bare repositories are meant} to serve as remote\\ \then i.e. \alert{to pull from and push to}
+            \end{itemize}
+            \begin{enumerate}
+                \item Initialize a bare empty folder, clone it, work and push to it
+            \end{enumerate}
+            \begin{lstlisting}[style=MyBash]
+                $ mkdir <bare-repository>.git
+                $ git init --bare <bare-repository>.git
+                |+Initialised empty Git repository <bare-repository>.git+|
+                $ git clone <bare-repository>.git <non-bare-repo>
+                |+Cloning into '<non-bare-repo>'...
+                warning: You appear to have cloned an empty repository.
+                done.+|
+                $ cd <non-bare-repo>
+                # Work as usual and push when needed.
+            \end{lstlisting}
+        \end{onlyenv}
+        \begin{onlyenv}<2->
+            \begin{enumerate}
+                \setcounter{enumi}{1}
+                \item Initialize a bare empty folder and push an existing repo to it
+            \end{enumerate}
+            \begin{lstlisting}[style=MyBash]
+                $ mkdir <bare-repository>.git
+                $ git init --bare <bare-repository>.git
+                |+Initialised empty Git repository <bare-repository>.git+|
+                $ cd <existent-non-bare-repository>
+                $ git remote add origin /path/to/<bare-repository>.git
+                $ git push -u origin main # <- From local desired branch
+            \end{lstlisting}
+            \vspace{1mm}
+            \begin{uncoverenv}<3->
+                \begin{enumerate}
+                    \setcounter{enumi}{2}
+                    \item Create a bare version of an existing non-bare one
+                \end{enumerate}
+                \begin{lstlisting}[style=MyBash]
+                    $ git clone --bare <non-bare-repository> <bare-repository>.git
+                    |+Cloning into bare repository 'QCD.git'...
+                    done.+|
+                    $ cd <non-bare-repository>
+                    $ git remote add origin /path/to/<bare-repository>.git
+                \end{lstlisting}
+            \end{uncoverenv}
+            \vspace{-1mm}
+            \begin{varblock}{}[0.6\textwidth]{Pick your favourite}<uncover@4>
+                \small Probably options 2 and 3 are handier.
+            \end{varblock}
+        \end{onlyenv}
+    \end{overlayarea}
+    \FrameRemark{You can put your bare repository e.g.\ on a server or an external HDD (to clone on different machine without network).}
+\end{frame}
 %===============================================================%
 
 
 %===============================================================%
 \section{The remaining git commands}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-%mv                Move or rename a file, a directory, or a symlink
-%restore           Restore working tree files
-%rm                Remove files from the working tree and from the index
-%sparse-checkout   Initialize and modify the sparse-checkout
-%
-%bisect            Use binary search to find the commit that introduced a bug
-%grep              Print lines matching a pattern
-%
-%rebase            Reapply commits on top of another base tip
-%reset             Reset current HEAD to the specified state
-%tag               Create, list, delete or verify a tag object signed with GPG
+\begin{frame}[fragile]{You can now explore the rest alone!}
+    \begin{tabular}{>{\bfseries\color{PB}}r>{\small}l}
+        git mv       & Move or rename a file, a directory, or a symlink\\
+        git restore  & Restore working tree files \Remark{we mentioned it already}\\
+        git rm       & Remove files from the working tree and from the index\\
+        git bisect   & Use binary search to find the commit that introduced a bug\\
+        git grep     & Print lines matching a pattern\\
+        \textcolor<2>{PT}{git rebase}   & Reapply commits on top of another base tip\\
+        git reset    & Reset current HEAD to the specified state\\
+        \textcolor<2>{PT}{git tag}      & Create, list, delete or verify a tag object signed with GPG\\
+        git [...]    & Few more technical commands
+    \end{tabular}
+    \begin{varblock}{alert}[0.95\textwidth]{Wait for it!}<uncover@2>
+        In the next and last talk about Git we'll learn to rebase and tag
+    \end{varblock}
+\end{frame}
 %===============================================================%
 
 
-
+%===============================================================%
+\section{Conclusions and live exercise}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}{That's \textbf{NOT} all folks}
-    \vspace{0.02\textheight}
+\againframe[plain]{Wow}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{That's \textbf{ALMOST} all folks}
+    \vspace{0.0\textheight}
     \begin{enumerate}[<+->]
         \item Start using Git.
               \alert{\textbf{Now.}}
@@ -651,18 +853,15 @@
         \item Was anything unclear?
               Do you get stuck at some point?\\
               $\to\;$ Drop me \PP{\href{mailto:sciarra@itp.uni-frankfurt.de}{{\small\faEnvelope}\;an email}}
-        \item Git is much more than this!\\
-              $\to\;$ Come to next Z02 talk: \alert{\guillemotleft Let's git \textbf{together}\tikzmark{tg}\guillemotright}
+        \item You can use Git to work in a very professional way!\\
+              $\to\;$ Come to next Z02 talk: \alert{\guillemotleft Git in real \tikzmark{tg}life\guillemotright}
     \end{enumerate}
     \begin{tikzpicture}[remember picture, overlay, scope on=<.->]
-        \node[anchor=west, space=PT, text width=18mm] (content) at ($(tg)+(0.5,-0.8)$) {
-            git clone\\
-            git branch\\
-            git switch\\
-            git checkout\\
-            git merge\\
-            git pull\\
-            git push
+        \node[anchor=west, space=PT, text width=28mm] (content) at ($(tg)+(0.5,-1.5)$) {
+            git rebase\\
+            git tag\\
+            Semantic versioning\\
+            Gitflow\\
         };
         \path[to, shorter={0mm}{1mm}] ($(tg)-(0.6,0.25)$) edge[out=270, in=180] (content.west);
     \end{tikzpicture}
@@ -679,6 +878,32 @@
         \end{minipage}
     \end{uncoverenv}
 \end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\AlertFrame{Live exercise}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Let's collaborate!}
+    \small
+    \setlength{\leftmargini}{5mm}
+    \begin{enumerate}
+        \setlength{\itemsep}{-1mm}
+        \item Clone the exercise repository from Redmine\\
+              \then \raisebox{1pt}{\scriptsize\texttt{https://<USERNAME>@git.physik.uni-bielefeld.de/<IDENTIFIER>}}
+        \item Create and switch to a new branch
+        \item Create a new file, e.g.\ via
+              \begin{lstlisting}[style=MyBash, xleftmargin=3mm, xrightmargin=28mm, belowskip=-9mm, aboveskip=2mm]
+                  $ echo "$(whoami): $(date)" > "$(whoami).txt"
+              \end{lstlisting}
+              and your name to the \texttt{AUTHORS} file
+        \item Commit your changes to the repository and push your branch
+        \item Let your local branch track the remote one
+        \item Check your work in the browser
+        \item Be sure the \texttt{main} branch is up-to-date and merge your branch into it
+        \item Pull and push it to the remote
+        \item Check that your changes appear as expected on \,\texttt{main}\, in the browser and, if so, remove your branch locally and remotely
+    \end{enumerate}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
 %===============================================================%
 
 \end{document}
