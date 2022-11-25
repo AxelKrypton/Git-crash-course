@@ -35,7 +35,7 @@
 
 %===============================================================%
 \title{Let's Git together}
-\date{XX August 2022}
+\date{26 August 2022}
 \author{Alessandro Sciarra}
 \institute{Z02~--~Software Development Center}
 \titlegraphic{\includegraphics[width=20mm]{LogoCRC}}
@@ -279,10 +279,12 @@
                 |+Switched to a new branch 'another-branch'+|
                 $ git branch
                 |+*+| |-another-branch-|
-                |+  main+|
+                |+  main+|                    # Pay attention from which
+                |+  new-branch+|              # branch you create a new one!
             \end{lstlisting}
         \end{onlyenv}
     \end{overlayarea}
+    \FrameRemark{Before v2.23 of Git (August 2019), the command \;\texttt{git checkout}\; needed to be used to switch branch.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Merging branches}
@@ -292,7 +294,7 @@
         \item This is automatically done by Git in a clever way
         \item When Git does not know how to merge the content of some file, it will create a conflict
         \item If conflicts occur, the merge will not automatically finish
-        \item A merge can be aborted in case of conflicts with the \texttt{--abort option}
+        \item A merge can be aborted in case of conflicts with the \,\texttt{--abort}\, option
         \item To fix conflicts, open and manually adjust files where Git failed
     \end{itemize}
     \medskip
@@ -519,6 +521,7 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Fetching and pulling: Examples}
     \begin{onlyenv}<1>
+        \vspace{5mm}
         \begin{lstlisting}[style=MyBash]
             # If there is only one remote, you can omit it
             $ git fetch origin
@@ -540,21 +543,53 @@
             Already up to date.+|
         \end{lstlisting}
     \end{onlyenv}
-    \begin{onlyenv}<2>
-        \begin{varblock}{}[\textwidth]{}
+    \begin{overlayarea}{\textwidth}{0.7\textheight}
+        \vspace{-6mm}
+        \begin{varblock}{}[\textwidth]{}<only@2-3>
             If you created commits on the present branch, pulling it from remote will perform a merge and, if this is not a fast-forward merge, the editor to make a commit with an auto-generated message will be displayed to you. \alert{Conflicts might occur as well.}
         \end{varblock}
-        \begin{lstlisting}[style=MyBash]
-            $ git log --oneline
-            |+a45b032 (HEAD -> main) Some work done locally on main
-            6e5ea4b (origin/main, origin/HEAD) Last commit pulled
-            236d4af Previous history+|
-            # If I now pull and some new commit exists remotely after
-            # 6e5ea4b, a 3-way merge occurs and the editor will open
-            $ git pull origin master
-            |+[...]+|
-        \end{lstlisting}
-    \end{onlyenv}
+        \begin{onlyenv}<2>
+            \begin{center}
+                \begin{tikzpicture}
+                    \draw[very thick] (-0.5,2.5) -- (5.5,2.5);
+                    \draw[very thick] (-0.5,0.0) -- (4.5,0);
+                    \draw[dashed] (3.5,3) -- node[pos=0.45, font=\scriptsize, fill=BGLIGHT] {Last pull} (3.5,0);
+                    \foreach \x [count=\i from 1] in {0,1,2,4.5,5.5}{
+                        \node[commit=PP!70] (R\i) at (\x,2.5) {};
+                    }
+                    \foreach \x [count=\i from 1] in {0.5,1.5,3.5,4.5}{
+                        \node[commit=PS!70] (L\i) at (\x,0) {};
+                    }
+                    \begin{scope}[opacity=0.6]
+                        \draw[very thick] (-0.5,1) -- (-0.25,1) (0.25,1) -- (0.75,1) (1.25,1) -- (1.75,1);
+                        \foreach \x [count=\i from 1] in {0,1,2}{
+                            \node[commit=PP!70] (Rc\i) at (\x,1) {};
+                        }
+                        \path[very thick] (2.25,1) edge[out=0, in=180] (3.2,0);
+                    \end{scope}
+                    % Branch labels
+                    \node[right = of R5, branch=PP!80] (BrR) {Remote main};
+                    \node[below of = BrR, branch=PS!50, node distance=25mm] (BrL) {Local main};
+                    % Complete paths
+                    \draw[pin] (BrR.west) -- (R5.east);
+                    \draw[pin] (BrL.west) -- (L4.east);
+                \end{tikzpicture}
+            \end{center}
+        \end{onlyenv}
+        \begin{onlyenv}<3>
+            \vspace{3mm}
+            \begin{lstlisting}[style=MyBash]
+                $ git log --oneline
+                |+a45b032 (HEAD -> main) Some work done locally on main
+                6e5ea4b (origin/main, origin/HEAD) Last commit pulled
+                236d4af Previous history+|
+                # If I now pull and some new commit exists remotely after
+                # 6e5ea4b, a 3-way merge occurs and the editor will open
+                $ git pull origin master
+                |+[...]+|
+            \end{lstlisting}
+        \end{onlyenv}
+    \end{overlayarea}
     \FrameRemark{These 3-way merge commits because of pulling operations are not ideal and next time we'll learn how to avoid them.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -689,7 +724,7 @@
         \item The stashing area is a stack$^\star$ of unfinished changes to be used later (or discarded) even on different branches
         \item From 2018 on it is possible to stash only some files/changes
     \end{itemize}
-    \FrameRemark{$^\star$Although if people still refer to the stashing area as a stack, the last-in-first-out principle is not anymore a must and item in the middle of the stack can be used.}
+    \FrameRemark{$^\star$Although people still refer to the stashing area as a stack, the last-in-first-out principle is not anymore a must and item in the middle of the stack can be used.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \againframe<3->{PictureCommands}
@@ -747,6 +782,7 @@
                 \draw[from] (0.33,0.84) -- node[pos=1, right, text=PS] {Workspace} ++(0.285,0);
                 \draw[from] (0.44,0.56) -- node[pos=1, right, text=Navy, font=\small] {Local repository} ++(0.175,0);
                 \draw[visible on=<2>, alert, thick] (0.26,0.48) rectangle (0.9,0.65) node[pos=0.5, above=0.06, font=\small]{Similar content as a bare repository};
+                \fill[BGLIGHT, opacity=0.8, visible on=<2>]  (0,0) -- (1,0) -- (1,0.45) -- (0.22,0.45) -- (0.22,0.78) -- (1.0,0.78) -- (1,1) -- (0,1) -- cycle;
             \end{DrawOnNode}
         \end{tikzpicture}
     \end{center}
@@ -764,7 +800,7 @@
                 \item \alert{Bare repositories are meant} to serve as remote\\ \then i.e. \alert{to pull from and push to}
             \end{itemize}
             \begin{enumerate}
-                \item Initialize a bare empty folder, clone it, work and push to it
+                \item Initialize a bare empty repository, clone it, work and push to it
             \end{enumerate}
             \begin{lstlisting}[style=MyBash]
                 $ mkdir <bare-repository>.git
@@ -781,7 +817,7 @@
         \begin{onlyenv}<2->
             \begin{enumerate}
                 \setcounter{enumi}{1}
-                \item Initialize a bare empty folder and push an existing repo to it
+                \item Initialize a bare empty repository and push an existing one to it
             \end{enumerate}
             \begin{lstlisting}[style=MyBash]
                 $ mkdir <bare-repository>.git
@@ -806,7 +842,7 @@
                 \end{lstlisting}
             \end{uncoverenv}
             \vspace{-1mm}
-            \begin{varblock}{}[0.6\textwidth]{Pick your favourite}<uncover@4>
+            \begin{varblock}{}[0.55\textwidth]{Pick your favourite way}<uncover@4>
                 \small Probably options 2 and 3 are handier.
             \end{varblock}
         \end{onlyenv}
@@ -865,17 +901,20 @@
         };
         \path[to, shorter={0mm}{1mm}] ($(tg)-(0.6,0.25)$) edge[out=270, in=180] (content.west);
     \end{tikzpicture}
-    \par\vspace{0.02\textheight}
+    \par\vspace{-0.02\textheight}
     \begin{uncoverenv}<+->
         \begin{tikzpicture}[remember picture, overlay]
             \node[anchor=north east, cloud, aspect=3, cloud puffs=15, draw=PB, fill=PP!20, text=PB]
                 at ($(current page.north east)+(-14mm,-6mm)$) {Thank you!};
         \end{tikzpicture}
-        \begin{minipage}{0.8\textwidth}
-            \begin{center}
-                \large\bfseries\PQ{Believe me, it's worth it!}
-            \end{center}
-        \end{minipage}
+        \begin{itemize}
+            \item[] \phantom{$\to\;$ }{\large\bfseries\PQ{Believe me, it's worth it!}}
+        \end{itemize}
+%        \begin{minipage}{0.8\textwidth}
+%            \begin{center}
+%                \large\bfseries\PQ{Believe me, it's worth it!}\phantom{xxxx}
+%            \end{center}
+%        \end{minipage}
     \end{uncoverenv}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -887,20 +926,21 @@
     \begin{enumerate}
         \setlength{\itemsep}{-1mm}
         \item Clone the exercise repository from Redmine\\
-              \then \raisebox{1pt}{\scriptsize\texttt{https://<USERNAME>@git.physik.uni-bielefeld.de/<IDENTIFIER>}}
+              \then \raisebox{1pt}{\scriptsize\texttt{https://<USERNAME>@git.physik.uni-bielefeld.de/git-together}}
         \item Create and switch to a new branch
         \item Create a new file, e.g.\ via
               \begin{lstlisting}[style=MyBash, xleftmargin=3mm, xrightmargin=28mm, belowskip=-9mm, aboveskip=2mm]
                   $ echo "$(whoami): $(date)" > "$(whoami).txt"
               \end{lstlisting}
-              and your name to the \texttt{AUTHORS} file
+              and add your name to the \texttt{AUTHORS} file
         \item Commit your changes to the repository and push your branch
         \item Let your local branch track the remote one
         \item Check your work in the browser
-        \item Be sure the \texttt{main} branch is up-to-date and merge your branch into it
+        \item Be sure the main branch is up-to-date and merge your branch into it$^\star$
         \item Pull and push it to the remote
-        \item Check that your changes appear as expected on \,\texttt{main}\, in the browser and, if so, remove your branch locally and remotely
+        \item Check that your changes appear as expected on \,\texttt{master}\, in the browser and, if so, remove your branch locally and remotely
     \end{enumerate}
+    \FrameRemark{$^\star$For technical reasons, our Redmine platform still uses \,\texttt{master}\, as name of the main branch instead of \,\texttt{main}.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 
