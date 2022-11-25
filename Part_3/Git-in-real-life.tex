@@ -1,0 +1,404 @@
+\documentclass[usenames,svgnames,14pt]{beamer}
+\usepackage[english]{babel}
+\usepackage{
+  fontspec,
+  fontawesome,
+  xcolor,
+  mathabx,
+  listings,
+  lstautogobble,
+  listofitems,
+  TeXnicalities,
+  media9,
+  array
+}
+
+\setsansfont{Yanone Kaffeesatz}[
+    UprightFont     = *-Regular ,
+    BoldFont        = *-Bold ,
+    BoldItalicFont  = *-Bold ,
+    BoldSlantedFont = *-Bold ,
+    ItalicFont      = *-Light ,
+    SlantedFont     = *-Light ,
+    SmallCapsFont   = *-Thin
+]
+\graphicspath{{../Figures/}}
+\usetheme[style=green]{Z02}
+
+\usetikzlibrary{
+    positioning,
+    shapes,
+    bbox
+}
+\input{../Tex_tools/ListingsBash}
+%\includeonlyframes{current}
+
+%===============================================================%
+\title{Git in real life}
+\date{XX December 2022}
+\author{Alessandro Sciarra}
+\institute{Z02~--~Software Development Center}
+\titlegraphic{\includegraphics[width=20mm]{LogoCRC}}
+\titlepagelogo{\includegraphics[width=20mm]{LogoGoethe}}
+%===============================================================%
+
+\AtBeginSection[] % <- Empty optional argument, do nothing for \section*
+{
+    \begin{frame}[plain, noframenumbering]{}
+         \sectionpage
+    \end{frame}
+}
+
+\tikzset{
+    space/.style={%
+        thick, draw=#1, fill=#1!10, text=#1, rounded corners=1mm, font=\small, text width=14mm, align=center, minimum height=12mm
+    },
+    commit/.style={circle, draw, very thick, fill=#1, minimum size=5mm},
+    branch/.style={rounded corners=1mm, fill=#1, draw, very thick, font=\small},
+    pin/.style={to, thick, shorter={1pt}{1pt}}
+}
+\newcommand{\labelBranch}[5]{%
+    \node[#2 = #3 of #4, branch=#5] (tmp) {#1\vphantom{FMi}};
+    % https://tex.stackexchange.com/a/24924
+    \expandafter\ifstrequal\expandafter{#2}{above}{\draw[pin] (tmp.south) -- (#4.north);}{}
+    \expandafter\ifstrequal\expandafter{#2}{below}{\draw[pin] (tmp.north) -- (#4.south);}{}
+    \expandafter\ifstrequal\expandafter{#2}{right}{\draw[pin]  (tmp.west) -- (#4.east);}{}
+    \expandafter\ifstrequal\expandafter{#2}{left}{ \draw[pin]  (tmp.east) -- (#4.west);}{}
+}
+\PrepareURLsymbol[PB]
+\newcommand{\ttc}[2]{\texttt{\textcolor{#1}{#2}}}%
+\setlength{\leftmarginii}{0.5cm}
+\newcommand{\then}{\raisebox{2pt}{$\;\drsh\;$}}
+
+
+% Taken from https://tex.stackexchange.com/a/51458/128737
+\makeatletter
+\patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
+\makeatother
+
+\begin{document}
+
+%===============================================================%
+\begin{frame}[plain,noframenumbering]
+    \titlepage
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Outline of the talk}
+    \tableofcontents[subsectionstyle=hide]
+\end{frame}
+%===============================================================%
+
+
+%===============================================================%
+\section{Rewriting history}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{About rewriting history}{Yes, you can change the history of a repository!}
+\begin{overlayarea}{\textwidth}{0.3\textheight}
+
+    \begin{itemize}
+        \item\alert{Very bad if there are different copies of the history} \Remark{E.g.\ branches, remote(s)}
+        \item If you rewrite shared history,\\
+              \begin{itemize}
+                  \item it is generally hard to make the same change elsewhere and\\
+                  \item merging (and hence pull/push) can lead to duplicated commits in history
+              \end{itemize}
+        \item<only@1> Fine as long as\\
+              \begin{itemize}
+                  \item yours is the only repository containing the rewritten history or
+                  \item you work on a git project alone and you know what to do then
+              \end{itemize}
+    \end{itemize}
+\end{overlayarea}
+    \begin{center}
+        \begin{tikzpicture}[scope on=<2->]
+            \draw[very thick] (-0.5,2) -- (4,2);
+            \draw[very thick] (-0.5,0) -- (4,0);
+            \draw[dashed] (4,2) -- node[pos=0.35, font=\scriptsize, fill=BGLIGHT, inner ysep=2pt] {Up-to-date} (4,0);
+            \foreach \x [count=\i from 1] in {0,1,...,4}{
+                \node[commit=PP!70] (R\i) at (\x,2) {};
+            }
+            % Branch labels
+            \node[right = of R5, branch=PP!80] (BrR) {Remote main};
+            % Complete paths
+            \draw[pin] (BrR.west) -- (R5.east);
+            \begin{scope}[scope on=<2>]
+                \foreach \x [count=\i from 1] in {0,1,...,4}{
+                    \node[commit=PS!70] (L\i) at (\x,0) {};
+                }
+                % Branch labels
+                \node[right = of L5, branch=PS!50] (BrL) {Local main};
+                % Complete paths
+                \draw[pin] (BrL.west) -- (L5.east);
+            \end{scope}
+            \begin{scope}[scope on=<3>]
+                \node (cross) at (4,0.7) {};
+                \fill[BGLIGHT] ($(cross.south west)-(0,1)$) rectangle (cross.north east);
+                \draw[ultra thick, red] (cross.south west) -- (cross.north east) (cross.south east) -- (cross.north west);
+                \foreach \x [count=\i from 1] in {0,1,...,4}{
+                    \ifnum\x>1
+                        \node[commit=PT!70] (L\i) at (\x,0) {};
+                    \else
+                        \node[commit=PS!70] (L\i) at (\x,0) {};
+                    \fi
+                }
+                % Branch labels
+                \node[right = of L5, branch=PS!50] (BrL) {Local main};
+                \node at (BrR) {\includegraphics[width=18mm]{boom}};
+                % Complete paths
+                \draw[pin] (BrL.west) -- (L5.east);
+            \end{scope}
+        \end{tikzpicture}
+        \par\uncover<3>{\small\alert{As long as you rewrite history contained elsewhere, you are in troubles!}}
+    \end{center}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north east] at ([xshift=-12mm]current page.north east) {\includegraphics[width=25mm]{Spiderman}};
+    \end{tikzpicture}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Changing the last commit (message)}
+    \begin{enumerate}
+        \item How can I fix a typo in the \textbf{last} commit message?
+    \end{enumerate}
+    \begin{varblock}{alerted}[\textwidth]{This procedure will change history!}
+        Said differently, feel free to do it if you \alert{\textbf{did not}} share history!
+    \end{varblock}
+    \vspace{3mm}
+    \begin{onlyenv}<1>
+        \begin{lstlisting}[style=MyBash]
+            $ git commit -m "Added engine implementation"
+            |+[airplane f8b0c25] Added engine implementation
+            24 files changed, 1340 insertions(+), 476 deletions(-)+|
+            # Ops! I used a verb in past form, @|\URL[red]{https://chris.beams.io/posts/git-commit/}{not conforming!}|@
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{onlyenv}<2>
+        \begin{lstlisting}[style=MyBash]
+            $ git commit -m "Added engine implementation"
+            |+[airplane +||*f8b0c25*||+] Added engine implementation
+            24 files changed, 1340 insertions(+), 476 deletions(-)+|
+            # Ops! I used a verb in past form, @|\URL[red]{https://chris.beams.io/posts/git-commit/}{not conforming!}|@
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{uncoverenv}<2>
+        \begin{lstlisting}[style=MyBash]
+            # With clean staging area:
+            $ git commit --amend -m "Add engine implementation"
+            |+[airplane +||*33f53f4*||+] Add engine implementation
+            Date: Fri Nov 25 08:52:22 2018 +0100
+            24 files changed, 1340 insertions(+), 476 deletions(-)+|
+        \end{lstlisting}
+    \end{uncoverenv}
+    \FrameRemark{There is a \URL*{https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History}{nice official page} about different situations in which rewriting history is needed.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Changing the last commit (content)}
+    \begin{enumerate}
+        \setcounter{enumi}{1}
+        \item I forgot some changes in the \textbf{last} commit! And now?
+    \end{enumerate}
+    \begin{varblock}{alerted}[\textwidth]{This procedure will change history!}
+        Said differently, feel free to do it if you \alert{\textbf{did not}} share history!
+    \end{varblock}
+    \vspace{3mm}
+    \begin{onlyenv}<1>
+        \begin{lstlisting}[style=MyBash]
+            $ git commit -m "Review take-off system"
+            |+[airplane e1df32a] Review take-off system
+            1 file changed, 230 insertions(+), 61 deletions(-)+|
+            # Ops! I forgot a file!
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{onlyenv}<2-3>
+        \begin{lstlisting}[style=MyBash]
+            $ git commit -m "Review take-off system"
+            |+[airplane +||*e1df32a*||+] Review take-off system
+            1 file changed, 230 insertions(+), 61 deletions(-)+|
+            # Ops! I forgot a file!
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{onlyenv}<2>
+        \begin{lstlisting}[style=MyBash]
+            $ git add wheels_electronic.h
+            $ git commit --amend --no-edit
+            |+[airplane +||*c13e34f*||+] Add engine implementation
+            Date: Fri Nov 25 08:45:18 2022 +0100
+            2 files changed, 345 insertions(+), 88 deletions(-)+|
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{onlyenv}<3>
+    \begin{lstlisting}[style=MyBash]
+            $ git add wheels_electronic.h
+            $ git commit --amend -C HEAD # use original commit timestamp
+            |+[airplane +||*c13e34f*||+] Add engine implementation
+            Date: Fri Nov 25 08:33:01 2022 +0100
+            2 files changed, 345 insertions(+), 88 deletions(-)+|
+        \end{lstlisting}
+    \end{onlyenv}
+    \FrameRemark{There is a \URL*{https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History}{nice official page} about different situations in which rewriting history is needed.}
+\end{frame}
+%===============================================================%
+
+
+%===============================================================%
+\section{Git rebase}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Which is the abstract idea of a rebase?}
+    \vspace{-3mm}
+    \begin{enumerate}
+        \item<2-> Go back in history till a given point
+        \item<3-4> Replay commits in a given order\\
+                   \then possibly taking action on applied commit as specified
+    \end{enumerate}
+    \vspace{3mm}
+    \begin{tikzpicture}
+        \draw[very thick] (-0.5,1.2) -- (6,1.2);
+        \foreach \x [count=\i from 1] in {0,1.5,...,6.1}{
+            \node[commit=PS!70] (I\i) at (\x,1.2) {};
+        }
+        \node[above = 6mm of I5, branch=PS!80] (BrI) {Main};
+        \draw[pin] (BrI.south) -- (I5.north);
+        \node[above = 6mm of I2, font=\small\ttfamily] {Before rebase};
+        \draw[thin] (-2,0.6) -- (8,0.6);
+        \begin{scope}[scope on=<2->]
+           \draw[very thick] (-0.5,0) -- (3,0);
+            \foreach \x [count=\i from 1] in {0,1.5,3}{
+                \node[commit=PS!70] (R\i) at (\x,0) {};
+            }
+        \end{scope}
+        \begin{onlyenv}<2> % Use onlyenv because of opacities
+            \begin{scope}
+                \draw[very thick, opacity=0.2] (3.25,0) -- ++(1,0) (4.75,0) -- ++(1,0);
+                \foreach \x [count=\i from 4] in {4.5,6.0}{
+                    \node[opacity=0.2, commit=PS!70] (R\i) at (\x,0) {};
+                }
+                % Branch label
+                \node[below = 6mm of R3, branch=PS!80] (BrR) {Main};
+                % Complete paths
+                \draw[pin] (BrR.north) -- (R3.south);
+                \node[below = 6mm of R5, font=\small\ttfamily] {During rebase};
+            \end{scope}
+        \end{onlyenv}
+        \begin{onlyenv}<3>
+            \begin{scope}
+                \draw[very thick] (3.25,0) -- (4.5,0);
+                \node[commit=PT!70] (R4) at (4.5,0) {};
+                \node[opacity=0.2, commit=PS!70] (R5) at (6,0) {};
+                % Branch label
+                \node[below = 6mm of R4, branch=PS!80] (BrR) {Main};
+                % Complete paths
+                \draw[pin] (BrR.north) -- (R4.south);
+                \node[below = 6mm of R2, font=\small\ttfamily] {During rebase};
+            \end{scope}
+        \end{onlyenv}
+        \begin{scope}[scope on=<4>]
+            \draw[very thick] (3.25,0) -- (6,0);
+            \node[commit=PT!70] (R4) at (4.5,0) {};
+            \node[commit=white] (R5) at (6,0) {};
+            % Branch label
+            \node[below = 6mm of R5, branch=PS!80] (BrR) {Main};
+            % Complete paths
+            \draw[pin] (BrR.north) -- (R5.south);
+            \node[below = 6mm of R2, font=\small\ttfamily] {After rebase};
+        \end{scope}
+    \end{tikzpicture}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Rebasing instead of (three-way) merging}
+    \vspace{1mm}Three way merge from Feature:
+    \begin{center}
+        \begin{tikzpicture}
+            \draw[very thick] (0.5,0) -- (2.5,0) edge[out=0, in=180] (3.5,1) (3.5,1) -- (5,1);
+            \draw[very thick] (2.5,0) -- (5.5,0);
+            \foreach \dx/\dy [count=\i from 1] in {1/0, 2/0, 3.3/0, 4.5/0, 5.7/0, 4/1, 5/1}{
+                \ifnum\i<6
+                   \def\col{PS!50}
+                \else
+                    \def\col{white}
+                \fi
+                \node[commit=\col] (C\i) at ($(0,0)+(\dx,\dy)$) {};
+            }
+            \labelBranch{Main}{below}{5mm}{C5}{PS!50}
+            \begin{scope}[scope on=<1>]
+                \labelBranch{Feature}{right}{5mm}{C7}{white}
+            \end{scope}
+            \begin{scope}[scope on=<2->]
+                \draw[very thick] (5.25,1) -- (7.7,1);
+                \draw[very thick] (5.95,0) -- (6.2,0)  edge[out=0, in=180] (7.2,1);
+                \node[commit=white] (CM) at (7.7,1) {};
+                \labelBranch{Feature}{right}{5mm}{CM}{white}
+            \end{scope}
+        \end{tikzpicture}
+    \end{center}
+    \vspace{-2mm}
+    Rebase from Feature:
+    \par\vspace{-1mm}
+    \begin{center}
+        \begin{tikzpicture}
+            \draw[very thick] (0.5,0) -- (5.5,0);
+            \foreach \dx/\dy [count=\i from 1] in {1/0, 2/0, 3.3/0, 4.5/0, 5.7/0}{
+                \node[commit=PS!50] (C\i) at ($(0,0)+(\dx,\dy)$) {};
+            }
+            \labelBranch{Main}{below}{5mm}{C5}{PS!50}
+            \begin{scope}[scope on=<1-2>]
+                \draw[very thick] (2.5,0) edge[out=0, in=180] (3.5,1) (3.5,1) -- (5,1);
+                \foreach \dx/\dy [count=\i from 6] in {3.9/1, 5.1/1}{
+                    \node[commit=white] (C\i) at ($(0,0)+(\dx,\dy)$) {};
+                }
+                \labelBranch{Feature}{right}{5mm}{C7}{white}
+            \end{scope}
+            \begin{onlyenv}<3-6> % Because of opacity
+                \begin{scope}
+                    \draw[opacity=0.2, very thick] (2.5,0) edge[out=0, in=180] (3.5,1)
+                                                   (3.5,1) -- ++(0.15,0) +(0.5,0) -- ++(1.2,0);
+                    \foreach \dx/\dy [count=\i from 6] in {3.9/1, 5.1/1}{
+                        \node[opacity=0.2, commit=white] (C\i) at ($(0,0)+(\dx,\dy)$) {};
+                    }
+                \end{scope}
+            \end{onlyenv}
+            \foreach \i [count=\ov from 3] in {2,...,5}{
+                \def\pos{below}
+                \ifnum\i=5\def\pos{right}\fi
+                \begin{scope}[scope on=<\ov>]
+                    \labelBranch{Feature}{\pos}{5mm}{C\i}{white}
+                \end{scope}
+            }
+            \begin{scope}[scope on=<7->]
+                \draw[very thick] (5.95,0) -- (6.2,0) edge[out=0, in=180] (7.2,1) (7.2,1) -- ++(0.15,0);
+                \node[commit=white] (C6) at (7.6,1) {};
+            \end{scope}
+            \begin{onlyenv}<7> % Because of opacity
+                \begin{scope}
+                    \draw[opacity=0.2, very thick] (7.85,1) -- ++(0.95,0);
+                    \node[opacity=0.2, commit=white] (C7) at (9.05,1) {};
+                    \labelBranch{Feature}{below}{5mm}{C6}{white}
+                \end{scope}
+            \end{onlyenv}
+            \begin{scope}[scope on=<8>]
+                \draw[very thick] (7.85,1) -- ++(0.95,0);
+                \node[commit=white] (C7) at (9.05,1) {};
+                \labelBranch{Feature}{below}{5mm}{C7}{white}
+            \end{scope}
+%                \draw[very thick] (5.25,1) -- (7.5,1);
+%                \draw[very thick] (5.75,0) -- (6,0)  edge[out=0, in=180] (7,1);
+%                \node[commit=white] (CM) at (7.5,1) {};
+%                \labelBranch{Feature}{right}{5mm}{CM}{white}
+        \end{tikzpicture}
+    \end{center}
+
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
+%===============================================================%
+\section{Git tag}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+%===============================================================%
+\section{Semantic versioning}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+%===============================================================%
+\section{Gitflow}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
+
+%===============================================================%
+
+\end{document}
