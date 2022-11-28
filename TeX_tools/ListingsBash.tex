@@ -66,6 +66,7 @@ morestring=[d][\color{strings-color}]{'},
 moredelim=[is][\color{strings-color}]{|-}{-|}, % I will use this for present git branch
 moredelim=[is][\color{comment-color}]{|*}{*|}, % I will use this for e.g. remote git branches
 moredelim=[is][\color{environment-color}]{|+}{+|}, % I will use this for terminal output
+moredelim=[is][\color{functions-color}]{|=}{=|}, % I will use this for highlighting output
 literate={`}{\textasciigrave}1, % https://tex.stackexchange.com/a/466224/128737
 literate={~}{{\textasciitilde}}1,
 % literate=% literate={<replace>}{<replacement text>}{<width>}
@@ -106,4 +107,4 @@ autogobble=true, % lstautogobble needed!
     {\lstset{style=MyBash, #1}}
     {}
 
-\def\bash{\lstinline[style=MyBash, basicstyle=\ttfamily\color{black}]}
+\def\bash{\lstinline[style=MyBash, basicstyle=\ttfamily\scriptsize\color{basic-color}]}

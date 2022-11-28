@@ -9,9 +9,10 @@
   lstautogobble,
   listofitems,
   TeXnicalities,
-  media9,
-  array
+  array,
+  pgfplotstable
 }
+\pgfplotsset{compat=1.17}
 
 \setsansfont{Yanone Kaffeesatz}[
     UprightFont     = *-Regular ,
@@ -32,6 +33,57 @@
 }
 \input{../Tex_tools/ListingsBash}
 %\includeonlyframes{current}
+
+%This command set the \HeightOfNode \WidthOfNode pgfmath macro
+\newcommand{\CalculateSizeOfNode}[1]{%
+    \pgfpointdiff{\pgfpointanchor{#1}{south west}}{\pgfpointanchor{#1}{north east}}
+    \pgfmathsetmacro\WidthOfNode{\csname pgf@x\endcsname}
+    \pgfmathsetmacro\HeightOfNode{\csname pgf@y\endcsname}
+}
+
+%Inspired from https://tex.stackexchange.com/a/87518/128737
+%To be called in tikzpicture!
+% #1 -> width rectangle where to place
+% #2 -> height rectangle where to place
+% #3 -> radius of empty space around coordinate (without units, in pt)
+% #4 -> how many coordinate to place
+%
+% It defines tikz coordinates called 'N1', 'N2', etc. in a rectangle (0,0) to (#3, #4)
+\newcommand{\PlaceSpreadCoordinatesAndStoreThemToFile}[4]{
+    \newwrite\posfile
+    \immediate\openout\posfile=\jobname .pos
+    \def\xlist{6}
+    \def\ylist{6}
+    \newcounter{NodeIndex}
+    \pgfmathtruncatemacro\Width{0.0351459804*#1}
+    \pgfmathtruncatemacro\Height{0.0351459804*#2}
+    \pgfmathsetmacro\diameter{#3}
+    \draw (0,0) rectangle (\Width,\Height);
+    \foreach \i in {1,...,#4}{
+        \xdef\collision{1}
+        \whileboolexpr{test {\ifnumcomp{\collision}{=}{1}}}{%
+            \pgfmathsetmacro\x{rnd*\Width}
+            \pgfmathsetmacro\y{rnd*\Height}
+            \xdef\collision{0}
+            \foreach \element [count=\i] in \xlist{
+                \pgfmathtruncatemacro\j{\i-1}
+                \pgfmathsetmacro\checkdistance{ sqrt( ({\xlist}[\j]-(\x))^2 + ({\ylist}[\j]-(\y))^2 ) }
+                \ifdim\checkdistance pt<\diameter pt
+                \xdef\collision{1}
+                \breakforeach
+                \fi
+            }
+        }
+        \ifnum\collision=0
+        \xdef\xlist{\xlist,\x}
+        \xdef\ylist{\ylist,\y}
+        \stepcounter{NodeIndex}
+        \coordinate (C\theNodeIndex) at (\x,\y);
+        \node at (C\theNodeIndex) {\immediate\write\posfile{\x\space \y}};
+        \message{Placed node \theNodeIndex^^J}
+        \fi
+    }
+}
 
 %===============================================================%
 \title{Git in real life}
@@ -245,8 +297,8 @@
 \begin{frame}{Which is the abstract idea of a rebase?}
     \vspace{-3mm}
     \begin{enumerate}
-        \item<2-> Go back in history till a given point
-        \item<3-4> Replay commits in a given order\\
+        \item<2-> Go back in history till a \textbf{given} point
+        \item<3-4> Replay \textbf{chosen} commits in their order\\
                    \then possibly taking action on applied commit as specified
     \end{enumerate}
     \vspace{3mm}
@@ -255,7 +307,7 @@
         \foreach \x [count=\i from 1] in {0,1.5,...,6.1}{
             \node[commit=PS!70] (I\i) at (\x,1.2) {};
         }
-        \node[above = 6mm of I5, branch=PS!80] (BrI) {Main};
+        \node[above = 6mm of I5, branch=PS!80] (BrI) {main};
         \draw[pin] (BrI.south) -- (I5.north);
         \node[above = 6mm of I2, font=\small\ttfamily] {Before rebase};
         \draw[thin] (-2,0.6) -- (8,0.6);
@@ -272,7 +324,7 @@
                     \node[opacity=0.2, commit=PS!70] (R\i) at (\x,0) {};
                 }
                 % Branch label
-                \node[below = 6mm of R3, branch=PS!80] (BrR) {Main};
+                \node[below = 6mm of R3, branch=PS!80] (BrR) {main};
                 % Complete paths
                 \draw[pin] (BrR.north) -- (R3.south);
                 \node[below = 6mm of R5, font=\small\ttfamily] {During rebase};
@@ -281,10 +333,11 @@
         \begin{onlyenv}<3>
             \begin{scope}
                 \draw[very thick] (3.25,0) -- (4.5,0);
+                \draw[very thick, opacity=0.2] (4.75,0) -- ++(1,0);
                 \node[commit=PT!70] (R4) at (4.5,0) {};
                 \node[opacity=0.2, commit=PS!70] (R5) at (6,0) {};
                 % Branch label
-                \node[below = 6mm of R4, branch=PS!80] (BrR) {Main};
+                \node[below = 6mm of R4, branch=PS!80] (BrR) {main};
                 % Complete paths
                 \draw[pin] (BrR.north) -- (R4.south);
                 \node[below = 6mm of R2, font=\small\ttfamily] {During rebase};
@@ -295,7 +348,7 @@
             \node[commit=PT!70] (R4) at (4.5,0) {};
             \node[commit=white] (R5) at (6,0) {};
             % Branch label
-            \node[below = 6mm of R5, branch=PS!80] (BrR) {Main};
+            \node[below = 6mm of R5, branch=PS!80] (BrR) {main};
             % Complete paths
             \draw[pin] (BrR.north) -- (R5.south);
             \node[below = 6mm of R2, font=\small\ttfamily] {After rebase};
@@ -304,7 +357,8 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Rebasing instead of (three-way) merging}
-    \vspace{1mm}Three way merge from Feature:
+    \vspace{1mm}
+    Three way merge from Feature:
     \begin{center}
         \begin{tikzpicture}
             \draw[very thick] (0.5,0) -- (2.5,0) edge[out=0, in=180] (3.5,1) (3.5,1) -- (5,1);
@@ -317,7 +371,7 @@
                 \fi
                 \node[commit=\col] (C\i) at ($(0,0)+(\dx,\dy)$) {};
             }
-            \labelBranch{Main}{below}{5mm}{C5}{PS!50}
+            \labelBranch{main}{below}{5mm}{C5}{PS!50}
             \begin{scope}[scope on=<1>]
                 \labelBranch{Feature}{right}{5mm}{C7}{white}
             \end{scope}
@@ -325,7 +379,9 @@
                 \draw[very thick] (5.25,1) -- (7.7,1);
                 \draw[very thick] (5.95,0) -- (6.2,0)  edge[out=0, in=180] (7.2,1);
                 \node[commit=white] (CM) at (7.7,1) {};
+                \node[font=\tiny] at (CM) {$\star$};
                 \labelBranch{Feature}{right}{5mm}{CM}{white}
+                \node[below = 16mm of CM, anchor=west, font=\scriptsize] {$^\star$Conflicts might occur};
             \end{scope}
         \end{tikzpicture}
     \end{center}
@@ -338,7 +394,7 @@
             \foreach \dx/\dy [count=\i from 1] in {1/0, 2/0, 3.3/0, 4.5/0, 5.7/0}{
                 \node[commit=PS!50] (C\i) at ($(0,0)+(\dx,\dy)$) {};
             }
-            \labelBranch{Main}{below}{5mm}{C5}{PS!50}
+            \labelBranch{main}{below}{5mm}{C5}{PS!50}
             \begin{scope}[scope on=<1-2>]
                 \draw[very thick] (2.5,0) edge[out=0, in=180] (3.5,1) (3.5,1) -- (5,1);
                 \foreach \dx/\dy [count=\i from 6] in {3.9/1, 5.1/1}{
@@ -346,59 +402,571 @@
                 }
                 \labelBranch{Feature}{right}{5mm}{C7}{white}
             \end{scope}
-            \begin{onlyenv}<3-6> % Because of opacity
+            \begin{onlyenv}<3> % Because of opacity
                 \begin{scope}
                     \draw[opacity=0.2, very thick] (2.5,0) edge[out=0, in=180] (3.5,1)
                                                    (3.5,1) -- ++(0.15,0) +(0.5,0) -- ++(1.2,0);
                     \foreach \dx/\dy [count=\i from 6] in {3.9/1, 5.1/1}{
                         \node[opacity=0.2, commit=white] (C\i) at ($(0,0)+(\dx,\dy)$) {};
                     }
+                    \labelBranch{Feature}{right}{5mm}{C5}{white}
                 \end{scope}
             \end{onlyenv}
-            \foreach \i [count=\ov from 3] in {2,...,5}{
-                \def\pos{below}
-                \ifnum\i=5\def\pos{right}\fi
-                \begin{scope}[scope on=<\ov>]
-                    \labelBranch{Feature}{\pos}{5mm}{C\i}{white}
-                \end{scope}
-            }
-            \begin{scope}[scope on=<7->]
+            \begin{scope}[scope on=<4->]
                 \draw[very thick] (5.95,0) -- (6.2,0) edge[out=0, in=180] (7.2,1) (7.2,1) -- ++(0.15,0);
                 \node[commit=white] (C6) at (7.6,1) {};
+                \node[font=\tiny] at (C6) {$\star$};
             \end{scope}
-            \begin{onlyenv}<7> % Because of opacity
+            \begin{onlyenv}<4> % Because of opacity
                 \begin{scope}
                     \draw[opacity=0.2, very thick] (7.85,1) -- ++(0.95,0);
                     \node[opacity=0.2, commit=white] (C7) at (9.05,1) {};
                     \labelBranch{Feature}{below}{5mm}{C6}{white}
                 \end{scope}
             \end{onlyenv}
-            \begin{scope}[scope on=<8>]
+            \begin{scope}[scope on=<5>]
                 \draw[very thick] (7.85,1) -- ++(0.95,0);
                 \node[commit=white] (C7) at (9.05,1) {};
+                \node[font=\tiny] at (C7) {$\star$};
                 \labelBranch{Feature}{below}{5mm}{C7}{white}
             \end{scope}
-%                \draw[very thick] (5.25,1) -- (7.5,1);
-%                \draw[very thick] (5.75,0) -- (6,0)  edge[out=0, in=180] (7,1);
-%                \node[commit=white] (CM) at (7.5,1) {};
-%                \labelBranch{Feature}{right}{5mm}{CM}{white}
         \end{tikzpicture}
     \end{center}
-
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Git rebase in its (almost) full glory}
+    \begin{lstlisting}[style=MyBash, xleftmargin=5mm, xrightmargin=5mm, aboveskip=-6mm]
+        git rebase |+[-i] [--onto <newbase>] [<upstream> [<branch>]]+|
+    \end{lstlisting}
+    \begin{overlayarea}{\textwidth}{0.5\textheight}
+        \begin{onlyenv}<1-2>
+            \vspace{2mm}
+            \setbeamerfont{description item}{family=\ttfamily,size=\small}
+            \setbeamercolor{description item}{fg=environment-color}
+            \begin{description}[\texttt{<upstream>}]
+                \item[-i] Specify it to set up the rebase interactively
+                \item[<newbase>] Where to apply the chosen commit\\ \then by default \texttt{<upstream>}
+                \item[<upstream>] Base history for the rebase to choose commits
+                \item[<branch>] The branch from which the rebase is done
+            \end{description}
+            \begin{varblock*}{alert}[\textwidth]{Conflicts might occur}
+                \begin{overlayarea}{\textwidth}{0.12\textheight}
+                    \vspace{-4.5mm}
+                    \begin{onlyenv}<1>
+                        \begin{enumerate}
+                            \item Resolve them as usual and \;\texttt{git-add}\; the files
+                            \item Run \;\texttt{git rebase --continue}
+                        \end{enumerate}
+                    \end{onlyenv}
+                    \begin{onlyenv}<2>
+                        \vspace{-3pt}
+                        \begin{itemize}
+                            \item Run \;\texttt{git rebase --skip} to ignore commit
+                            \item Run \;\texttt{git rebase --abort} to end rebase
+                        \end{itemize}
+                    \end{onlyenv}
+                \end{overlayarea}
+            \end{varblock*}
+        \end{onlyenv}
+        \begin{onlyenv}<3>
+            \newcommand{\opt}[1]{\;\textcolor{environment-color}{\texttt{#1}}\;}
+            \begin{enumerate}
+                \item If \opt{<branch>} is specified, git will switch to it% before doing anything else
+                \item Commits in the current branch but that are not in \opt{<upstream>} are saved to a temporary area\\
+                      {\footnotesize\then Use \;\texttt{git log <upstream>..HEAD}\; to see these commits}
+                \item The current branch is reset to \opt{<upstream>}\\
+                      {\footnotesize\then or \opt{<newbase>} if the \opt{--onto} option was supplied}
+                \item The previously saved commits are then reapplied to the current branch, one by one, in order
+                      $\to$ \alert{conflicts might occur!}\\
+                      {\footnotesize\then already existing commits are by default omitted}
+            \end{enumerate}
+        \end{onlyenv}
+    \end{overlayarea}
+    \FrameRemark{You can actually do more than that; see \URL*{https://git-scm.com/docs/git-rebase}{the official documenation} to know more about rebasing.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Another example}
+    \begin{center}
+        \begin{tikzpicture}
+            \pgfmathsetmacro{\ys}{1.5}
+            \foreach \dx/\dy [count=\i from 1] in {1/0, 2/0, 4/1, 5/1, 6/1}{
+                \def\col{white}
+                \ifnum\i<3
+                    \def\col{PS!50}
+                \fi
+                \node[commit=\col] (C\i) at ($(0,0)+(\dx,\ys*\dy)$) {};
+            }
+            \begin{scope}[every path/.style={very thick}]
+                \draw (C1) -- ++(-0.5,0);
+                \foreach \i [evaluate=\i as \ip using int(\i+1)] in {1,3,4} {
+                    \draw[very thick] (C\i.east) -- (C\ip.west);
+                }
+                \draw (C2.east) -- ++(0.25,0) coordinate (EL) (C3.west) -- ++(-0.25,0) coordinate (ER);
+                \draw (EL) edge[out=0, in=180] (ER);
+            \end{scope}
+            \labelBranch{main}{below}{5mm}{C2}{PS!50}
+            \labelBranch{Feature-A}{below}{5mm}{C5}{white}
+            \begin{scope}[invisible/.style={opacity=0.2}, visible on=<1>, every path/.style={very thick}]
+                \foreach \dx/\dy [count=\i from 6] in {8/2, 9/2}{
+                    \node[commit=PT!50] (C\i) at ($(0,0)+(\dx,\ys*\dy)$) {};
+                }
+                \draw (C6.east) -- (C7.west);
+                \draw (C5.east) -- ++(0.25,0) coordinate (EL) (C6.west) -- ++(-0.25,0) coordinate (ER);
+                \draw (EL) edge[out=0, in=180] (ER);
+                \labelBranch{Feature-B}{above}{5mm}{C7}{PT!50}
+            \end{scope}
+            \begin{scope}[visible on=<2>, every path/.style={very thick}]
+                \foreach \dx/\dy [count=\i from 6] in {4/2, 5/2}{
+                    \node[commit=PT!50] (C\i) at ($(0,0)+(\dx,\ys*\dy)$) {};
+                }
+                \draw (C6.east) -- (C7.west);
+                \draw (C2.east) -- ++(0.15,0) coordinate (EL) (C6.west) -- ++(-0.25,0) coordinate (ER);
+                \draw (EL) edge[out=0, in=180, looseness=0.75] (ER);
+                \labelBranch{Feature-B}{above}{5mm}{C7}{PT!50}
+            \end{scope}
+        \end{tikzpicture}
+        \vspace{3mm}
+        \begin{uncoverenv}<2->
+            \begin{lstlisting}[style=MyBash, xleftmargin=18mm, xrightmargin=18mm]
+                git rebase --onto main Feature-A Feature-B
+            \end{lstlisting}
+        \end{uncoverenv}
+    \end{center}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Back to rebasing instead of merging}{Useful to keep history clean in repository}
+    \begin{varblock}{alert}[\textwidth]{If working \textbf{alone} on a branch}
+        \begin{enumerate}
+            \item Get your work done
+            \item \texttt{git rebase main your-branch}
+            \item Then \;\texttt{git merge main}\; will be up-to-date
+            \item Switch to \;\texttt{main}\; and do a trivial merge
+        \end{enumerate}
+    \end{varblock}
+    \begin{varblock}{}[\textwidth]{Interactive rebase}
+        \begin{itemize}
+            \item It allows to act on commits while re-applying them
+            \item It offers further possibilities to tidy up work
+        \end{itemize}
+    \end{varblock}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[c,fragile]
+    \frametitle<1-3,6->{An example of interactive rebase}
+    \alt<1-3,6->{\vspace{-3mm}}{\vspace{6mm}}
+    \begin{varblock}{example}[1.05\textwidth]{Adjust history of recent local changes}<only@1-3,6->
+        \begin{lstlisting}[style=MyBash, aboveskip=2mm]
+            $ git log --oneline -n 4
+            |+e499d89 Deploy engine turbo+|          # This should be rephrased
+            |+f8b0c25 Improve flaps of wings
+            dfb705b Make some wheels maintenance+| # Here we forgot a file
+            |+a0a3f28 Work on cockpit instruments+|
+        \end{lstlisting}
+        \begin{uncoverenv}<2->
+            \begin{lstlisting}[style=MyBash, aboveskip=-4pt]
+                $ git add wheel_test.cpp
+                $ git commit -m "This commit message does not matter"
+                |+[airplane 364ff12] This commit message does not matter
+                Date: Mon Nov 28 11:57:01 2022 +0100
+                1 files changed, 546 insertions(+), 810 deletions(-)+|
+            \end{lstlisting}
+        \end{uncoverenv}
+        \begin{uncoverenv}<3->
+            \begin{lstlisting}[style=MyBash, aboveskip=-4pt]
+                $ git rebase -i HEAD~5  # --> Edit, save, exit from editor
+            \end{lstlisting}
+        \end{uncoverenv}
+        \begin{uncoverenv}<6->
+            \begin{lstlisting}[style=MyBash, aboveskip=-4pt]
+                # When asked for, rephrase commit as wished
+                |+Successfully rebased and updated refs/heads/airplane.+|
+            \end{lstlisting}
+        \end{uncoverenv}
+        \begin{uncoverenv}<7->
+            \begin{lstlisting}[style=MyBash, aboveskip=-4pt]
+                $ git log --oneline -n 4
+                |*51a4b9b*| |+Deploy engine turbo and new pipes+|
+                |*afc765a*| |+Improve flaps of wings+|
+                |*9927a77*| |+Make some wheels maintenance
+                a0a3f28 Work on cockpit instruments+|
+            \end{lstlisting}
+        \end{uncoverenv}
+    \end{varblock}
+    \begin{onlyenv}<4>
+        \begin{lstlisting}[style=MyBash]
+            pick a0a3f28 Work on cockpit instruments             |+#1+|
+            pick dfb705b Make some wheels maintenance            |+#2+|
+            pick f8b0c25 Improve flaps of wings                  |+#3+|
+            pick e499d89 Deploy engine turbo                     |+#4+|
+            pick 364ff12 This commit message does not matter     |+#5+|
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{onlyenv}<5>
+        \begin{lstlisting}[style=MyBash]
+            pick a0a3f28 Work on cockpit instruments             |+#1+|
+            pick dfb705b Make some wheels maintenance            |+#2+|
+            |*fixup*| 364ff12 This commit message does not matter    #5
+            pick f8b0c25 Improve flaps of wings                  #3
+            pick e499d89 Deploy engine turbo                     #4
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{onlyenv}<4-5>
+        \begin{lstlisting}[style=MyBash, basicstyle=\ttfamily\tiny\color{basic-color}, aboveskip=-4pt]
+            |+# Rebase 9fdb3bd..e499d89 onto 9fdb3bd
+            #
+            # Commands:
+            # p, pick <commit> = use commit
+            # r, reword <commit> = use commit, but edit the commit message
+            # e, edit <commit> = use commit, but stop for amending
+            # s, squash <commit> = use commit, but meld into previous commit
+            # f, fixup [-C | -c] <commit> = like "squash" but keep only the previous
+            #                    commit's log message, unless -C is used, in which case
+            #                    keep only this commit's message; -c is same as -C but
+            #                    opens the editor
+            # x, exec <command> = run command (the rest of the line) using shell
+            # b, break = stop here (continue rebase later with 'git rebase --continue')
+            # d, drop <commit> = remove commit
+            # l, label <label> = label current HEAD with a name
+            # t, reset <label> = reset HEAD to a label
+            # m, merge [-C <commit> | -c <commit>] <label> [# <oneline>]
+            # .       create a merge commit using the original merge commit's
+            # .       message (or the oneline, if no original merge commit was
+            # .       specified); use -c <commit> to reword the commit message
+            #
+            # These lines can be re-ordered; they are executed from top to bottom.
+            # [...]+|
+        \end{lstlisting}
+    \end{onlyenv}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south west, font=\Large, text=PT, visible on=<7>] at ($(current page.south)+(13mm,10mm)$) {History changed!};
+    \end{tikzpicture}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\newsavebox{\savedTikZ}
+\begin{frame}[fragile]{Coming back to changing public history}
+    \begin{lrbox}{\savedTikZ}
+        \begin{tikzpicture}
+            \pgfmathsetmacro{\ys}{1.8}
+            \foreach \dx/\dy [count=\i from 1] in {1/0, 2.2/0}{
+                \node[commit=PS!50] (C\i) at ($(0,0)+(\dx,\dy)$) {};
+            }
+            \foreach \dx/\dy [count=\i from 5] in {4.4/1, 5.6/1, 6.8/1}{
+                \node[commit=white] (C\i) at ($(0,0)+(\dx,\ys*\dy)$) {};
+            }
+            \draw[very thick] (C1.west) -- ++(-0.5,0);
+            \foreach \i in {1,5,6} {
+                \draw[very thick] (C\i.east) -- ++(0.7,0);
+            }
+            \draw[very thick] (C2.east) -- ++(0.25,0) coordinate (EL) (C5.west) -- ++(-0.25,0) coordinate (ER);
+            \draw[very thick] (EL) edge[out=0, in=180] (ER);
+            \labelBranch{Feature}{above}{5mm}{C7}{white}
+            \begin{scope}[invisible/.style={opacity=0.2}, scope on=<1>]
+                \foreach \dx/\dy [count=\i from 3] in {4.2/0, 5.4/0}{
+                    \node[commit=PS!50] (C\i) at ($(0,0)+(\dx,\dy)$) {};
+                }
+                \labelBranch{\alt<1>{main\vphantom{y}}{Everybody else's main}}{below}{5mm}{C4}{PS!50}
+                \draw[very thick] (C2.east) -- ++(1.5,0) (C3.east) -- ++(0.7,0);
+            \end{scope}
+            \begin{scope}[scope on=<2-3>]
+                \foreach \dx/\dy [count=\i from 8] in {8/1, 9.2/1}{
+                    \node[commit=PS!50] (C\i) at ($(0,0)+(\dx,\ys*\dy)$) {};
+                }
+                \labelBranch{main}{above}{5mm}{C9}{PS!50}
+                \foreach \i in {7,8} {
+                    \draw[very thick] (C\i.east) -- ++(0.7,0);
+                }
+            \end{scope}
+            \begin{scope}[scope on=<3>]
+                \draw[thin] ($(C3)!0.5!(C4)$) ellipse (12mm and 5mm);
+                \draw[thin] ($(C8)!0.5!(C9)$) ellipse (12mm and 5mm);
+                \path[thin, fromto] ($(C4)+(0.65,0)$) edge[out=0, in=270]
+                    node[pos=0.5, fill=BGLIGHT, font=\footnotesize, text=red] {Same changes} ($(C8)!0.5!(C9)-(0,0.55)$);
+            \end{scope}
+        \end{tikzpicture}
+    \end{lrbox}
+    \vspace{-15mm}
+    \begin{overlayarea}{\textwidth}{0.7\textheight}
+        \begin{varblock}{alert}[\textwidth]{The golden rule of rebasing: \textbf{Never use it on public branches}}
+            \usebox{\savedTikZ}
+            \vspace{5mm}
+            \begin{uncoverenv}<2->
+                \begin{lstlisting}[style=MyBash]
+                    git rebase feature main # ...rebasing on main, AAAAAAAAARGH!
+                \end{lstlisting}
+            \end{uncoverenv}
+        \end{varblock}
+    \end{overlayarea}
+\end{frame}
+%===============================================================%
+
 
 %===============================================================%
 \section{Git tag}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Tagging the history of a repository}
+    \vspace{-12mm}
+    \begin{overlayarea}{\textwidth}{0.7\textheight}
+        \begin{varblock}{example}[0.96\textwidth]{Lightweight tags}<only@1-2>
+            They simply are a name for an object (often a commit) and they are usually meant for private or temporary use
+        \end{varblock}
+        \begin{onlyenv}<1>
+            \begin{lstlisting}[style=MyBash]
+                $ git tag v1.0
+                $ git tag
+                |+v1.0+|
+                $ git show v1.0
+                |+commit aa879f463acd41fc38c7e96090cc1eea279304df
+                Author: Alessandro Sciarra <sciarra@itp.uni-frankfurt.de>
+                Date:   Wed Aug 16 14:01:08 2025 +0200
+
+                Coffee machine production ready+|
+
+                # Commit differences
+            \end{lstlisting}
+        \end{onlyenv}
+        \begin{varblock}{example}[0.96\textwidth]{Annotated tags}<only@2>
+            Tag objects contain a creation date, the tagger name and e-mail, a tagging message, and an optional GnuPG signature
+        \end{varblock}
+        \begin{onlyenv}<3>
+            \begin{lstlisting}[style=MyBash, aboveskip=3mm]
+                $ git tag -a v1.0 -m\
+                >     "Coffee machine software ready for production"
+                $ git show v1.0
+                |+tag v1.0
+                Tagger: Alessandro Sciarra <sciarra@itp.uni-frankfurt.de>
+                Date:   Wed Aug 17 09:12:24 2025 +0200
+
+                Coffee machine software ready for production
+
+                commit aa879f463acd41fc38c7e96090cc1eea279304df
+                Author: Alessandro Sciarra <sciarra@itp.uni-frankfurt.de>
+                Date:   Wed Aug 16 14:01:08 2025 +0200
+
+                Coffee machine production ready+|
+
+                # Commit differences
+            \end{lstlisting}
+            \begin{varblock}{alert}[0.6\textwidth]{}
+                \alert{Prefer annotated tags for releases!}
+            \end{varblock}
+        \end{onlyenv}
+    \end{overlayarea}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Tagging a code}
+    \vspace{-3mm}
+    \begin{varblock}{}[0.9\textwidth]{Why should I?}<only@1>
+        \begin{itemize}
+            \item The codebase is released
+            \item The codebase will be released
+            \item The codebase is  private but shared with colleagues
+            \item The codebase will be (maybe) inherited
+            \item \textbf{The software is used to produce data}
+        \end{itemize}
+    \end{varblock}
+    \begin{varblock}{alerted}[0.9\textwidth]{A milestone in development}<only@1>
+        A tag in the git history is to some extent a commitment, but it is also a statement of invaluable help about the codebase!
+    \end{varblock}
+\end{frame}
+%===============================================================%
+
+
 %===============================================================%
 \section{Semantic versioning}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{How should tags be named? \hfill\uncover<2->{\ttfamily\normalsize\alert{\raisebox{1pt}{[Prefix]X[.Y[.Z]]}}}}
+    \vspace{-2mm}
+    \PrepareURLsymbol[PB]
+    \begin{varblock*}{}[\textwidth]{According to the \URL*[PB]{https://semver.org/spec/v2.0.0.html}{Semantic Versioning}\color{PP}, increase}<uncover@2->
+        \small
+        \makebox[9mm][r]{\PQ{MAJOR}} version \PT{\texttt{X}} when you make incompatible API changes\\
+        \makebox[9mm][r]{\PQ{MINOR}} version \PT{\texttt{Y}} when you add functionality in a backwards-compatible manner\\
+        \makebox[9mm][r]{\PQ{PATCH}} version \PT{\texttt{Z}} when you make backwards-compatible bug fixes
+    \end{varblock*}
+    \begin{varblock*}{example}[0.95\textwidth]{Choose your alternative, but give yourself a rule, e.g. increase}<uncover@3->
+        \small
+        \makebox[9mm][r]{\PQ{MAJOR}} version \PT{\texttt{X}} when you introduce new big features\\
+        \makebox[9mm][r]{\PQ{MINOR}} version \PT{\texttt{Y}} when you add minor functionality or do big refactoring\\
+        \makebox[9mm][r]{\PQ{PATCH}} version \PT{\texttt{Z}} when you make bug fixes (without large changes)
+    \end{varblock*}
+    \vspace{-2mm}
+    \begin{varblock*}{example}[0.95\textwidth]{}<uncover@4>
+        \small
+        \makebox[9mm][r]{\PQ{MAJOR}} version \PT{\texttt{X}} when you introduce new features\\
+        \makebox[9mm][r]{\PQ{MINOR}} version \PT{\texttt{Y}} when you do big refactoring or fix bugs
+    \end{varblock*}
+    \begin{center}
+        \alert{However you do it, use a CHANGELOG file to list user-relevant changes!}
+    \end{center}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Ideally}
+    \vspace{-2mm}
+    \begin{lstlisting}[style=MyBash]
+        $ git tag -n
+        |+  v2.0.0   Coffee machine ready for milk drinks      +||-Major-|
+        |+  v1.3.1   Fix milk temperature problem              +||*Patch*|
+        |+  v1.3.0   Interface milk system with machine        +||=Minor=|
+        |+  v1.2.0   Add foam generator                        +||=Minor=|
+        |+  v1.1.0   Add milk container                        +||=Minor=|
+        |-  v1.0.0-|   |+Coffee machine production ready+|           |-Major-|
+        |+  v0.7.1   Fix pipe failures                         +||*Patch*|
+        |+  v0.7.0   Interface all components                  +||=Minor=|
+        |+  v0.6.0   Add coffee grounds container              +||=Minor=|
+        |+  v0.5.0   Add water tray                            +||=Minor=|
+        |+  v0.4.0   Add water tank                            +||=Minor=|
+        |+  v0.3.0   Add bean container                        +||=Minor=|
+        |+  v0.2.0   Add brew system and core engine           +||=Minor=|
+        |+  v0.1.0   Deploy coffee machine skeleton            +||=Minor=|
+    \end{lstlisting}
+    \begin{itemize}
+        \item Clear evolution of the codebase for everybody
+        \item \textbf{v1.0} usually refers to the first stable version of the software
+    \end{itemize}
+\end{frame}
+%===============================================================%
+
+
+%===============================================================%
+\AlertFrame{
+    \begin{tabular}{cc}
+        \multicolumn{2}{c}{Summary so far}\\[5mm]
+        \includegraphics[height=3cm]{Spiderman} &
+        \includegraphics[height=3cm, clip, trim=0 5mm 0 3mm]{MatrixRebase} \\[55mm]
+    \end{tabular}
+}
+%===============================================================%
+
+
 %===============================================================%
 \section{Gitflow}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}<beamer>{\\ \colorbox{PP}{\makebox[1em]{\textcolor{BGLIGHT}{5\vphantom{$A^{\int}_x$}}}}\;Gitflow}
+    \vspace{3mm}
+    \tableofcontents[sections={5}, currentsection, currentsubsection, hideothersubsections, sectionstyle=hide]
+\end{frame}
+%---------------------------------------------------------------%
+\subsection{Motivation and background}
+%---------------------------------------------------------------%
+\begin{frame}{}
+
+\end{frame}
+%---------------------------------------------------------------%
+\subsection{The main branches}
+%---------------------------------------------------------------%
+\begin{frame}{}
+
+\end{frame}
+%---------------------------------------------------------------%
+\subsection{Feature branches}
+%---------------------------------------------------------------%
+\begin{frame}{}
+
+\end{frame}
+%---------------------------------------------------------------%
+\subsection{Release branches}
+%---------------------------------------------------------------%
+\begin{frame}{}
+
+\end{frame}
+%---------------------------------------------------------------%
+\subsection{Hotfix branches}
+%---------------------------------------------------------------%
+\begin{frame}{}
+
+\end{frame}
+%---------------------------------------------------------------%
+\subsection{Git-flow: an additional tool}
+%---------------------------------------------------------------%
+\begin{frame}{}
+
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 
 
 %===============================================================%
+
+
+%===============================================================%
+\tikzset{
+    opacityOv/.style args={#1on#2}{%
+        alt=#2{opacity=#1,text opacity=#1}{}
+    }
+}
+\begin{frame}[plain]
+    \PrepareURLsymbol[PT]
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=north west, font=\Large, text=PP] at ([shift={(2mm,-2mm)}]current page.north west){Most used Git commands};
+        \node[anchor=south] at ([yshift=1mm]current page.south){
+            \begin{tikzpicture}
+                \only<1>{ %Coordinates shall be set once for all overlays, if not one gets in troubles with counter redefinition!
+                    \IfFileExists{./\jobname.pos}{
+                        \newcounter{NodeIndex}
+                        \immediate\write18{./Sort-TikZ-node-Position.bash} %needs --enable-write18 in compilation
+                        %Inspired from https://tex.stackexchange.com/a/48770/128737
+                        \pgfplotstableread[header=false]{\jobname.pos}\datatable
+                        \pgfplotstableforeachcolumnelement{[index]0}\of\datatable\as\x{
+                            \stepcounter{NodeIndex}
+                            \pgfplotstablegetelem{\pgfplotstablerow}{[index]1}\of\datatable
+                            \coordinate (C\theNodeIndex) at (\x,\pgfplotsretval);
+                        }
+                    }{
+                        \pgfmathsetseed{2}
+                        \PlaceSpreadCoordinatesAndStoreThemToFile{0.85\textwidth}{0.78\textheight}{1.25}{26}
+                    }
+                }
+                \begin{scope}[every node/.style={circle, draw, thick, font=\small, inner sep=1mm}]
+                    \foreach \s [count=\i from 1] in {config, help}{
+                        \node [PB, visible on=<1->, opacityOv=0.3 on <2->] (N\i) at (C\i) {\vphantom{ph}\s};
+                    }
+                    \foreach \s [count=\i from 3] in {init, clone}{
+                        \node [PP, visible on=<2->, opacityOv=0.3 on <3->] (N\i) at (C\i) {\vphantom{ph}\s};
+                    }
+                    \foreach \s [count=\i from 5] in {add, status, commit, mv, rm, reset}{
+                        \node [PS, visible on=<3->, opacityOv=0.3 on <4->] (N\i) at (C\i) {\vphantom{ph}\s};
+                    }
+                    \foreach \s [count=\i from 11] in {tag, branch, merge, switch, stash}{
+                        \node [PT, visible on=<4->, opacityOv=0.3 on <5->] (N\i) at (C\i) {\vphantom{ph}\s};
+                    }
+                    \foreach \s [count=\i from 16] in {fetch, pull, push, remote}{
+                        \node [PQ, visible on=<5->, opacityOv=0.3 on <6->] (N\i) at (C\i) {\vphantom{ph}\s};
+                    }
+                    \foreach \s [count=\i from 20] in {show, log, diff}{
+                        \node [Marine, visible on=<6->, opacityOv=0.3 on <7->] (N\i) at (C\i) {\vphantom{ph}\s};
+                    }
+                    \foreach \s [count=\i from 23] in {rebase, revert, bisect, blame}{
+                        \node [TEXT, visible on=<7->, opacityOv=0.3 on <8->] (N\i) at (C\i) {\vphantom{ph}\s};
+                    }
+                \end{scope}
+                \begin{scope}[every node/.style={font=\footnotesize}]
+                    \node[visible on=<1>, above = 4mm of N1, PB] {Setup and Config};
+                    \node[visible on=<2>, right = 4mm of N4, PP] {Getting and creating projects};
+                    \node[visible on=<3>, above = 4mm of N8, PS] {Basic snapshotting};
+                    \node[visible on=<4>, right = 4mm of N14, PT] {Branching and merging};
+                    \node[visible on=<5>, right = 4mm of N16, PQ] {Sharing and updating projects};
+                    \node[visible on=<6>, right = 4mm of N20, Marine] {Inspection and comparison};
+                    \node[visible on=<7>, above = 4mm of N26, TEXT] {Patching and debugging};
+                \end{scope}
+            \end{tikzpicture}
+        };
+        \node[visible on=<8->, anchor=north east, font=\small, draw=PT, thick, rounded corners]
+        at ([shift={(-3mm,-2mm)}]current page.north east) {\URL*[PT]{https://git-scm.com/docs}{Git Documentation}};
+        \begin{scope}[every node/.style={visible on=<9->, opacity=0.85}]
+            \node (V) at (current page.center){\includegraphics[width=0.85\textwidth]{V}};
+            \node[anchor=south west] at (V.south west) {\includegraphics[width=15mm]{Vlogo}};
+            \node[anchor=east, text=BGLIGHT] at ([xshift=-4mm]V.center) {
+                \begin{tabular}{c}
+                    There is\\
+                    no certainty,\\
+                    only opportunities!\\
+                \end{tabular}
+            };
+        \end{scope}
+    \end{tikzpicture}
+\end{frame}
+%===============================================================%
+
 
 \end{document}
