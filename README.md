@@ -1,21 +1,30 @@
-# A crash course to Git
+# Git Trilogy
 
-This three parts crash course should bring the newbie from not knowing what is Git and how to use it to a comfortable knowledge level about it.
-Some practice from the attenddee is clearly required and necessary to make this material useful and in order to make Git part of the own toolbox.
+This three-parts, crash course should bring the newbie from not knowing what git is and how to use it to a comfortable knowledge level about it.
+Some practice from the attenddee is clearly required and necessary to make this material useful and in order to make git part of the own toolbox.
 
 ## Part 1
 
-After some general introduction and motivation about why a version control system and in particular Git should be daily used, this presentation will focus on how to use it locally in a daily flow.
+:green_book: [View](Part_1/Git-introduction.pdf) &emsp;
+:floppy_disk: [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_1/Git-introduction.pdf)
+
+After some general introduction and motivation about why a version control system and in particular git should be daily used, this presentation will focus on how to use it locally in a daily flow.
 Slides contain lots of examples that can be used as exercise to become acquainted with this wonderful tool.
 
 ## Part 2
 
-We are now ready to learn how to use Git to collaborate in the same project with different people or simply how to contribute to the same project from different machines.
+:blue_book: [View](Part_2/Git-together.pdf) &emsp;
+:floppy_disk: [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_2/Git-together.pdf)
+
+We are now ready to learn how to use git to collaborate in the same project with different people or simply how to contribute to the same project from different machines.
 
 ## Part 3
 
+:orange_book: [View](Part_3/Git-in-real-life.pdf) &emsp;
+:floppy_disk: [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_3/Git-in-real-life.pdf)
+
 Knowing most of git commands, it is now time to bring our git usage to another level.
-A very common branching pattern is here introduced and some common situation discussed.
+After having explored how to rebase and tag git history, a very common branching pattern is here introduced and discussed.
 
 
 ## Note about LaTeX compilation
