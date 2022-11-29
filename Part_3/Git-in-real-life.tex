@@ -10,7 +10,8 @@
   listofitems,
   TeXnicalities,
   array,
-  pgfplotstable
+  pgfplotstable,
+  pifont
 }
 \pgfplotsset{compat=1.17}
 
@@ -23,7 +24,7 @@
     SlantedFont     = *-Light ,
     SmallCapsFont   = *-Thin
 ]
-\graphicspath{{../Figures/}}
+\graphicspath{{../Figures/},{../Figures/Gitflow},{../Figures/Meme}}
 \usetheme[style=green]{Z02}
 
 \usetikzlibrary{
@@ -85,9 +86,23 @@
     }
 }
 
+% Branch for gitflow
+\newcommand{\mainBranchColor}{PQ}
+\newcommand{\supportBranchColor}{Marine}
+\newcommand{\branch}[2]{\textcolor{#1}{\texttt{\bfseries #2}}}
+\newcommand{\main}{\branch{\mainBranchColor}{main}}
+\newcommand{\develop}{\branch{\mainBranchColor}{develop}}
+\newcommand{\feature}{\branch{\supportBranchColor}{feature}}
+\newcommand{\release}{\branch{\supportBranchColor}{release-*}}
+\newcommand{\hotfix}{\branch{\supportBranchColor}{hotfix-*}}
+
+% Further utilities
+\renewcommand{\checkmark}[1][PP]{\textcolor{#1}{\ding{51}}}
+\newcommand{\crossmark}[1][PT]{\textcolor{#1}{\ding{55}}}
+
 %===============================================================%
 \title{Git in real life}
-\date{XX December 2022}
+\date{16 December 2022}
 \author{Alessandro Sciarra}
 \institute{Z02~--~Software Development Center}
 \titlegraphic{\includegraphics[width=20mm]{LogoCRC}}
@@ -790,13 +805,13 @@
         \makebox[9mm][r]{\PQ{PATCH}} version \PT{\texttt{Z}} when you make bug fixes (without large changes)
     \end{varblock*}
     \vspace{-2mm}
-    \begin{varblock*}{example}[0.95\textwidth]{}<uncover@4>
+    \begin{varblock*}{example}[0.95\textwidth]{}<uncover@4->
         \small
         \makebox[9mm][r]{\PQ{MAJOR}} version \PT{\texttt{X}} when you introduce new features\\
         \makebox[9mm][r]{\PQ{MINOR}} version \PT{\texttt{Y}} when you do big refactoring or fix bugs
     \end{varblock*}
     \begin{center}
-        \alert{However you do it, use a CHANGELOG file to list user-relevant changes!}
+        \uncover<5>{\alert{However you do it, use a CHANGELOG file to list user-relevant changes!}}
     \end{center}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -847,49 +862,453 @@
 \end{frame}
 %---------------------------------------------------------------%
 \subsection{Motivation and background}
-%---------------------------------------------------------------%
-\begin{frame}{}
-
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Disclaimer and references}
+    \PrepareURLsymbol[PT]
+    \begin{varblock}{alert}[\textwidth]{\URL*[PT]{http://nvie.com/posts/a-successful-git-branching-model/}{Vincent Driessen} back in 2010}
+        In the following I will give you a summary of his blog page.\\
+        All credit goes to the author and no original part is here contained.
+    \end{varblock}
+    \vspace{-1mm}
+    \begin{varblock}{}[\textwidth]{Vincent Driessen as \;\href{https://github.com/nvie/gitflow}{\faGithub\;\textbf{nvie}}}
+        The original author also implemented a collection of git extensions which allow to easily use his branching model (active till 2012).
+    \end{varblock}
+    \vspace{-1mm}
+    \PrepareURLsymbol[PS]
+    \begin{varblock}{example}[\textwidth]{Useful links}
+        Another popular implementation of the model (active till 2019)\\
+        \PS{\href{https://github.com/petervanderdoes/gitflow-avh}{\faGithub\;gitflow-avh}}\;$\longleftrightarrow$\;
+        \URL*[PS]{https://danielkummer.github.io/git-flow-cheatsheet/index.html}{gitflow-avh\ cheatsheet}
+    \end{varblock}
 \end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[c]{Motivation}
+    \vspace{-4mm}
+    \begin{center}
+        \begin{tikzpicture}
+            \node[visible on=<1->] (L) {\includegraphics[height=28mm]{GitBadCommits}};
+            \node[visible on=<1->, below = -1mm of L, font=\tiny] {\URL*{https://www.xkcd.com/1296/}{https://www.xkcd.com/1296/}};
+            \node[visible on=<2->, right =  1mm of L] (R) {\includegraphics[height=28mm]{GitMessyHistory}};
+            \node[visible on=<2->, below = -1mm of R, font=\tiny] {\URL*{https://image.slidesharecdn.com/gitseries-150826152158-lva1-app6892/95/git-series-episode-3-git-flow-and-githubflow-2-638.jpg?cb=1443100187}{https://image.slidesharecdn.com/[...]}};
+        \end{tikzpicture}
+    \end{center}
+    \vspace{-3mm}
+    \begin{uncoverenv}<3>
+        \setlength{\leftmargini}{7mm}
+        \begin{itemize}
+            \item \alert{Ordered} and \alert{standardized} way to daily work
+            \item Easy way to keep big projects history and development tidied up
+            \item Sustainable work in team also \alert{for new members}
+            \item In larger projects, easy interaction within and between sub-teams
+            \item \PP{A way to go for released software}
+        \end{itemize}
+    \end{uncoverenv}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[c]{Background}
+    \vspace{-3mm}
+    \begin{columns}[c]
+        \begin{column}{0.5\textwidth}
+            \small
+            \setlength{\leftmargini}{7mm}
+            \begin{itemize}
+                \setlength{\itemsep}{0mm}
+                \item Central repository (e.g.\ GitHub)
+                \item Developers pull/push from/to origin
+                \item Sub-team fetches lead to high work efficiency
+                \item It might be useful to work together with two or more developers on a big new feature,
+                before pushing the work in progress to origin prematurely.
+                \item \alert{Never forget \texttt{origin} is public!}
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \vspace{3mm}
+            \centering
+            \includegraphics[width=\textwidth]{centr-decentr}
+            \begin{block}{}
+                \footnotesize\itshape
+                Technically, this means nothing more than that, for example, Alice has defined a Git remote,
+                named \textnormal{\texttt{bob}}, pointing to Bob's repository, and vice versa.
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+%---------------------------------------------------------------%
+
 %---------------------------------------------------------------%
 \subsection{The main branches}
 %---------------------------------------------------------------%
-\begin{frame}{}
-
+\begin{frame}[c]{The main and develop branches}
+    \small
+    \begin{columns}[b]
+        \begin{column}{0.5\textwidth}
+            \vspace{-3mm}
+            \begin{varblock}{}[0.95\textwidth]{\texttt{origin/\main}}
+                The source code of \texttt{HEAD} always reflects a production-ready state
+            \end{varblock}
+            \vspace{-1mm}
+            \begin{varblock}{}[0.95\textwidth]{\texttt{origin/\develop}}
+                The source code of \texttt{HEAD} always reflects a state
+                with the latest delivered development changes for the next release
+            \end{varblock}
+            \begin{varblock}{alerted}[0.95\textwidth]{}
+                \alert{Each time when changes are merged back into main, this is a new production release by definition}\\
+                {\scriptsize $\to$ hooks for enforced policies!}
+            \end{varblock}
+        \end{column}
+        \begin{column}{0.4\textwidth}
+            \includegraphics[height=0.77\textheight]{main-branches}
+        \end{column}
+    \end{columns}
+    \FrameRemark{\URL*{https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks}{Git hooks} are authomatised actions that are triggered by a given git command, i.e.\ git will automatically run a script whenever you run a git command.}
 \end{frame}
+%---------------------------------------------------------------%
+
 %---------------------------------------------------------------%
 \subsection{Feature branches}
 %---------------------------------------------------------------%
-\begin{frame}{}
-
+\begin{frame}[fragile,c]{The feature branches}
+    \begin{columns}[c]
+        \begin{column}{0.65\textwidth}
+            \vspace*{-1cm}
+            \begin{overlayarea}{\textwidth}{0.75\textheight}
+                \vspace{-3mm}
+                \begin{varblock}{}[0.9\textwidth]{Properties}<only@1>
+                    \begin{itemize}
+                        \item May branch off from:\\
+                              \quad{\small\develop}
+                        \item Must merge back into:\\
+                              \quad{\small\develop}
+                        \item Any name except:\\
+                              \quad{\small\main,\;\develop}\\[-1mm]
+                              \quad{\small\release,\;\hotfix}
+                    \end{itemize}
+                \end{varblock}
+                \vspace{-1mm}
+                \begin{varblock}{alerted}[0.9\textwidth]{}<only@1>
+                    \small \alert{Feature branches typically exist in developer repository only, not in \texttt{origin}.}
+                \end{varblock}
+                \vspace{3mm}
+                \begin{varblock}{}[1.05\textwidth]{How it looks like:}<only@2>
+                    \setlength{\medskipamount}{0pt}
+                    \begin{lstlisting}[style=MyBash]
+                        $ git switch -b myfeature develop
+                        |+Switched to a new branch "myfeature"+|
+                        #------------------------------------
+                        # Some development, commits, etc.
+                        #------------------------------------
+                        $ git switch develop
+                        |+Switched to branch 'develop'+|
+                        $ git pull origin develop
+                        |+Already up-to-date.+|
+                        $ git merge --no-ff myfeature
+                        |+Updating ea1b82a..05e9557
+                        (Summary of changes)+|
+                        $ git branch -d myfeature
+                        |+Deleted branch myfeature (was 05e9557).+|
+                        $ git push origin develop
+                        |+[...]+|
+                    \end{lstlisting}
+                \end{varblock}
+            \end{overlayarea}
+        \end{column}
+        \begin{column}{0.3\textwidth}
+            \centerline{\includegraphics[height=0.75\textheight]{feature}}
+        \end{column}
+    \end{columns}
 \end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[c]{Why to avoid a fast-forward merge?}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[visible on=<1>] at ([yshift=-5mm]current page.center) {\includegraphics[height=0.65\textheight]{no-ff}};
+    \end{tikzpicture}
+    \begin{onlyenv}<2>
+        \vspace{-8mm}
+        \begin{center}
+            \includegraphics[height=0.35\textheight]{no-ff}
+        \end{center}
+        \setlength{\leftmargini}{7mm}
+        \begin{itemize}
+            \setlength{\itemsep}{2mm}
+            \item[\checkmark] No information lost about the historical existence of a feature
+            \item[\checkmark] Easy to see in history which commits have implemented a feature
+            \item[\checkmark] Easy to revert a whole feature (i.e.\ a group of commits)
+            \item[\crossmark] It will create (empty) commit objects\\
+                              \then the gain is much bigger than the cost!
+        \end{itemize}
+    \end{onlyenv}
+\end{frame}
+%---------------------------------------------------------------%
+
 %---------------------------------------------------------------%
 \subsection{Release branches}
 %---------------------------------------------------------------%
-\begin{frame}{}
-
+\begin{frame}[fragile,c]{The release branches}
+    \begin{tikzpicture}[overlay, remember picture]
+        \node[anchor=north east] (yeah) at ([shift={(-8mm,-3mm)}]current page.north east) {\includegraphics[height=20mm]{SuccessMeme}};
+        \path[to] ([shift={(-8mm,-9mm)}]current page.north) edge[out=0, in=180] node[midway, font=\tiny, sloped, above=-3pt]{Make you feel like} (yeah);
+    \end{tikzpicture}
+    \begin{onlyenv}<2>
+        \begin{columns}[c]
+            \begin{column}{0.55\textwidth}
+                \begin{varblock}{}[\textwidth]{Preperties:}
+                    \begin{itemize}
+                        \item May branch off from:\\
+                        \quad{\small\develop}
+                        \item Must merge back into:\\
+                        \quad{\small\develop,\;\main}
+                        \item Branch naming convention:\\
+                        \quad{\small\release}
+                    \end{itemize}
+                \end{varblock}
+            \end{column}
+            \begin{column}{0.45\textwidth}
+                \vspace{6mm}
+                \includegraphics[width=\textwidth]{release}
+            \end{column}
+        \end{columns}
+    \end{onlyenv}
+    \begin{onlyenv}<3>
+        \begin{minipage}[c]{0.95\textwidth}
+            \vspace{14mm}
+            \setlength{\leftmargini}{1mm}
+            \begin{itemize}
+                \setlength{\itemsep}{3mm}
+                \item Release branches support preparation of a new production release
+                \item Last-minute checks, minor bug fixes and preparing meta-data (version number,
+                etc.) should be done on a release branch
+                \item By doing all of this work on a release branch, the \PS{develop}
+                branch is cleared to receive features for the following release
+                \item \alert{When a new \PQ{release} branch is created, all features that are
+                    targeted for this release must be merged into the \PS{develop} branch}
+            \end{itemize}
+        \end{minipage}
+    \end{onlyenv}
 \end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile,c]{The release branch: How it works}
+    \begin{overlayarea}{\textwidth}{0.9\textheight}
+        \vspace{-5mm}
+        \begin{onlyenv}<1>
+            \begin{varblock}{example}{Creation}
+                \begin{lstlisting}[style=MyBash]
+                    |+Version 1.1.5 is the current production release
+                    We are ready for "next release" ->+| |*NOW*| |+we decide v1.2+|
+                    $ git switch -b release-1.2 develop
+                    |+Switched to a new branch "release-1.2"+|
+                    $ ./bump-version.sh 1.2  #Just modify some files
+                    |+Files modified successfully, version bumped to 1.2.+|
+                    $ git commit -a -m "Bump version number to 1.2"
+                    |+[release-1.2 74d9424] Bumped version number to 1.2
+                    1 files changed, 1 insertions(+), 1 deletions(-)+|
+                \end{lstlisting}
+            \end{varblock}
+            \begin{varblock}{alerted}[0.8\textwidth]{}
+                \alert{Adding new features here is \textbf{strictly prohibited}!}\\
+                The idea is to just make sure everything works and is ready to be published!
+            \end{varblock}
+        \end{onlyenv}
+        \begin{onlyenv}<2>
+            \begin{varblock}{example}{Creation}
+                \begin{lstlisting}[style=MyBash]
+                    $ git switch -b release-1.2 develop
+                    $ ./bump-version.sh 1.2 #Just modify some files
+                    $ git commit -a -m "Bump version number to 1.2"
+                \end{lstlisting}
+            \end{varblock}
+            \vspace{-2mm}
+            \begin{varblock}{example}{Finalisation}
+                \begin{lstlisting}[style=MyBash]
+                    $ git switch main
+                    |+Switched to branch 'main'+|
+                    $ git merge --no-ff release-1.2
+                    |+Merge made by recursive. (Summary of changes)+|
+                    $ git tag -a 1.2
+                    $ git switch develop
+                    |+Switched to branch 'develop'+|
+                    $ git merge --no-ff release-1.2  #Maybe conflicts!
+                    |+Merge made by recursive. (Summary of changes)+|
+                    $ git branch -d release-1.2
+                    |+Deleted branch release-1.2 (was ff452fe).+|
+                \end{lstlisting}
+            \end{varblock}
+        \end{onlyenv}
+    \end{overlayarea}
+\end{frame}
+%---------------------------------------------------------------%
+
 %---------------------------------------------------------------%
 \subsection{Hotfix branches}
 %---------------------------------------------------------------%
-\begin{frame}{}
-
+\begin{frame}[fragile,c]{The hotfix branch}
+    \begin{tikzpicture}[remember picture, overlay, visible on=<2>]
+        \node[inner sep=0pt] (yeah) at ([yshift=-8mm]current page.center) {\includegraphics[height=40mm]{HotfixMeme}};
+        \node[below = 2mm of yeah, font=\scriptsize, text=PQ] {\ldots{}and, after all, never forget Murphy's law!};
+        \node[above = 4mm of yeah, font=\Large, text=PT] {A hotfix is not something bad!};
+        \draw[red, line width=1mm, shorten <= -1mm, shorten >= -1mm] (yeah.south west) -- (yeah.north east);
+    \end{tikzpicture}
+    \begin{onlyenv}<3>
+        \vspace{-9mm}
+        \begin{columns}[c]
+            \begin{column}{0.55\textwidth}
+                \begin{varblock}{}[\textwidth]{Properties:}
+                    \begin{itemize}
+                        \item May branch off from:\\
+                              \quad{\small\main}
+                        \item Must merge back into:\\
+                              \quad{\small\develop,\;\main}
+                        \item Branch naming convention:\\
+                              \quad{\small\hotfix}
+                    \end{itemize}
+                \end{varblock}
+                \vspace{-2mm}
+                \begin{varblock}{alerted}{Main advantage}
+                    \small
+                    The essence is that work on the develop branch can continue, while a quick production fix is prepared
+                \end{varblock}
+            \end{column}
+            \begin{column}{0.45\textwidth}
+                \vspace{5mm}
+                \centerline{\includegraphics[width=0.9\textwidth]{hotfix}}
+            \end{column}
+        \end{columns}
+    \end{onlyenv}
 \end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile,c]{The hotfix branch: How it works}
+    \vspace{-13mm}
+    \begin{overlayarea}{\textwidth}{0.8\textheight}
+        \begin{onlyenv}<1>
+            \begin{varblock}{example}{Creation}
+                \begin{lstlisting}[style=MyBash]
+                    $ git checkout -b hotfix-1.2.1 main
+                    |+Switched to a new branch "hotfix-1.2.1"+|
+                    $ ./bump-version.sh 1.2.1  #Just modify some files
+                    |+Files modified successfully, version bumped to 1.2.1.+|
+                    $ git commit -a -m "Bump version number to 1.2.1"
+                    |+[hotfix-1.2.1 41e61bb] Bump version number to 1.2.1
+                    1 files changed, 1 insertions(+), 1 deletions(-)+|
+                    # Some work to fix the situation
+                    $ git commit -m "Fix severe production problem"
+                    |+[hotfix-1.2.1 abbe5d6] Fix severe production problem
+                    5 files changed, 32 insertions(+), 17 deletions(-)+|
+                \end{lstlisting}
+            \end{varblock}
+        \end{onlyenv}
+        \begin{onlyenv}<2>
+            \begin{varblock}{example}{Creation}
+                \begin{lstlisting}[style=MyBash]
+                    $ git checkout -b hotfix-1.2.1 main
+                    $ ./bump-version.sh 1.2.1 #Just modify some files
+                    $ git commit -a -m "Bump version number to 1.2.1"
+                    # Some work to fix the situation
+                    $ git commit -m "Fix severe production problem"
+                \end{lstlisting}
+            \end{varblock}
+            \vspace{-3mm}
+            \begin{varblock}{example}{Finalisation}
+                \begin{lstlisting}[style=MyBash]
+                    $ git checkout main
+                    |+Switched to branch 'main'+|
+                    $ git merge --no-ff hotfix-1.2.1
+                    |+Merge made by recursive. (Summary of changes)+|
+                    $ git tag -a 1.2.1
+                    $ git checkout develop
+                    |+Switched to branch 'develop'+|
+                    $ git merge --no-ff hotfix-1.2.1
+                    |+Merge made by recursive. (Summary of changes)+|
+                    $ git branch -d hotfix-1.2.1
+                    |+Deleted branch hotfix-1.2.1 (was abbe5d6).+|
+                \end{lstlisting}
+            \end{varblock}
+        \end{onlyenv}
+    \end{overlayarea}
+\end{frame}
+%---------------------------------------------------------------%
+
 %---------------------------------------------------------------%
 \subsection{Git-flow: an additional tool}
 %---------------------------------------------------------------%
-\begin{frame}{}
-
+\begin{frame}[c]{Summary}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=west] (boss) at ([xshift=10mm]current page.west)
+            {\includegraphics[width=20mm, clip, trim=25mm 0 25mm 0]{LikeABoss}};
+        \node[right = 8mm of boss]{\includegraphics[height=\textheight]{Git-Model}};
+    \end{tikzpicture}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-
+\AlertFrame{%
+    \begin{tabular}{c}
+        \includegraphics[width=3cm, clip, trim=0 50mm 0 20mm]{ConfusedMeme}\\
+        But, wait, everything by hand?!\\[0.55\textheight]
+        ~
+    \end{tabular}
+}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-
-
+\begin{frame}[fragile,c]{Gitflow: How to easily apply what we learnt}
+    \vspace{-16mm}
+    \begin{overlayarea}{\textwidth}{0.7\textheight}
+        \begin{varblock}{example}[0.95\textwidth]{Pick a set of high-level repository operations}
+            \PT{\href{https://github.com/nvie/gitflow}{\faGithub\;\textbf{nvie}}}
+            \quad or probably better \quad
+            \PP{\href{https://github.com/petervanderdoes/gitflow-avh}{\faGithub\;gitflow-avh}}
+            \Remark{it has autocompletion}
+        \end{varblock}
+        \begin{onlyenv}<2>
+            \vspace{-3mm}
+            \centerline{\scriptsize \hspace{42mm}$\to\;$Standard raw git commands can be used as usual, too}
+            \vspace{-6mm}
+            \begin{varblock}{example}[0.9\textwidth]{The base syntax}
+                \begin{lstlisting}[style=MyBash, aboveskip=2mm]
+                    # To initialize a new repository, use:
+                    git flow init |+[-d]+|
+                    # To list/start/finish auxiliary branches, use:
+                    git flow <type>
+                    git flow <type> start <name> |+[<base>]+|
+                    git flow <type> finish <name>
+                    # To push/pull an auxiliary branch to the remote, use:
+                    git flow <type> publish <name>
+                    git flow <type> pull <remote> <name>
+                \end{lstlisting}
+                \begin{itemize}
+                    \footnotesize\setlength{\itemsep}{0mm}
+                    \item[] \bash|<type>|\; can be either \;\texttt{feature}, \;\texttt{release}\; or \;\texttt{hotfix}\\
+                    \item[] \bash|<name>|\; is the name of the auxiliary branch\\
+                    \item[] \bash{|+<base>+|}\; must be a commit on \;\texttt{develop}\; or \;\texttt{master}
+                \end{itemize}
+            \end{varblock}
+        \end{onlyenv}
+        \begin{varblock}{alerted}[0.72\textwidth]{Take-home message}<only@3>
+            If you have a released software or plan to have one, Gitflow branching model can help you to bring your product to another level!
+        \end{varblock}
+        \begin{varblock}{}[\textwidth]{Think about it}<only@3>
+            Even if you use a (slightly) different branching model, it might well be that available git extensions still partially fit your use case
+        \end{varblock}
+    \end{overlayarea}
+\end{frame}
 %===============================================================%
 
 
 %===============================================================%
+\section{Summary and outlook}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{What did we left out in this git trilogy?}
+    \begin{tabular}{>{\bfseries\color{PB}}r>{\small}l}
+        git mv       & Move or rename a file, a directory, or a symlink \Remark{pretty trivial}\\
+        git rm       & Remove files from the working tree and from the index \Remark{pretty trivial}\\
+        git restore  & Restore working tree files \Remark{we mentioned it already}\\
+        git reset    & Reset current HEAD to the specified state\\
+        git blame    & Find out who modified each line in each file\\
+        git revert   & Create new commits to undo existing ones\\
+        git bisect   & Use binary search to find the commit that introduced a bug\\
+        git grep     & Print lines matching a pattern\\
+        git [...]    & Few more technical commands
+    \end{tabular}
+    \begin{varblock}{alert}[\textwidth]{Go for it!}<uncover@2>
+        Read your favourite source, you'll be able to understand it alone!
+    \end{varblock}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \tikzset{
     opacityOv/.style args={#1on#2}{%
         alt=#2{opacity=#1,text opacity=#1}{}
@@ -965,6 +1384,27 @@
             };
         \end{scope}
     \end{tikzpicture}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Thanks for listening and remember}
+    \begin{varblock}{alert}[\textwidth]{In case of fire:}
+        \begin{enumerate}
+            \item \bash|git switch -c dfjaskjdsgk|
+            \item \bash|git commit -am 'fvfsdavg'|
+            \item \bash|git push|
+            \item Exit the building
+        \end{enumerate}
+    \end{varblock}
+    \vspace{3mm}
+    \begin{tabular}{cc}
+        \parbox[c]{3cm}{\includegraphics[width=3cm]{MemeNotSure}} &
+        Not sure whether I need an alias for that...\\
+    \end{tabular}
+    \vspace{5mm}
+    \begin{center}
+        \Large \PP{Questions? \; Feedback?}
+    \end{center}
+    \FrameRemark{In case you are not a fan of memes, sorry for that. I still hope you enjoyed the trilogy!}
 \end{frame}
 %===============================================================%
 

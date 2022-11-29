@@ -69,10 +69,7 @@ moredelim=[is][\color{environment-color}]{|+}{+|}, % I will use this for termina
 moredelim=[is][\color{functions-color}]{|=}{=|}, % I will use this for highlighting output
 literate={`}{\textasciigrave}1, % https://tex.stackexchange.com/a/466224/128737
 literate={~}{{\textasciitilde}}1,
-% literate=% literate={<replace>}{<replacement text>}{<width>}
-%   {\#define}{{{\color{CarnationPink}\#define}}}{6}
-%   {\#include}{{{\color{CarnationPink}\#include}}}{7},
-alsoletter=0123456789![]/\{\}.:+, % This to mark the symbols in keyword/emph[5] to be highlighted (otherkeywords does not work i.e. it highlights also in comments!) -> manual at page 45
+alsoletter={0123456789![]/\{\}.:+<>}, % This to mark the symbols in keyword/emph[5] to be highlighted (otherkeywords does not work i.e. it highlights also in comments!) -> manual at page 45
 morekeywords={if, then, else, elif, fi, case, esac, for, select, while, until, do, done, in, function, time, [[, ]], \{, \}, !, coproc}, %https://askubuntu.com/a/513712
 emph=[1]{},
 emphstyle=[1]{\color{functions-color}}, %Functions
@@ -96,6 +93,12 @@ emph=[7]{},
 emphstyle=[7]{\color{variables-color}}, %Class for local variables (usually with bad names)
 emph=[8]{},
 emphstyle=[8]{\color{builtins-color}}, %Class for local commands (usually with bad names)
+emph=[9]{<name>},
+emph=[10]{<type>},
+emph=[11]{<remote>},
+emphstyle=[9]{\color{ForestGreen}},
+emphstyle=[10]{\color{DarkOrange}},
+emphstyle=[11]{\color{DarkRed}},
 %
 %Additional customizations
 belowskip=-7mm,
@@ -107,4 +110,4 @@ autogobble=true, % lstautogobble needed!
     {\lstset{style=MyBash, #1}}
     {}
 
-\def\bash{\lstinline[style=MyBash, basicstyle=\ttfamily\scriptsize\color{basic-color}]}
+\def\bash{\lstinline[style=MyBash, basicstyle=\ttfamily\color{basic-color}]}
