@@ -61,6 +61,11 @@
 %===============================================================%
 \begin{frame}[plain,noframenumbering]
     \titlepage
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south, font=\small, text=BGLIGHT]
+            at ($(current page.center)!0.95!(current page.south)$)
+            {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
+    \end{tikzpicture}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Outline of the talk}
