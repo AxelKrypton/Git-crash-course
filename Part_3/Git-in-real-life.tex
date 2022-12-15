@@ -161,7 +161,7 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{About rewriting history}{Yes, you can change the history of a repository!}
 \begin{overlayarea}{\textwidth}{0.3\textheight}
-
+    \setlength{\leftmargini}{5mm}
     \begin{itemize}
         \item\alert{Very bad if there are different copies of the history} \Remark{E.g.\ branches, remote(s)}
         \item If you rewrite shared history,\\
@@ -171,7 +171,7 @@
               \end{itemize}
         \item<only@1> Fine as long as\\
               \begin{itemize}
-                  \item yours is the only repository containing the rewritten history or
+                  \item yours is the only clone containing the rewritten history or
                   \item you work on a git project alone and you know what to do then
               \end{itemize}
     \end{itemize}
@@ -215,7 +215,7 @@
                 \draw[pin] (BrL.west) -- (L5.east);
             \end{scope}
         \end{tikzpicture}
-        \par\uncover<3>{\small\alert{As long as you rewrite history contained elsewhere, you are in troubles!}}
+        \par\uncover<3>{\small\alert{As soon as you rewrite history contained elsewhere, you are in troubles!}}
     \end{center}
     \begin{tikzpicture}[remember picture, overlay]
         \node[anchor=north east] at ([xshift=-12mm]current page.north east) {\includegraphics[width=25mm]{Spiderman}};
@@ -251,7 +251,7 @@
             # With clean staging area:
             $ git commit --amend -m "Add engine implementation"
             |+[airplane +||*33f53f4*||+] Add engine implementation
-            Date: Fri Nov 25 08:52:22 2018 +0100
+            Date: Fri Nov 25 08:02:22 2022 +0100
             24 files changed, 1340 insertions(+), 476 deletions(-)+|
         \end{lstlisting}
     \end{uncoverenv}
@@ -283,14 +283,16 @@
             # Ops! I forgot a file!
         \end{lstlisting}
     \end{onlyenv}
-    \begin{onlyenv}<2>
-        \begin{lstlisting}[style=MyBash]
-            $ git add wheels_electronic.h
-            $ git commit --amend --no-edit
-            |+[airplane +||*c13e34f*||+] Add engine implementation
-            Date: Fri Nov 25 08:45:18 2022 +0100
-            2 files changed, 345 insertions(+), 88 deletions(-)+|
-        \end{lstlisting}
+    \begin{onlyenv}<1-2>
+        \begin{uncoverenv}<2>
+            \begin{lstlisting}[style=MyBash]
+                $ git add wheels_electronic.h
+                $ git commit --amend --no-edit
+                |+[airplane +||*c13e34f*||+] Add engine implementation
+                Date: Fri Nov 25 08:45:18 2022 +0100
+                2 files changed, 345 insertions(+), 88 deletions(-)+|
+            \end{lstlisting}
+        \end{uncoverenv}
     \end{onlyenv}
     \begin{onlyenv}<3>
     \begin{lstlisting}[style=MyBash]
@@ -361,7 +363,7 @@
         \begin{scope}[scope on=<4>]
             \draw[very thick] (3.25,0) -- (6,0);
             \node[commit=PT!70] (R4) at (4.5,0) {};
-            \node[commit=white] (R5) at (6,0) {};
+            \node[commit=PT!70] (R5) at (6,0) {};
             % Branch label
             \node[below = 6mm of R5, branch=PS!80] (BrR) {main};
             % Complete paths
@@ -434,6 +436,11 @@
             \end{scope}
             \begin{onlyenv}<4> % Because of opacity
                 \begin{scope}
+                    \draw[opacity=0.03, very thick] (2.5,0) edge[out=0, in=180] (3.5,1)
+                        (3.5,1) -- ++(0.15,0) +(0.5,0) -- ++(1.2,0);
+                    \foreach \dx/\dy [count=\i from 6] in {3.9/1, 5.1/1}{
+                        \node[opacity=0.03, commit=white] at ($(0,0)+(\dx,\dy)$) {};
+                    }
                     \draw[opacity=0.2, very thick] (7.85,1) -- ++(0.95,0);
                     \node[opacity=0.2, commit=white] (C7) at (9.05,1) {};
                     \labelBranch{Feature}{below}{5mm}{C6}{white}
@@ -459,7 +466,7 @@
             \setbeamerfont{description item}{family=\ttfamily,size=\small}
             \setbeamercolor{description item}{fg=environment-color}
             \begin{description}[\texttt{<upstream>}]
-                \item[-i] Specify it to set up the rebase interactively
+                \item[-i] Set up the rebase interactively
                 \item[<newbase>] Where to apply the chosen commit\\ \then by default \texttt{<upstream>}
                 \item[<upstream>] Base history for the rebase to choose commits
                 \item[<branch>] The branch from which the rebase is done
@@ -476,8 +483,8 @@
                     \begin{onlyenv}<2>
                         \vspace{-3pt}
                         \begin{itemize}
-                            \item Run \;\texttt{git rebase --skip} to ignore commit
-                            \item Run \;\texttt{git rebase --abort} to end rebase
+                            \item Run \;\texttt{git rebase --skip}\; to ignore commit
+                            \item Run \;\texttt{git rebase --abort}\; to end rebase
                         \end{itemize}
                     \end{onlyenv}
                 \end{overlayarea}
@@ -531,12 +538,12 @@
                 \labelBranch{Feature-B}{above}{5mm}{C7}{PT!50}
             \end{scope}
             \begin{scope}[visible on=<2>, every path/.style={very thick}]
-                \foreach \dx/\dy [count=\i from 6] in {4/2, 5/2}{
+                \foreach \dx/\dy [count=\i from 6] in {4.15/2, 5.15/2}{
                     \node[commit=PT!50] (C\i) at ($(0,0)+(\dx,\ys*\dy)$) {};
                 }
                 \draw (C6.east) -- (C7.west);
-                \draw (C2.east) -- ++(0.15,0) coordinate (EL) (C6.west) -- ++(-0.25,0) coordinate (ER);
-                \draw (EL) edge[out=0, in=180, looseness=0.75] (ER);
+                \draw (C2.east) -- ++(0.25,0) coordinate (EL) (C6.west) -- ++(-0.25,0) coordinate (ER);
+                \draw (EL) edge[out=0, in=180, looseness=0.71] (ER);
                 \labelBranch{Feature-B}{above}{5mm}{C7}{PT!50}
             \end{scope}
         \end{tikzpicture}
@@ -622,7 +629,7 @@
             pick dfb705b Make some wheels maintenance            |+#2+|
             |*fixup*| 364ff12 This commit message does not matter    #5
             pick f8b0c25 Improve flaps of wings                  #3
-            pick e499d89 Deploy engine turbo                     #4
+            |*edit*| e499d89 Deploy engine turbo                     #4
         \end{lstlisting}
     \end{onlyenv}
     \begin{onlyenv}<4-5>
@@ -653,7 +660,7 @@
         \end{lstlisting}
     \end{onlyenv}
     \begin{tikzpicture}[remember picture, overlay]
-        \node[anchor=south west, font=\Large, text=PT, visible on=<7>] at ($(current page.south)+(13mm,10mm)$) {History changed!};
+        \node[anchor=south west, font=\Large, text=PT, visible on=<7>] at ($(current page.south)+(13mm,8mm)$) {History changed!};
     \end{tikzpicture}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -702,8 +709,9 @@
     \vspace{-15mm}
     \begin{overlayarea}{\textwidth}{0.7\textheight}
         \begin{varblock}{alert}[\textwidth]{The golden rule of rebasing: \textbf{Never use it on public branches}}
+            \vspace{2mm}
             \usebox{\savedTikZ}
-            \vspace{5mm}
+            \vspace{3mm}
             \begin{uncoverenv}<2->
                 \begin{lstlisting}[style=MyBash]
                     git rebase feature main # ...rebasing on main, AAAAAAAAARGH!
@@ -768,8 +776,11 @@
     \end{overlayarea}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}[fragile]{Tagging a code}
+\begin{frame}[fragile]{Tagging a code: Let's speak about the \textbf{same} code!}
     \vspace{-3mm}
+    \begin{varblock}{alerted}[0.9\textwidth]{A milestone in development}<only@1>
+        A tag in the git history is to some extent a commitment, but it is also a statement of invaluable help about the codebase!
+    \end{varblock}
     \begin{varblock}{}[0.9\textwidth]{Why should I?}<only@1>
         \begin{itemize}
             \item The codebase is released
@@ -778,9 +789,6 @@
             \item The codebase will be (maybe) inherited
             \item \textbf{The software is used to produce data}
         \end{itemize}
-    \end{varblock}
-    \begin{varblock}{alerted}[0.9\textwidth]{A milestone in development}<only@1>
-        A tag in the git history is to some extent a commitment, but it is also a statement of invaluable help about the codebase!
     \end{varblock}
 \end{frame}
 %===============================================================%
@@ -836,7 +844,7 @@
     \end{lstlisting}
     \begin{itemize}
         \item Clear evolution of the codebase for everybody
-        \item \textbf{v1.0} usually refers to the first stable version of the software
+        \item \textbf{v1.0} usually refers to the first \textbf{production-ready} version
     \end{itemize}
 \end{frame}
 %===============================================================%
@@ -865,6 +873,7 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Disclaimer and references}
     \PrepareURLsymbol[PT]
+    \vspace{-3mm}
     \begin{varblock}{alert}[\textwidth]{\URL*[PT]{http://nvie.com/posts/a-successful-git-branching-model/}{Vincent Driessen} back in 2010}
         In the following I will give you a summary of his blog page.\\
         All credit goes to the author and no original part is here contained.
@@ -885,11 +894,19 @@
 \begin{frame}[c]{Motivation}
     \vspace{-4mm}
     \begin{center}
-        \begin{tikzpicture}
-            \node[visible on=<1->] (L) {\includegraphics[height=28mm]{GitBadCommits}};
-            \node[visible on=<1->, below = -1mm of L, font=\tiny] {\URL*{https://www.xkcd.com/1296/}{https://www.xkcd.com/1296/}};
-            \node[visible on=<2->, right =  1mm of L] (R) {\includegraphics[height=28mm]{GitMessyHistory}};
-            \node[visible on=<2->, below = -1mm of R, font=\tiny] {\URL*{https://image.slidesharecdn.com/gitseries-150826152158-lva1-app6892/95/git-series-episode-3-git-flow-and-githubflow-2-638.jpg?cb=1443100187}{https://image.slidesharecdn.com/[...]}};
+        \begin{tikzpicture}[every node/.style={inner sep=0mm}]
+            \begin{scope}[scope on=<1->]
+                \node (L) {\includegraphics[height=28mm]{GitBadCommits}};
+                \node[below = 2mm of L, font=\tiny] {\URL*{https://www.xkcd.com/1296/}{https://www.xkcd.com/1296/}};
+            \end{scope}
+            \begin{scope}[scope on=<2->]
+                \node[right = 1mm of L] (R) {\includegraphics[height=28mm]{GitMessyHistory}};
+                \node[below = 2mm of R, font=\tiny]
+                    {\URL*{https://image.slidesharecdn.com/gitseries-150826152158-lva1-app6892/95/git-series-episode-3-git-flow-and-githubflow-2-638.jpg?cb=1443100187}{https://image.slidesharecdn.com/[...]}};
+                \fill[white] (R.north west) rectangle ($(R.north east)!0.4!(R.east)$);
+                \node[font=\footnotesize, anchor=north, fill=white, text=PS] at ($(R.north)-(0,1.5mm)$)
+                    {Sometimes history becomes messy};
+            \end{scope}
         \end{tikzpicture}
     \end{center}
     \vspace{-3mm}
@@ -992,7 +1009,7 @@
                 \begin{varblock}{}[1.05\textwidth]{How it looks like:}<only@2>
                     \setlength{\medskipamount}{0pt}
                     \begin{lstlisting}[style=MyBash]
-                        $ git switch -b myfeature develop
+                        $ git switch -c myfeature develop
                         |+Switched to a new branch "myfeature"+|
                         #------------------------------------
                         # Some development, commits, etc.
@@ -1077,10 +1094,10 @@
                 \item Release branches support preparation of a new production release
                 \item Last-minute checks, minor bug fixes and preparing meta-data (version number,
                 etc.) should be done on a release branch
-                \item By doing all of this work on a release branch, the \PS{develop}
+                \item By doing all of this work on a release branch, the \textbf{develop}
                 branch is cleared to receive features for the following release
                 \item \alert{When a new \PQ{release} branch is created, all features that are
-                    targeted for this release must be merged into the \PS{develop} branch}
+                    targeted for this release must be merged into the \PQ{develop} branch}
             \end{itemize}
         \end{minipage}
     \end{onlyenv}
@@ -1094,7 +1111,7 @@
                 \begin{lstlisting}[style=MyBash]
                     |+Version 1.1.5 is the current production release
                     We are ready for "next release" ->+| |*NOW*| |+we decide v1.2+|
-                    $ git switch -b release-1.2 develop
+                    $ git switch -c release-1.2 develop
                     |+Switched to a new branch "release-1.2"+|
                     $ ./bump-version.sh 1.2  #Just modify some files
                     |+Files modified successfully, version bumped to 1.2.+|
@@ -1111,7 +1128,7 @@
         \begin{onlyenv}<2>
             \begin{varblock}{example}{Creation}
                 \begin{lstlisting}[style=MyBash]
-                    $ git switch -b release-1.2 develop
+                    $ git switch -c release-1.2 develop
                     $ ./bump-version.sh 1.2 #Just modify some files
                     $ git commit -a -m "Bump version number to 1.2"
                 \end{lstlisting}
@@ -1123,7 +1140,7 @@
                     |+Switched to branch 'main'+|
                     $ git merge --no-ff release-1.2
                     |+Merge made by recursive. (Summary of changes)+|
-                    $ git tag -a 1.2
+                    $ git tag -a v1.2
                     $ git switch develop
                     |+Switched to branch 'develop'+|
                     $ git merge --no-ff release-1.2  #Maybe conflicts!
@@ -1181,7 +1198,7 @@
         \begin{onlyenv}<1>
             \begin{varblock}{example}{Creation}
                 \begin{lstlisting}[style=MyBash]
-                    $ git checkout -b hotfix-1.2.1 main
+                    $ git switch -c hotfix-1.2.1 main
                     |+Switched to a new branch "hotfix-1.2.1"+|
                     $ ./bump-version.sh 1.2.1  #Just modify some files
                     |+Files modified successfully, version bumped to 1.2.1.+|
@@ -1198,7 +1215,7 @@
         \begin{onlyenv}<2>
             \begin{varblock}{example}{Creation}
                 \begin{lstlisting}[style=MyBash]
-                    $ git checkout -b hotfix-1.2.1 main
+                    $ git switch -c hotfix-1.2.1 main
                     $ ./bump-version.sh 1.2.1 #Just modify some files
                     $ git commit -a -m "Bump version number to 1.2.1"
                     # Some work to fix the situation
@@ -1208,12 +1225,12 @@
             \vspace{-3mm}
             \begin{varblock}{example}{Finalisation}
                 \begin{lstlisting}[style=MyBash]
-                    $ git checkout main
+                    $ git switch main
                     |+Switched to branch 'main'+|
                     $ git merge --no-ff hotfix-1.2.1
                     |+Merge made by recursive. (Summary of changes)+|
-                    $ git tag -a 1.2.1
-                    $ git checkout develop
+                    $ git tag -a v1.2.1
+                    $ git switch develop
                     |+Switched to branch 'develop'+|
                     $ git merge --no-ff hotfix-1.2.1
                     |+Merge made by recursive. (Summary of changes)+|
@@ -1274,7 +1291,7 @@
                     \footnotesize\setlength{\itemsep}{0mm}
                     \item[] \bash|<type>|\; can be either \;\texttt{feature}, \;\texttt{release}\; or \;\texttt{hotfix}\\
                     \item[] \bash|<name>|\; is the name of the auxiliary branch\\
-                    \item[] \bash{|+<base>+|}\; must be a commit on \;\texttt{develop}\; or \;\texttt{master}
+                    \item[] \bash{|+<base>+|}\; must be a commit on \;\texttt{develop}\; or \;\texttt{main}
                 \end{itemize}
             \end{varblock}
         \end{onlyenv}
