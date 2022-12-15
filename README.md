@@ -1,5 +1,7 @@
 # Git Trilogy
 
+[![CC BY 4.0][cc-by-shield]][cc-by]
+
 This three-parts, crash course should bring the newbie from not knowing what git is and how to use it to a comfortable knowledge level about it.
 Some practice from the attenddee is clearly required and necessary to make this material useful and in order to make git part of the own toolbox.
 
@@ -30,3 +32,16 @@ After having explored how to rebase and tag git history, a very common branching
 ## Note about LaTeX compilation
 
 If you wish to compile LaTeX source code, the `TeXnicalities` package and the used beamer theme are needed and can be found [here](https://github.com/AxelKrypton/TeXnicalities).
+
+
+## License
+
+This work is licensed under a [Creative Commons Attribution 4.0 International License][cc-by].
+
+[![CC BY 4.0][cc-by-image]][cc-by]
+
+
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+[cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
