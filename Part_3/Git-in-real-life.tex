@@ -667,6 +667,7 @@
     \begin{tikzpicture}[remember picture, overlay]
         \node[anchor=south west, font=\Large, text=PT, visible on=<7>] at ($(current page.south)+(13mm,8mm)$) {History changed!};
     \end{tikzpicture}
+    \FrameRemark[3,6-7]{\texttt{HEAD\textasciitilde 5} means the fifth ancestor of \;\texttt{HEAD}\;, but you could use any SHA1. Refer to e.g.\ \URL*{https://stackoverflow.com/a/2222920/14967071}{this SO answer} for more information.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \newsavebox{\savedTikZ}
@@ -734,7 +735,7 @@
 \begin{frame}[fragile]{Tagging the history of a repository}
     \vspace{-12mm}
     \begin{overlayarea}{\textwidth}{0.7\textheight}
-        \begin{varblock}{example}[0.96\textwidth]{Lightweight tags}<only@1-2>
+        \begin{varblock}{example}[0.96\textwidth]{Lightweight tags}<only@1-2,4>
             They simply are a name for an object (often a commit) and they are usually meant for private or temporary use
         \end{varblock}
         \begin{onlyenv}<1>
@@ -752,8 +753,11 @@
                 # Commit differences
             \end{lstlisting}
         \end{onlyenv}
-        \begin{varblock}{example}[0.96\textwidth]{Annotated tags}<only@2>
+        \begin{varblock}{example}[0.96\textwidth]{Annotated tags}<only@2,4>
             Tag objects contain a creation date, the tagger name and e-mail, a tagging message, and an optional GnuPG signature
+        \end{varblock}
+        \begin{varblock}{}[0.96\textwidth]{Tags as commits are by default local}<only@4>
+            Use \;\bash|git push --tags|\; to push them
         \end{varblock}
         \begin{onlyenv}<3>
             \begin{lstlisting}[style=MyBash, aboveskip=3mm]
