@@ -22,7 +22,6 @@ We are now ready to learn how to use git to collaborate in the same project with
 
 **NOTE:** The live example has been a demonstration about how to use branches, trigger and solve a conflict when this course has been given.
 It was basically a demonstration of the content of the previous slides and doing so can also be a good offline exercise for the attendee.
-Analogously, the conclusive live exercise has been taylored to the audience, but it is still possible to do some practice using/cloning an own test repository.
 
 ## Part 3
 

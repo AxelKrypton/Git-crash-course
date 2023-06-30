@@ -102,11 +102,11 @@
 
 %===============================================================%
 \title{Git in real life}
-\date{16 December 2022}
+\date{7 July 2023}
 \author{Alessandro Sciarra}
-\institute{Z02~--~Software Development Center}
-\titlegraphic{\includegraphics[width=20mm]{LogoCRC}}
-\titlepagelogo{\includegraphics[width=20mm]{LogoGoethe}}
+\institute{CRC-TR\,211~--~Software Development Center}
+\titlegraphic{\includegraphics[width=16mm]{LogoCRC}}
+\titlepagelogo{\includegraphics[width=25mm]{LogoGoethe}}
 %===============================================================%
 
 \AtBeginSection[] % <- Empty optional argument, do nothing for \section*
@@ -149,8 +149,12 @@
 \begin{frame}[plain,noframenumbering]
     \titlepage
     \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
+            {\includegraphics[width=13mm]{LogoPUNCH}};
+        \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
+            {\includegraphics[width=10mm]{CC-BY}};
         \node[anchor=south, font=\small, text=BGLIGHT]
-            at ($(current page.center)!0.95!(current page.south)$)
+            (Axel) at (license.north)
             {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
     \end{tikzpicture}
 \end{frame}
@@ -164,23 +168,28 @@
 %===============================================================%
 \section{Rewriting history}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\AlertFrame{A very sharp knife!}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{About rewriting history}{Yes, you can change the history of a repository!}
-\begin{overlayarea}{\textwidth}{0.3\textheight}
-    \setlength{\leftmargini}{5mm}
-    \begin{itemize}
-        \item\alert{Very bad if there are different copies of the history} \Remark{E.g.\ branches, remote(s)}
-        \item If you rewrite shared history,\\
-              \begin{itemize}
-                  \item it is generally hard to make the same change elsewhere and\\
-                  \item merging (and hence pull/push) can lead to duplicated commits in history
-              \end{itemize}
-        \item<only@1> Fine as long as\\
-              \begin{itemize}
-                  \item yours is the only clone containing the rewritten history or
-                  \item you work on a git project alone and you know what to do then
-              \end{itemize}
-    \end{itemize}
-\end{overlayarea}
+    \vspace{6mm}
+    \begin{overlayarea}{\textwidth}{0.3\textheight}
+        \setlength{\leftmargini}{5mm}
+        \begin{itemize}
+            \item\alert{Very bad if there are different copies of the history} \Remark{E.g.\ branches, remote(s)}
+            \item If you rewrite shared history,\\
+                  \begin{itemize}
+                      \item it is generally hard to make the same change elsewhere and\\
+                      \item merging (and hence pull/push) can lead to duplicated commits in history
+                  \end{itemize}
+            \item<only@1> Fine as long as\\
+                  \begin{itemize}
+                      \item yours is the only clone containing the rewritten history or
+                      \item you work on a git project alone and you know what to do then
+                      \item your \textbf{branch} is internal to the team and you inform people about rewriting
+                  \end{itemize}
+        \end{itemize}
+    \end{overlayarea}
+    \vspace{-5mm}
     \begin{center}
         \begin{tikzpicture}[scope on=<2->]
             \draw[very thick] (-0.5,2) -- (4,2);
@@ -462,12 +471,11 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Git rebase in its (almost) full glory}
-    \begin{lstlisting}[style=MyBash, xleftmargin=5mm, xrightmargin=5mm, aboveskip=-6mm]
+    \begin{lstlisting}[style=MyBash, xleftmargin=5mm, xrightmargin=5mm, aboveskip=-5mm, belowskip=-3mm]
         git rebase |+[-i] [--onto <newbase>] [<upstream> [<branch>]]+|
     \end{lstlisting}
     \begin{overlayarea}{\textwidth}{0.5\textheight}
         \begin{onlyenv}<1-2>
-            \vspace{2mm}
             \setbeamerfont{description item}{family=\ttfamily,size=\small}
             \setbeamercolor{description item}{fg=environment-color}
             \begin{description}[\texttt{<upstream>}]
@@ -478,7 +486,6 @@
             \end{description}
             \begin{varblock*}{alert}[\textwidth]{Conflicts might occur}
                 \begin{overlayarea}{\textwidth}{0.12\textheight}
-                    \vspace{-4.5mm}
                     \begin{onlyenv}<1>
                         \begin{enumerate}
                             \item Resolve them as usual and \;\texttt{git-add}\; the files
@@ -493,6 +500,7 @@
                         \end{itemize}
                     \end{onlyenv}
                 \end{overlayarea}
+                \vspace{1pt}
             \end{varblock*}
         \end{onlyenv}
         \begin{onlyenv}<3>
@@ -565,7 +573,7 @@
     \begin{varblock}{alert}[\textwidth]{If working \textbf{alone} on a branch}
         \begin{enumerate}
             \item Get your work done
-            \item \texttt{git rebase main your-branch}
+            \item \texttt{git rebase main [your-branch]}
             \item Then \;\texttt{git merge main}\; will be up-to-date
             \item Switch to \;\texttt{main}\; and do a trivial merge
         \end{enumerate}
@@ -667,7 +675,7 @@
     \begin{tikzpicture}[remember picture, overlay]
         \node[anchor=south west, font=\Large, text=PT, visible on=<7>] at ($(current page.south)+(13mm,8mm)$) {History changed!};
     \end{tikzpicture}
-    \FrameRemark[3,6-7]{\texttt{HEAD\textasciitilde 5} means the fifth ancestor of \;\texttt{HEAD}\;, but you could use any SHA1. Refer to e.g.\ \URL*{https://stackoverflow.com/a/2222920/14967071}{this SO answer} for more information.}
+    \FrameRemark<3,6-7>{\texttt{HEAD\textasciitilde 5} means the fifth ancestor of \;\texttt{HEAD}\;, but you could use any SHA1. Refer to e.g.\ \URL*{https://stackoverflow.com/a/2222920/14967071}{this SO answer} for more information.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \newsavebox{\savedTikZ}
@@ -712,7 +720,7 @@
             \end{scope}
         \end{tikzpicture}
     \end{lrbox}
-    \vspace{-15mm}
+    \vspace{-8mm}
     \begin{overlayarea}{\textwidth}{0.7\textheight}
         \begin{varblock}{alert}[\textwidth]{The golden rule of rebasing: \textbf{Never use it on public branches}}
             \vspace{2mm}
@@ -733,7 +741,7 @@
 \section{Git tag}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Tagging the history of a repository}
-    \vspace{-12mm}
+    \vspace{-8mm}
     \begin{overlayarea}{\textwidth}{0.7\textheight}
         \begin{varblock}{example}[0.96\textwidth]{Lightweight tags}<only@1-2,4>
             They simply are a name for an object (often a commit) and they are usually meant for private or temporary use
@@ -760,7 +768,7 @@
             Use \;\bash|git push --tags|\; to push them
         \end{varblock}
         \begin{onlyenv}<3>
-            \begin{lstlisting}[style=MyBash, aboveskip=3mm]
+            \begin{lstlisting}[style=MyBash, aboveskip=7mm]
                 $ git tag -a v1.0 -m\
                 >     "Coffee machine software ready for production"
                 $ git show v1.0
@@ -1114,7 +1122,6 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile,c]{The release branch: How it works}
     \begin{overlayarea}{\textwidth}{0.9\textheight}
-        \vspace{-5mm}
         \begin{onlyenv}<1>
             \begin{varblock}{example}{Creation}
                 \begin{lstlisting}[style=MyBash]
@@ -1202,7 +1209,7 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile,c]{The hotfix branch: How it works}
-    \vspace{-13mm}
+    \vspace{-6mm}
     \begin{overlayarea}{\textwidth}{0.8\textheight}
         \begin{onlyenv}<1>
             \begin{varblock}{example}{Creation}
@@ -1272,7 +1279,7 @@
 }
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile,c]{Gitflow: How to easily apply what we learnt}
-    \vspace{-16mm}
+    \vspace{-10mm}
     \begin{overlayarea}{\textwidth}{0.7\textheight}
         \begin{varblock}{example}[0.95\textwidth]{Pick a set of high-level repository operations}
             \PT{\href{https://github.com/nvie/gitflow}{\faGithub\;\textbf{nvie}}}
@@ -1430,7 +1437,7 @@
     \begin{center}
         \Large \PP{Questions? \; Feedback?}
     \end{center}
-    \FrameRemark{In case you are not a fan of memes, sorry for that. I still hope you enjoyed the trilogy!}
+    \FrameRemark{In case you are not a fan of memes, sorry for that. I hope you still enjoyed the trilogy!}
 \end{frame}
 %===============================================================%
 

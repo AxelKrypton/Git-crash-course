@@ -35,11 +35,11 @@
 
 %===============================================================%
 \title{Let's Git together}
-\date{26 August 2022}
+\date{6 July 2023}
 \author{Alessandro Sciarra}
-\institute{Z02~--~Software Development Center}
-\titlegraphic{\includegraphics[width=20mm]{LogoCRC}}
-\titlepagelogo{\includegraphics[width=20mm]{LogoGoethe}}
+\institute{CRC-TR\,211~--~Software Development Center}
+\titlegraphic{\includegraphics[width=16mm]{LogoCRC}}
+\titlepagelogo{\includegraphics[width=25mm]{LogoGoethe}}
 %===============================================================%
 
 \AtBeginSection[] % <- Empty optional argument, do nothing for \section*
@@ -74,9 +74,13 @@
 \begin{frame}[plain,noframenumbering]
     \titlepage
     \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
+        {\includegraphics[width=13mm]{LogoPUNCH}};
+        \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
+        {\includegraphics[width=10mm]{CC-BY}};
         \node[anchor=south, font=\small, text=BGLIGHT]
-            at ($(current page.center)!0.95!(current page.south)$)
-            {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
+        (Axel) at (license.north)
+        {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
     \end{tikzpicture}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -168,10 +172,10 @@
         \node[draw=red, very thick, rounded corners=1mm, fill=yellow, text width=0.9\textwidth, align=center, font=\bfseries\large, text=red, visible on=<3>]
             at ($(N3.south)!0.5!(E3)$) {It's all about having this picture clear in mind and understand how git commands affect it};
         \begin{onlyenv}<1>
-            \fill[Gray, fill opacity=0.95] (DNW) rectangle ($(DSW)-(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next Z02 Git talk};
-            \fill[Gray, fill opacity=0.95] (DNE) rectangle ($(DSE)+(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next Z02 Git talk};
+            \fill[Gray, fill opacity=0.95] (DNW) rectangle ($(DSW)-(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next part of the course};
+            \fill[Gray, fill opacity=0.95] (DNE) rectangle ($(DSE)+(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next part of the course};
         \end{onlyenv}
-        \node[visible on=<1-3>] at ($(DSW)!0.5!(DSE)-(0,0.3)$) {\alt<1>{What we explored last time}{Today we'll complete the picture}};
+        \node[visible on=<1-3>] at ($(DSW)!0.5!(DSE)-(0,0.3)$) {\alt<1>{What we explored last time}{Now we'll complete the picture}};
         % Second slide
         \fill[Gray, fill opacity=0.98, visible on=<4>] ($(DNW)-(2.3,0)$) rectangle ($(DSE)-(0,0)$) node[pos=0.5, rotate=37, text=BGLIGHT, font=\large\bfseries] {Nothing existing before cloning the remote repository};
         \node[visible on=<5>] at ($(N3.south)!0.5!(E3)-(0.1,0)$) {\usebox{\lstclonebox}};
@@ -184,7 +188,6 @@
 \section{Using branches}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[label=current]{A key feature of Git}
-    \vspace{-5mm}
     \begin{overlayarea}{\textwidth}{0.7\textheight}
         \begin{itemize}
             \item Branches store \textbf{different versions of your project}
@@ -223,7 +226,7 @@
                   \begin{itemize}
                       \item By default created at initialization
                       \item Development should be done on other branches
-                      \item Till few years ago it was called \;\PB{\texttt{master}}
+                      \item Till \textasciitilde2020 it was called \;\PB{\texttt{master}}
                   \end{itemize}
         \end{itemize}
     \end{overlayarea}
@@ -252,12 +255,11 @@
     \begin{varblock}{alert}[\textwidth]{Git is safe}
         \small
         If a modifications would be lost, Git does not allow you to delete the branch using the \texttt{-d} option.
-        Use the \texttt{-D} option instead.
+        Use the \texttt{-D} option, instead, to force the deletion.
     \end{varblock}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Git switch}
-    \vspace{-8mm}
     \begin{overlayarea}{\textwidth}{0.8\textheight}
         \begin{varblock}{}[0.7\textwidth]{}
             \PB{This will in general change your workspace!}
@@ -300,6 +302,7 @@
         \item When Git does not know how to merge the content of some file, it will create a conflict
         \item If conflicts occur, the merge will not automatically finish
         \item A merge can be aborted in case of conflicts with the \,\texttt{--abort}\, option
+              \Remark{The content of the repository will be restored to the state before issuing the merge command}
         \item To fix conflicts, open and manually adjust files where Git failed
     \end{itemize}
     \medskip
@@ -408,16 +411,23 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \AlertFrame{Live example!}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}[plain, noframenumbering, label=Wow]{}
+\begin{frame}<0>[plain, noframenumbering, label=Wow]{}
     \centering
+    \vfill
     \vfill
     \includemedia[width=0.6\paperwidth,
                   totalheight=0.6\paperheight,
                   activate=pageopen,
                   addresource=../Figures/Wow.mp4]{\includegraphics[width=0.6\paperwidth]{Wow-cover}}{VPlayer.swf}
     \vfill
+    \begin{onlyenv}<1>
+        \small
+        \uncover<1>{The Git prompt I use in my \textbf{bash} terminal is a customization of \URL[PB]{https://github.com/magicmonty/bash-git-prompt}{this one}!}
+    \end{onlyenv}
+    \vfill
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\againframe<1>[plain]{Wow}
 
 %===============================================================%
 
@@ -549,7 +559,6 @@
         \end{lstlisting}
     \end{onlyenv}
     \begin{overlayarea}{\textwidth}{0.7\textheight}
-        \vspace{-6mm}
         \begin{varblock}{}[\textwidth]{}<only@2-3>
             If you created commits on the present branch, pulling it from remote will perform a merge and, if this is not a fast-forward merge, the editor to make a commit with an auto-generated message will be displayed to you. \alert{Conflicts might occur as well.}
         \end{varblock}
@@ -595,7 +604,7 @@
             \end{lstlisting}
         \end{onlyenv}
     \end{overlayarea}
-    \FrameRemark{These 3-way merge commits because of pulling operations are not ideal and next time we'll learn how to avoid them.}
+    \FrameRemark<2->{These 3-way merge commits because of pulling operations are not ideal and next time we'll learn how to avoid them.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Pushing your own work}
@@ -619,7 +628,7 @@
 \begin{frame}<1-2>[label=PictureCommands]
     \frametitle<1-2>{How does this fit into our mental picture?}
     \frametitle<3->{Let's complete our mental picture}
-    \vspace{-0.1\textheight}
+    \vspace{-1mm}
     \begin{overlayarea}{\textwidth}{0.75\textheight}
         \begin{center}
             \begin{tikzpicture}[node distance=5mm]
@@ -657,13 +666,13 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Few words about tracking branches}
-    \vspace{-8mm}
+    \begin{varblock}{alert}[\textwidth]{A convenient feature}
+        It is possible to make a default association between a local and a remote branch which is used for pull and push operations!
+    \end{varblock}
     \begin{overlayarea}{\textwidth}{0.85\textheight}
-        \begin{varblock}{alert}[\textwidth]{A convenient feature}
-            It is possible to make a default association between a local and a remote branch which is used for pull and push operations!
-        \end{varblock}
         \begin{onlyenv}<1>
-            \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
+            \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm, aboveskip=4mm]
+                # Show all existing branches in verbose mode
                 $ git branch -a -vv
                 |+  exp1                6e5ea4b Commit msg
                   exp2                6e5ea4b Commit msg+|
@@ -672,7 +681,7 @@
                 |*  remotes/origin/main*| |+6e5ea4b Commit msg+|
                 |*  remotes/origin/exp1*| |+6e5ea4b Commit msg+|
             \end{lstlisting}
-            \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
+            \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm, aboveskip=2mm]
                 # First possibility (when remote branch already exists)
                 $ git switch exp1
                 |+Switched to branch 'exp1'+|
@@ -680,36 +689,35 @@
                 |+Branch 'exp1' set up to track remote branch 'exp1' from 'origin'.+|
             \end{lstlisting}
         \end{onlyenv}
-        \begin{overlayarea}{\textwidth}{0.35\textheight}
-            \vspace{-2mm}
-            \begin{onlyenv}<2>
-                \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
-                    # Second possibility (even without remote branch, yet)
-                    $ git switch exp2
-                    |+Switched to branch 'exp2'+|
-                    $ git push -u origin exp2
-                    |+[...]
-                    To github.com:AxelKrypton/Git-crash-course.git
-                    * [new branch]      exp2 -> exp2
-                    Branch 'exp2' set up to track remote branch 'exp2' from 'origin'.+|
+        \begin{onlyenv}<2->
+            \begin{overlayarea}{\textwidth}{0.353\textheight}
+                \begin{onlyenv}<2>
+                    \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm, aboveskip=4mm]
+                        # Second possibility (even without remote branch, yet)
+                        $ git switch exp2
+                        |+Switched to branch 'exp2'+|
+                        $ git push -u origin exp2
+                        |+[...]
+                        To github.com:AxelKrypton/Git-crash-course.git
+                        * [new branch]      exp2 -> exp2
+                        Branch 'exp2' set up to track remote branch 'exp2' from 'origin'.+|
+                    \end{lstlisting}
+                \end{onlyenv}
+                \begin{onlyenv}<3>
+                    \begin{varblock}{}[0.5\textwidth]{Between tracking branches}
+                        \PB{It is then possible to simply use \textbf{\PP{git pull}} and \textbf{\PP{git push}} commands!}
+                    \end{varblock}
+                \end{onlyenv}
+            \end{overlayarea}
+            \begin{onlyenv}<2->
+                \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm, aboveskip=0.8mm]
+                    # Check branch tracking associations
+                    $ git branch -vv
+                    |+  exp1              6e5ea4b [+|@|\ttc{Blue}{origin/exp1}|@|+] Commit msg+|
+                    |+*+| |-exp2-|              |+6e5ea4b [+|@|\ttc{Blue}{origin/exp2}|@|+] Commit msg+|
+                    |+  main              6e5ea4b [+|@|\ttc{Blue}{origin/main}|@|+] Commit msg+|
                 \end{lstlisting}
             \end{onlyenv}
-            \begin{onlyenv}<3>
-                \vspace{-1mm}
-                \begin{varblock}{}[0.5\textwidth]{Between tracking branches}
-                    \PB{It is then possible to simply use \textbf{\PP{git pull}} and \textbf{\PP{git push}} commands!}
-                \end{varblock}
-            \end{onlyenv}
-        \end{overlayarea}
-        \begin{onlyenv}<2->
-            \vspace{-5pt}
-            \begin{lstlisting}[style=MyBash, xrightmargin=-1mm, xleftmargin=-1mm]
-                # Check branch tracking associations
-                $ git branch -vv
-                |+  exp1              6e5ea4b [+|@|\ttc{Blue}{origin/exp1}|@|+] Commit msg+|
-                |+*+| |-exp2-|              |+6e5ea4b [+|@|\ttc{Blue}{origin/exp2}|@|+] Commit msg+|
-                |+  main              6e5ea4b [+|@|\ttc{Blue}{origin/main}|@|+] Commit msg+|
-            \end{lstlisting}
         \end{onlyenv}
     \end{overlayarea}
 \end{frame}
@@ -721,7 +729,7 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{What if I want neither to commit nor to restore?}
     \begin{varblock}{}[\textwidth]{From Git documentation}
-        Often, when you’ve been working on part of your project, things are in a messy state and you want to switch branches for a bit to work on something else. The problem is, you don’t want to do a commit of half-done work just so you can get back to this point later. The answer to this issue is \textbf{\PP{the git}} stash command.
+        Often, when you’ve been working on part of your project, things are in a messy state and you want to switch branches for a bit to work on something else. The problem is, you don’t want to do a commit of half-done work just so you can get back to this point later. The answer to this issue is the \textbf{\PP{git stash}} command.
     \end{varblock}
     \setlength{\leftmargini}{4mm}
     \begin{itemize}
@@ -762,7 +770,7 @@
     \end{lstlisting}
     \FrameRemark{
         \begin{tabular}{c}
-            Using \,\texttt{apply}\, instead of \,\texttt{pop}\, the entry in the stash list untouched.\\
+            Using \,\texttt{apply}\, instead of \,\texttt{pop}\, the entry in the stash list remains untouched.\\
             You can also \,\texttt{apply}, \,\texttt{pop}, \,\texttt{drop}, etc. any stash in the list referring it as \bash|"stash@\{n\}"| or simply as \,\texttt{n}\, (from Git v2.11).
         \end{tabular}
     }
@@ -795,20 +803,20 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{How to create and use bare repositories?}
     \setlength{\leftmarginii}{8mm}
-    \vspace{-6mm}
     \begin{overlayarea}{\textwidth}{0.8\textheight}
         \begin{onlyenv}<1>
             \vspace{1mm}
             \begin{itemize}
-                \item By default it is not possible to push to a bare repository
+                \item By default it is not possible to push to a non-bare repository
                 \item If you create a new repository in the browser on a platform like e.g. GitHub, you will not notice it, but a bare one will be created
                 \item \alert{Bare repositories are meant} to serve as remote\\ \then i.e. \alert{to pull from and push to}
             \end{itemize}
+            \vspace{1mm}
             \begin{enumerate}
                 \item Initialize a bare empty repository, clone it, work and push to it
             \end{enumerate}
             \begin{lstlisting}[style=MyBash]
-                $ mkdir <bare-repository>.git
+                $ mkdir <bare-repository>.git # .git is often used as suffix
                 $ git init --bare <bare-repository>.git
                 |+Initialised empty Git repository <bare-repository>.git+|
                 $ git clone <bare-repository>.git <non-bare-repo>
@@ -872,80 +880,48 @@
         \textcolor<2>{PT}{git tag}      & Create, list, delete or verify a tag object signed with GPG\\
         git [...]    & Few more technical commands
     \end{tabular}
-    \begin{varblock}{alert}[0.95\textwidth]{Wait for it!}<uncover@2>
-        In the next and last talk about Git we'll learn to rebase and tag
+    \begin{varblock}{alert}[0.98\textwidth]{Wait for it!}<uncover@2>
+        In the next and last part of the course we'll learn to rebase and tag
     \end{varblock}
 \end{frame}
 %===============================================================%
 
 
 %===============================================================%
-\section{Conclusions and live exercise}
+\section{Conclusions}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\againframe[plain]{Wow}
+\againframe<2>[plain]{Wow}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{That's \textbf{ALMOST} all folks}
-    \vspace{0.0\textheight}
+    \vspace{-3mm}
     \begin{enumerate}[<+->]
         \item Start using Git.
               \alert{\textbf{Now.}}
               Not tomorrow or next week, today!\\
               $\to\;$ Repeat what done on these slides
         \item Was anything unclear?
-              Do you get stuck at some point?\\
+              Did you get stuck at some point?\\
               $\to\;$ Drop me \PP{\href{mailto:sciarra@itp.uni-frankfurt.de}{{\small\faEnvelope}\;an email}}
         \item You can use Git to work in a very professional way!\\
-              $\to\;$ Come to next Z02 talk: \alert{\guillemotleft Git in real \tikzmark{tg}life\guillemotright}
+              $\to\;$ Attend next part: \alert{\guillemotleft Git in real life\guillemotright}\tikzmark{tg}
     \end{enumerate}
     \begin{tikzpicture}[remember picture, overlay, scope on=<.->]
-        \node[anchor=west, space=PT, text width=28mm] (content) at ($(tg)+(0.5,-1.5)$) {
+        \node[anchor=west, space=PT, text width=28mm] (content) at ($(tg)-(0.2,1.7)$) {
             git rebase\\
             git tag\\
             Semantic versioning\\
             Gitflow\\
         };
-        \path[to, shorter={0mm}{1mm}] ($(tg)-(0.6,0.25)$) edge[out=270, in=180] (content.west);
+        \path[to, shorter={0mm}{1mm}] ($(tg)+(0.3,0.0)$) edge[out=0, in=90] (content.north);
     \end{tikzpicture}
     \par\vspace{-0.02\textheight}
     \begin{uncoverenv}<+->
         \begin{tikzpicture}[remember picture, overlay]
             \node[anchor=north east, cloud, aspect=3, cloud puffs=15, draw=PB, fill=PP!20, text=PB]
                 at ($(current page.north east)+(-14mm,-6mm)$) {Thank you!};
+            \node[left = of content, font=\large\bfseries, text=PQ] {Believe me, it's worth it!};
         \end{tikzpicture}
-        \begin{itemize}
-            \item[] \phantom{$\to\;$ }{\large\bfseries\PQ{Believe me, it's worth it!}}
-        \end{itemize}
-%        \begin{minipage}{0.8\textwidth}
-%            \begin{center}
-%                \large\bfseries\PQ{Believe me, it's worth it!}\phantom{xxxx}
-%            \end{center}
-%        \end{minipage}
     \end{uncoverenv}
-\end{frame}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\AlertFrame{Live exercise}
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}[fragile]{Let's collaborate!}
-    \small
-    \setlength{\leftmargini}{5mm}
-    \begin{enumerate}
-        \setlength{\itemsep}{-1mm}
-        \item Clone the exercise repository from Redmine\\
-              \then \raisebox{1pt}{\scriptsize\texttt{https://<USERNAME>@git.physik.uni-bielefeld.de/git-together}}
-        \item Create and switch to a new branch
-        \item Create a new file, e.g.\ via
-              \begin{lstlisting}[style=MyBash, xleftmargin=3mm, xrightmargin=28mm, belowskip=-9mm, aboveskip=2mm]
-                  $ echo "$(whoami): $(date)" > "$(whoami).txt"
-              \end{lstlisting}
-              and add your name to the \texttt{AUTHORS} file
-        \item Commit your changes to the repository and push your branch
-        \item Let your local branch track the remote one
-        \item Check your work in the browser
-        \item Be sure the main branch is up-to-date and merge your branch into it$^\star$
-        \item Pull and push it to the remote
-        \item Check that your changes appear as expected on \,\texttt{master}\, in the browser and, if so, remove your branch locally and remotely
-    \end{enumerate}
-    \FrameRemark{$^\star$For technical reasons, our Redmine platform still uses \,\texttt{master}\, as name of the main branch instead of \,\texttt{main}.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 

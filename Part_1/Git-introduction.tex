@@ -33,11 +33,11 @@
 
 %===============================================================%
 \title{Introduction to Git}
-\date{25 February 2022}
+\date{6 July 2023}
 \author{Alessandro Sciarra}
-\institute{Z02~--~Software Development Center}
-\titlegraphic{\includegraphics[width=20mm]{LogoCRC}}
-\titlepagelogo{\includegraphics[width=20mm]{LogoGoethe}}
+\institute{CRC-TR\,211~--~Software Development Center}
+\titlegraphic{\includegraphics[width=16mm]{LogoCRC}}
+\titlepagelogo{\includegraphics[width=25mm]{LogoGoethe}}
 %===============================================================%
 
 \AtBeginSection[] % <- Empty optional argument, do nothing for \section*
@@ -62,8 +62,12 @@
 \begin{frame}[plain,noframenumbering]
     \titlepage
     \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
+            {\includegraphics[width=13mm]{LogoPUNCH}};
+        \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
+            {\includegraphics[width=10mm]{CC-BY}};
         \node[anchor=south, font=\small, text=BGLIGHT]
-            at ($(current page.center)!0.95!(current page.south)$)
+            (Axel) at (license.north)
             {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
     \end{tikzpicture}
 \end{frame}
@@ -162,7 +166,7 @@
             \item<+-> \textcolor<.-.(1)>{PQ}{How do you go back in history e.g.\ in case of a bug?}
                     \par\begin{onlyenv}<+->
                         \begin{itemize}
-                            \item Again, use the archive sent around per email
+                            \item Again, use the archives sent around per email
                             \item Using a shared place, this is not possible $\;\to\;$ debug!
                         \end{itemize}
                     \end{onlyenv}
@@ -251,7 +255,7 @@
                       \item \URL[PB]{https://git-cola.github.io/}{Git-Cola:} Powerful GUI For GIT \Remark{Windows, Mac, Ubuntu \& Linux}
                       \item{} [\ldots]
                   \end{itemize}
-            \item You can work in the terminal\\ $\,\to\,$ after this (and next) talk it will be possible!
+            \item You can work in the terminal\\ $\,\to\,$ after this course it will be possible and straightforward!
         \end{itemize}
     \end{onlyenv}
     \FrameRemark{Git was not designed to aim to user-friendliness, but it is by far the most used version control system in the world and hence in continuous evolution.}
@@ -278,7 +282,7 @@
     \begin{tikzpicture}[remember picture, overlay]
         \node[anchor=north east, inner xsep=8mm, inner ysep=3mm] at (current page.north east) {\includegraphics[width=0.25\textwidth]{Git-Logo}};
     \end{tikzpicture}
-    \FrameRemark[2]{$^\star$ Among many others, in a Git repository you can undo a \texttt{rm} command given by accident on a wrong file.}
+    \FrameRemark<2>{$^\star$ Among many others, in a Git repository you can undo a \texttt{rm} command given by accident on a wrong file.}
 \end{frame}
 %===============================================================%
 
@@ -351,10 +355,10 @@
 \begin{frame}{An example of Git history}
     \begin{center}
         \readlist\SHA{%
-            6d7253af8a986838f78adc25a801cd06897be033,
-            54a94046deeb7117e77f0b6ee984165fedbc2345,
-            09c1b4321589b548be39063c828903901a3e14e7,
-            b924cdb3101220b552cdd92c8c4e7b9eb887a83a,
+            6d7253af8a986838f78adc25a801cd06897be033
+            54a94046deeb7117e77f0b6ee984165fedbc2345
+            09c1b4321589b548be39063c828903901a3e14e7
+            b924cdb3101220b552cdd92c8c4e7b9eb887a83a
             24ffea36e3b6b696cc537fbf05bae8d04c63a92b
         }
         \begin{varblock}{example}[0.9\textwidth]{}
@@ -394,8 +398,8 @@
             \node[draw=red, very thick, rounded corners=1mm, fill=yellow, text width=0.9\textwidth, align=center, font=\bfseries\large, text=red, visible on=<3>]
                 at ($(N3.south)!0.5!(E3)$) {It's all about having this picture clear in mind and understand how git commands affect it};
             \begin{onlyenv}<4>
-                \fill[Gray, fill opacity=0.95] (DNW) rectangle ($(DSW)-(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next Z02 Git talk};
-                \fill[Gray, fill opacity=0.95] (DNE) rectangle ($(DSE)+(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next Z02 Git talk};
+                \fill[Gray, fill opacity=0.95] (DNW) rectangle ($(DSW)-(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next part of the course};
+                \fill[Gray, fill opacity=0.95] (DNE) rectangle ($(DSE)+(2.3,0)$) node[pos=0.5, rotate=90, text=BGLIGHT, font=\large\bfseries] {Next part of the course};
             \end{onlyenv}
         \end{tikzpicture}
     \end{uncoverenv}
@@ -510,7 +514,7 @@
         \end{tikzpicture}
         \par\medskip
         \uncover<2->{\small Commands marked in \PQ{dark red} do not change anything in the repository!}
-        \FrameRemark[3-]{Git introduced \texttt{git-restore} in v2.23 but this stayed buggy for a while. Use it from v2.27 on, otherwhise use \texttt{git-reset}.}
+        \FrameRemark<3->{Git introduced \texttt{git-restore} in v2.23 but this stayed buggy for a while. Use it from v2.27 on, otherwhise use \texttt{git-reset}.}
     \end{center}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -539,7 +543,7 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Letting Git ignore some files}
     \begin{lstlisting}[style=MyBash]
-        $ printf '*.%s\n' {aux,log,out,pdf} > .gitignore
+        $ printf '*.%s\n' aux log out pdf > .gitignore
         $ cat .gitignore
         |+*.aux+|
         |+*.log+|
@@ -708,8 +712,9 @@
         |+9c6154d (HEAD -> master) Add paper main document+|
         |+bb8c78b Add .gitignore file for LaTeX project+|
     \end{lstlisting}
+    \vspace{1mm}
     \begin{itemize}
-        \item Write them like a email to yourself / the other developers\\
+        \item Write them like an email to yourself (or to the other developers)\\
               $\to\;$ Subject line + body, follow \URL[PB]{https://p5v.medium.com/what-s-with-the-50-72-rule-8a906f61f09c}{the 50/72 rule}
         \item Subject: Summarize what has been done\\
               $\to\;$ \alert{\textbf{Use present tense and no period at the end!}}
@@ -801,7 +806,7 @@
         \item Define your aliases\\[1mm]
               \begin{minipage}{\linewidth}
                   \begin{lstlisting}[style=MyBash]
-                      git config --global alias.unstage 'reset HEAD --'
+                      git config --global alias.unstage 'restore --staged --'
                       # From now on, you can use 'git unstage'
                   \end{lstlisting}
               \end{minipage}
@@ -851,10 +856,10 @@
               Not tomorrow or next week, today!\\
               $\to\;$ Repeat what done on these slides
         \item Was anything unclear?
-              Do you get stuck at some point?\\
+              Did you get stuck at some point?\\
               $\to\;$ Drop me \PP{\href{mailto:sciarra@itp.uni-frankfurt.de}{{\small\faEnvelope}\;an email}}
         \item Git is much more than this!\\
-              $\to\;$ Come to next Z02 talk: \alert{\guillemotleft Let's git \textbf{together}\tikzmark{tg}\guillemotright}
+              $\to\;$ Attend next part: \alert{\guillemotleft Let's git \textbf{together}\tikzmark{tg}\guillemotright}
     \end{enumerate}
     \begin{tikzpicture}[remember picture, overlay, scope on=<.->]
         \node[anchor=west, space=PT, text width=18mm] (content) at ($(tg)+(0.5,-0.8)$) {
