@@ -1,5 +1,6 @@
 \documentclass[usenames,svgnames,14pt]{beamer}
 \usepackage[english]{babel}
+\usepackage[compat=0.2]{TeXnicalities}
 \usepackage{
   fontspec,
   fontawesome,
@@ -8,7 +9,6 @@
   listings,
   lstautogobble,
   listofitems,
-  TeXnicalities,
   media9,
   array
 }
@@ -35,7 +35,7 @@
 
 %===============================================================%
 \title{Let's Git together}
-\date{6 July 2023}
+\date{7 March 2024}
 \author{Alessandro Sciarra}
 \institute{CRC-TR\,211~--~Software Development Center}
 \titlegraphic{\includegraphics[width=16mm]{LogoCRC}}
@@ -60,7 +60,6 @@
 \PrepareURLsymbol[PB]
 \newcommand{\ttc}[2]{\texttt{\textcolor{#1}{#2}}}%
 \setlength{\leftmarginii}{0.5cm}
-\newcommand{\then}{\raisebox{2pt}{$\;\drsh\;$}}
 
 
 % Taken from https://tex.stackexchange.com/a/51458/128737
@@ -74,8 +73,8 @@
 \begin{frame}[plain,noframenumbering]
     \titlepage
     \begin{tikzpicture}[remember picture, overlay]
-        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
-        {\includegraphics[width=13mm]{LogoPUNCH}};
+%        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
+%        {\includegraphics[width=13mm]{LogoPUNCH}};
         \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
         {\includegraphics[width=10mm]{CC-BY}};
         \node[anchor=south, font=\small, text=BGLIGHT]
