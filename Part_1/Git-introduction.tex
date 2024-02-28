@@ -521,7 +521,7 @@
 \begin{frame}[fragile]{Git status}
     \begin{lstlisting}[style=MyBash]
         $ git status
-        |+On branch master+|
+        |+On branch main+|
 
         |+No commits yet+|
 
@@ -550,7 +550,7 @@
         |+*.out+|
         |+*.pdf+|
         $ git status
-        |+On branch master+|
+        |+On branch main+|
 
         |+No commits yet+|
 
@@ -576,10 +576,10 @@
             \centerline{In your terminal}
             \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-1mm, xrightmargin=-1mm]
                 $ git log
-                |+fatal: your current branch 'master' does not have any commits yet+|
+                |+fatal: your current branch 'main' does not have any commits yet+|
                 $ git add .gitignore
                 $ git status
-                |+On branch master+|
+                |+On branch main+|
 
                 |+No commits yet+|
 
@@ -601,7 +601,7 @@
                 # Please enter the commit message for your changes. Lines starting
                 # with '#' will be ignored, and an empty message aborts the commit.
                 #
-                # On branch @|\ttc{DarkOrange}{master}|@
+                # On branch @|\ttc{DarkOrange}{main}|@
                 #
                 # Initial commit
                 #
@@ -621,7 +621,7 @@
                 # Please enter the commit message for your changes. Lines starting
                 # with '#' will be ignored, and an empty message aborts the commit.
                 #
-                # On branch @|\ttc{DarkOrange}{master}|@
+                # On branch @|\ttc{DarkOrange}{main}|@
                 #
                 # Initial commit
                 #
@@ -637,10 +637,10 @@
             \centerline{In your terminal}
             \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-2mm, xrightmargin=-2mm]
                 $ git log
-                |+fatal: your current branch 'master' does not have any commits yet+|
+                |+fatal: your current branch 'main' does not have any commits yet+|
                 $ git add .gitignore
                 $ git status
-                |+On branch master+|
+                |+On branch main+|
 
                 |+No commits yet+|
 
@@ -653,7 +653,7 @@
                 @|\ttfamily\color{red}~~~~~Paper.tex|@
                 $ git commit
                 # Your editor opens -> type commit message, save and exit
-                |+[master (root-commit) bb8c78b] Add .gitignore file for TeX project+|
+                |+[main (root-commit) bb8c78b] Add .gitignore file for TeX project+|
                 |+ 1 file changed, 4 insertions(+)+|
                 |+ create mode 100644 .gitignore+|
             \end{lstlisting}
@@ -664,13 +664,13 @@
 \begin{frame}[fragile]{Inspecting history}
     \begin{lstlisting}[style=MyBash, belowskip=-4mm]
         $ git log
-        |+commit bb8c78b68075dacf8467420bc00867c73ef5ba8c (HEAD -> master)+|
+        |+commit bb8c78b68075dacf8467420bc00867c73ef5ba8c (HEAD -> main)+|
         |+Author: Alessandro Sciarra <asciarra@fias.uni-frankfurt.de>+|
         |+Date:   Thu Dec 23 10:13:05 2021 +0100+|
 
         |+    Add .gitignore file for TeX project+|
         $ git log --oneline
-        |+bb8c78b (HEAD -> master) Add .gitignore file for LaTeX project+|
+        |+bb8c78b (HEAD -> main) Add .gitignore file for LaTeX project+|
     \end{lstlisting}
     \centerline{Use a pager to avoid polluting terminal}
     \begin{lstlisting}[style=MyBash, aboveskip=2mm]
@@ -685,7 +685,7 @@
 \begin{frame}[fragile]{Our second commit}
     \begin{lstlisting}[style=MyBash]
         $ git status
-        |+On branch master+|
+        |+On branch main+|
         |+Untracked files:+|
         |+  (use "git add <file>..." to include in what will be committed)+|
             @|\ttc{red}{Paper.tex}|@
@@ -695,12 +695,12 @@
         $ git add Paper.tex # Always add to the staging
                             # area before committing!
         $ git status
-        |+On branch master+|
+        |+On branch main+|
         |+Changes to be committed:+|
         |+  (use "git restore --staged <file>..." to unstage)+|
                @|\ttc{ForestGreen}{new file:   Paper.tex}|@
         $ git commit -m 'Add paper main document'
-        |+[master 9c6154d] Add paper main document+|
+        |+[main 9c6154d] Add paper main document+|
         |+ 1 file changed, 147 insertions(+)+|
         |+ create mode 100644 Paper.tex+|
     \end{lstlisting}
@@ -709,7 +709,7 @@
 \begin{frame}[fragile]{Use good commit messages}
     \begin{lstlisting}[style=MyBash]
         $ git log --oneline
-        |+9c6154d (HEAD -> master) Add paper main document+|
+        |+9c6154d (HEAD -> main) Add paper main document+|
         |+bb8c78b Add .gitignore file for LaTeX project+|
     \end{lstlisting}
     \vspace{1mm}
@@ -737,7 +737,7 @@
             \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-6mm, xrightmargin=-6mm]
                 # Make some changes
                 $ git status
-                |+On branch master+|
+                |+On branch main+|
                 |+Changes not staged for commit:+|
                 |+  (use "git add <file>..." to update what will be committed)+|
                 |+  (use "git restore <file>..." to discard changes in working directory)+|
@@ -770,7 +770,7 @@
             \begin{lstlisting}[style=MyBash, aboveskip=2mm, xleftmargin=-6mm, xrightmargin=-6mm]
                 # Make some changes
                 $ git status
-                |+On branch master+|
+                |+On branch main+|
                 |+Changes not staged for commit:+|
                 |+  (use "git add <file>..." to update what will be committed)+|
                 |+  (use "git restore <file>..." to discard changes in working directory)+|
