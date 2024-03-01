@@ -370,7 +370,7 @@
             \foreach \n[count=\i from 1] in {0,2,...,8}{
                 \draw[line width=\dl pt, draw=PB, fill=PP!20] (\n,0) circle (\radius pt);
                 \ifnum\i<5%
-                    \draw[to] (\n cm+\radius pt,0) -- ++(2 cm-2*\radius pt-0.5*\dl pt,0);
+                    \draw (\n cm+\radius pt,0) -- ++(2 cm-2*\radius pt-0.5*\dl pt,0);
                 \fi
                 \node[rotate=90, font=\tiny, anchor=east] at (\n,-0.5) {\SHA[\i]};
             }
