@@ -7,16 +7,16 @@ Some practice from the attenddee is clearly required and necessary to make this 
 
 ## Part 1
 
-:green_book: [View](Part_1/Git-introduction.pdf) &emsp;
-:floppy_disk: [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_1/Git-introduction.pdf)
+📗 [View](Part_1/Git-introduction.pdf) &emsp;
+💾 [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_1/Git-introduction.pdf)
 
 After some general introduction and motivation about why a version control system and in particular git should be daily used, this presentation will focus on how to use it locally in a daily flow.
 Slides contain lots of examples that can be used as exercise to become acquainted with this wonderful tool.
 
 ## Part 2
 
-:blue_book: [View](Part_2/Git-together.pdf) &emsp;
-:floppy_disk: [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_2/Git-together.pdf)
+📘 [View](Part_2/Git-together.pdf) &emsp;
+💾 [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_2/Git-together.pdf)
 
 We are now ready to learn how to use git to collaborate in the same project with different people or simply how to contribute to the same project from different machines.
 
@@ -25,8 +25,8 @@ It was basically a demonstration of the content of the previous slides and doing
 
 ## Part 3
 
-:orange_book: [View](Part_3/Git-in-real-life.pdf) &emsp;
-:floppy_disk: [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_3/Git-in-real-life.pdf)
+📙 [View](Part_3/Git-in-real-life.pdf) &emsp;
+💾 [Download](https://github.com/AxelKrypton/Git-crash-course/raw/main/Part_3/Git-in-real-life.pdf)
 
 Knowing most of git commands, it is now time to bring our git usage to another level.
 After having explored how to rebase and tag git history, a very common branching pattern is here introduced and discussed.
