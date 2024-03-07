@@ -421,7 +421,7 @@
     \vfill
     \begin{onlyenv}<1>
         \small
-        \uncover<1>{The Git prompt I use in my \textbf{bash} terminal is a customization of \URL[PB]{https://github.com/magicmonty/bash-git-prompt}{this one}!}
+        \uncover<1>{The Git prompt I use in my \textbf{Bash} terminal is a customization of \URL[PB]{https://github.com/magicmonty/bash-git-prompt}{this one}!}
     \end{onlyenv}
     \vfill
 \end{frame}
@@ -654,6 +654,7 @@
                 \begin{scope}[scope on=<4->, every node/.style={fill=BGLIGHT}]
                     \node[text=PQ, font=\ttfamily\scriptsize] at ($(N1.south)-(0,0.4)$) {git stash list};
                     \node[font=\ttfamily\scriptsize] at ($(N1.south)-(0,0.8)$) {git stash drop};
+                    \node[font=\ttfamily\scriptsize] at ($(N1.south)-(0,1.2)$) {git stash clear};
                     \GitCommand{from}{1}{2}{0.75}{git stash}
                     \GitCommand{to}{1}{2}{0.95}{\begin{tabular}{@{}c@{}}git stash\\ pop\end{tabular}}
                 \end{scope}
@@ -921,6 +922,31 @@
             \node[left = of content, font=\large\bfseries, text=PQ] {Believe me, it's worth it!};
         \end{tikzpicture}
     \end{uncoverenv}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\AlertFrame{Live exercise}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Let's collaborate!}
+    \small
+    \setlength{\leftmargini}{5mm}
+    \begin{enumerate}
+        \setlength{\itemsep}{-1mm}
+        \item Clone the exercise repository from Redmine\\
+        \then \raisebox{1pt}{\scriptsize\texttt{https://<USERNAME>@git.physik.uni-bielefeld.de/git-together}}
+        \item Create and switch to a new branch
+        \item Create a new file, e.g.\ via
+        \begin{lstlisting}[style=MyBash, xleftmargin=3mm, xrightmargin=28mm, belowskip=-9mm, aboveskip=2mm]
+            $ echo "$(whoami): $(date)" > "$(whoami).txt"
+        \end{lstlisting}
+        and add your name to the \texttt{AUTHORS} file
+        \item Commit your changes to the repository and push your branch
+        \item Let your local branch track the remote one
+        \item Check your work in the browser
+        \item Be sure the main branch is up-to-date and merge your branch into it$^\star$
+        \item Pull and push it to the remote
+        \item Check that your changes appear as expected on \,\texttt{master}\, in the browser and, if so, remove your branch locally and remotely
+    \end{enumerate}
+    \FrameRemark{$^\star$For technical reasons, our Redmine platform still uses \,\texttt{master}\, as name of the main branch instead of \,\texttt{main}.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 
