@@ -42,7 +42,7 @@
 \titlepagelogo{\includegraphics[width=25mm]{LogoGoethe}}
 %===============================================================%
 
-\AtBeginSection[] % <- Empty optional argument, do nothing for \section*
+\AtBeginSection % <- Non-empty optional argument, do it also for \section*
 {
     \begin{frame}[plain, noframenumbering]{}
          \sectionpage
@@ -180,6 +180,28 @@
         \node[visible on=<5>] at ($(N3.south)!0.5!(E3)-(0.1,0)$) {\usebox{\lstclonebox}};
     \end{tikzpicture}
 \end{frame}
+%===============================================================%
+
+
+%===============================================================%
+\section*{Git User Interface philosophy}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\PrepareURLsymbol[PB]
+\begin{frame}{Git is your friend!}
+    \begin{varblock}{alert}[\textwidth]{What happens if I ask Git something not possible?}
+        In many case, when Git fails, it reports to you a detailed error message that is likely to make you understand what has happened.
+        \textbf{Make sure you read it!}
+        Sometimes you need to figure out what should be done, but you never get a silent failure.
+    \end{varblock}
+    \begin{varblock}{}[\textwidth]{Git will hardly make you loose changes}
+        \small
+        There are only few commands that potentially make you loose changes and usually these require you to force the operation with a command line option.
+        This together with the verbose reporting system allows you to be pretty confident in using and experimenting with Git.
+    \end{varblock}
+    \FrameRemark{Even in some cases when changes seem lost, \,\texttt{git reflog}\; or \;\texttt{git fsck}\; could rescue you. \URL*{https://stackoverflow.com/a/7147749/14967071}{Here} a nice overview.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+
 %===============================================================%
 
 
@@ -848,7 +870,7 @@
                 \end{enumerate}
                 \begin{lstlisting}[style=MyBash]
                     $ git clone --bare <non-bare-repository> <bare-repository>.git
-                    |+Cloning into bare repository 'QCD.git'...
+                    |+Cloning into bare repository '<bare-repository>.git'...
                     done.+|
                     $ cd <non-bare-repository>
                     $ git remote add origin /path/to/<bare-repository>.git
