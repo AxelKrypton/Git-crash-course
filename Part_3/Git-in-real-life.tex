@@ -900,11 +900,17 @@
     \end{varblock}
     \vspace{-1mm}
     \PrepareURLsymbol[PS]
-    \begin{varblock}{example}[\textwidth]{Useful links}
-        Another popular implementation of the model (active till 2019)\\
-        \PS{\href{https://github.com/petervanderdoes/gitflow-avh}{\faGithub\;gitflow-avh}}\;$\longleftrightarrow$\;
-        \URL*[PS]{https://danielkummer.github.io/git-flow-cheatsheet/index.html}{gitflow-avh\ cheatsheet}
+    \begin{varblock}{example}[0.9\textwidth]{Alternative implementations}
+        \begin{tabular}{r@{\;\;}l@{\;\;}l}
+            AVH Edition: &
+            \PS{\href{https://github.com/petervanderdoes/gitflow-avh}{\faGithub\;gitflow-avh}} &
+            (archived in June 2023)\\
+            CJS Edition: &
+            \PS{\href{https://github.com/CJ-Systems/gitflow-cjs}{\faGithub\;gitflow-cjs}} &
+            (rarely active)\\
+        \end{tabular}
     \end{varblock}
+    \FrameRemark{The AVH edition has an associated \URL*[PS]{https://danielkummer.github.io/git-flow-cheatsheet/index.html}{cheatsheet}, which also illustrate the branching model.}\\
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[c]{Motivation}
@@ -1005,7 +1011,6 @@
         \begin{column}{0.65\textwidth}
             \vspace*{-1cm}
             \begin{overlayarea}{\textwidth}{0.75\textheight}
-                \vspace{-3mm}
                 \begin{varblock}{}[0.9\textwidth]{Properties}<only@1>
                     \begin{itemize}
                         \item May branch off from:\\
@@ -1278,16 +1283,19 @@
 }
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile,c]{Gitflow: How to easily apply what we learnt}
-    \vspace{-10mm}
-    \begin{overlayarea}{\textwidth}{0.7\textheight}
+    \vspace{-2mm}
+    \begin{overlayarea}{\textwidth}{0.88\textheight}
         \begin{varblock}{example}[0.95\textwidth]{Pick a set of high-level repository operations}
             \PT{\href{https://github.com/nvie/gitflow}{\faGithub\;\textbf{nvie}}}
-            \quad or probably better \quad
+            \hspace{1ex}
+            or better
+            \hspace{1ex}
             \PP{\href{https://github.com/petervanderdoes/gitflow-avh}{\faGithub\;gitflow-avh}}
-            \Remark{it has autocompletion}
+            \hspace{1ex}
+            \PS{\href{https://github.com/CJ-Systems/gitflow-cjs}{\faGithub\;gitflow-cjs}}
         \end{varblock}
+        \vspace{-1mm}
         \begin{onlyenv}<2>
-            \vspace{-3mm}
             \centerline{\scriptsize \hspace{42mm}$\to\;$Standard raw git commands can be used as usual, too}
             \vspace{-6mm}
             \begin{varblock}{example}[0.9\textwidth]{The base syntax}
@@ -1302,21 +1310,53 @@
                     git flow <type> publish <name>
                     git flow <type> pull <remote> <name>
                 \end{lstlisting}
-                \begin{itemize}
-                    \footnotesize\setlength{\itemsep}{0mm}
-                    \item[] \bash|<type>|\; can be either \;\texttt{feature}, \;\texttt{release}\; or \;\texttt{hotfix}\\
-                    \item[] \bash|<name>|\; is the name of the auxiliary branch\\
-                    \item[] \bash{|+<base>+|}\; must be a commit on \;\texttt{develop}\; or \;\texttt{main}
-                \end{itemize}
+                \vspace{1mm}
+                \scriptsize
+                \begin{tabular}{r@{\;}l}
+                    \bash|<type>| & can be either \;\texttt{feature}, \;\texttt{release}\; or \;\texttt{hotfix}\\
+                    \bash|<name>| & is the name of the auxiliary branch\\
+                    \bash|<base>| & must be a commit on \;\texttt{develop}\; or \;\texttt{main}\\
+                \end{tabular}
             \end{varblock}
         \end{onlyenv}
-        \begin{varblock}{alerted}[0.72\textwidth]{Take-home message}<only@3>
-            If you have a released software or plan to have one, Gitflow branching model can help you to bring your product to another level!
-        \end{varblock}
-        \begin{varblock}{}[\textwidth]{Think about it}<only@3>
-            Even if you use a (slightly) different branching model, it might well be that available git extensions still partially fit your use case
-        \end{varblock}
+        \begin{onlyenv}<3>
+            \begin{varblock}{alerted}[0.72\textwidth]{Take-home message}
+                If you have a released software or plan to have one, Gitflow branching model can help you to bring your product to another level!
+            \end{varblock}
+            \begin{varblock}{}[\textwidth]{Think about it}
+                Even if you use a (slightly) different branching model, it might well be that available git extensions still partially fit your use case
+            \end{varblock}
+        \end{onlyenv}
     \end{overlayarea}
+    \FrameRemark<1-2>{Both AVH and CJS editions provide autocompletion for main shell types (checkout their README files for more information).}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\AlertFrame{I heard Gitflow is obsolete, is it?}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{No, it is not!}
+    \PrepareURLsymbol[PB]
+    \begin{onlyenv}<1>
+        \begin{center}
+            {\large\URL[PB]{https://trunkbaseddevelopment.com}{Trunk-based development}}\\[3mm]
+            \includegraphics[width=\textwidth]{Trunk}\\[2mm]
+            In the last years this alternative approach has become popular
+        \end{center}
+    \end{onlyenv}
+    \begin{onlyenv}<2>
+        \begin{varblock}{alert}[0.8\textwidth]{When does trunk-based development work best?}
+            When you need to iterate quickly\\
+            When you work mostly with senior developers
+        \end{varblock}
+        \begin{varblock}{example}[0.7\textwidth]{When does Gitflow work best?}
+            When you have a lot of junior developers\\
+            When you have an established product\\
+            When you run an open-source project
+        \end{varblock}
+        \begin{varblock}{}[0.88\textwidth]{In academia}
+            Rhythms of development rather slow and in small teams
+        \end{varblock}
+    \end{onlyenv}
+    \FrameRemark<2>{If you are interested in a nice comparison of the two development techniques, refer to \URL*{https://www.toptal.com/software/trunk-based-development-git-flow}{this nice overview}.}
 \end{frame}
 %===============================================================%
 
@@ -1334,7 +1374,7 @@
         git revert   & Create new commits to undo existing ones\\
         git bisect   & Use binary search to find the commit that introduced a bug\\
         git grep     & Print lines matching a pattern\\
-        git [...]    & Few more technical commands
+        git [...]    & Some more technical commands
     \end{tabular}
     \begin{varblock}{alert}[\textwidth]{Go for it!}<uncover@2>
         Read your favourite source, you'll be able to understand it alone!
