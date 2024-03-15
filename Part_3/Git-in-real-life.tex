@@ -86,7 +86,7 @@
     }
 }
 
-% Branch for gitflow
+% Branch for git-flow
 \newcommand{\mainBranchColor}{PQ}
 \newcommand{\supportBranchColor}{Marine}
 \newcommand{\branch}[2]{\textcolor{#1}{\texttt{\bfseries #2}}}
@@ -763,7 +763,7 @@
         \begin{varblock}{example}[0.96\textwidth]{Annotated tags}<only@2,4>
             Tag objects contain a creation date, the tagger name and e-mail, a tagging message, and an optional GnuPG signature
         \end{varblock}
-        \begin{varblock}{}[0.96\textwidth]{Tags as commits are by default local}<only@4>
+        \begin{varblock}{}[0.7\textwidth]{Tags as commits are by default local}<only@4>
             Use \;\bash|git push --tags|\; to push them
         \end{varblock}
         \begin{onlyenv}<3>
@@ -878,9 +878,9 @@
 
 
 %===============================================================%
-\section{Gitflow}
+\section{Git-flow}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}<beamer>{\\ \colorbox{PP}{\makebox[1em]{\textcolor{BGLIGHT}{5\vphantom{$A^{\int}_x$}}}}\;Gitflow}
+\begin{frame}<beamer>{\\ \colorbox{PP}{\makebox[1em]{\textcolor{BGLIGHT}{5\vphantom{$A^{\int}_x$}}}}\;Git-flow}
     \vspace{3mm}
     \tableofcontents[sections={5}, currentsection, currentsubsection, hideothersubsections, sectionstyle=hide]
 \end{frame}
@@ -907,7 +907,7 @@
             (archived in June 2023)\\
             CJS Edition: &
             \PS{\href{https://github.com/CJ-Systems/gitflow-cjs}{\faGithub\;gitflow-cjs}} &
-            (rarely active)\\
+            (still active, but rarely)\\
         \end{tabular}
     \end{varblock}
     \FrameRemark{The AVH edition has an associated \URL*[PS]{https://danielkummer.github.io/git-flow-cheatsheet/index.html}{cheatsheet}, which also illustrate the branching model.}\\
@@ -1282,7 +1282,7 @@
     \end{tabular}
 }
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\begin{frame}[fragile,c]{Gitflow: How to easily apply what we learnt}
+\begin{frame}[fragile,c]{Git-flow: How to easily apply what we learnt}
     \vspace{-2mm}
     \begin{overlayarea}{\textwidth}{0.88\textheight}
         \begin{varblock}{example}[0.95\textwidth]{Pick a set of high-level repository operations}
@@ -1321,7 +1321,7 @@
         \end{onlyenv}
         \begin{onlyenv}<3>
             \begin{varblock}{alerted}[0.72\textwidth]{Take-home message}
-                If you have a released software or plan to have one, Gitflow branching model can help you to bring your product to another level!
+                If you have a released software or plan to have one, Git-flow branching model can help you to bring your product to another level!
             \end{varblock}
             \begin{varblock}{}[\textwidth]{Think about it}
                 Even if you use a (slightly) different branching model, it might well be that available git extensions still partially fit your use case
@@ -1331,7 +1331,7 @@
     \FrameRemark<1-2>{Both AVH and CJS editions provide autocompletion for main shell types (checkout their README files for more information).}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
-\AlertFrame{I heard Gitflow is obsolete, is it?}
+\AlertFrame{I heard Git-flow is obsolete, is it?}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{No, it is not!}
     \PrepareURLsymbol[PB]
@@ -1347,13 +1347,13 @@
             When you need to iterate quickly\\
             When you work mostly with senior developers
         \end{varblock}
-        \begin{varblock}{example}[0.7\textwidth]{When does Gitflow work best?}
+        \begin{varblock}{example}[0.7\textwidth]{When does Git-flow work best?}
             When you have a lot of junior developers\\
             When you have an established product\\
             When you run an open-source project
         \end{varblock}
-        \begin{varblock}{}[0.88\textwidth]{In academia}
-            Rhythms of development rather slow and in small teams
+        \begin{varblock}{}[0.72\textwidth]{In academia}
+            Development is rather slow and in small teams
         \end{varblock}
     \end{onlyenv}
     \FrameRemark<2>{If you are interested in a nice comparison of the two development techniques, refer to \URL*{https://www.toptal.com/software/trunk-based-development-git-flow}{this nice overview}.}
