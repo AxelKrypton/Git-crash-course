@@ -100,11 +100,23 @@
 \renewcommand{\checkmark}[1][PP]{\textcolor{#1}{\ding{51}}}
 \newcommand{\crossmark}[1][PT]{\textcolor{#1}{\ding{55}}}
 
+%Append code to put more information on titlepage
+\appto\titlepage{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
+        {\includegraphics[width=13mm]{LogoPUNCH}};
+        \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
+        {\includegraphics[width=10mm]{CC-BY}};
+        \node[anchor=south, font=\small, text=BGLIGHT]
+        (Axel) at (license.north) {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
+    \end{tikzpicture}
+}
+
 %===============================================================%
 \title{Git in real life}
-\date{15 March 2024}
+\date{24 May 2024}
 \author{Alessandro Sciarra}
-\institute{CRC-TR\,211~--~Software Development Center}
+\institute{CRC-TR\,211~--~Software Development Center\\[1mm] {PUNCH Young Academy -- PUNCH4NFDI}}
 \titlegraphic{\includegraphics[width=16mm]{LogoCRC}}
 \titlepagelogo{\includegraphics[width=25mm]{LogoGoethe}}
 %===============================================================%
@@ -147,15 +159,6 @@
 %===============================================================%
 \begin{frame}[plain,noframenumbering]
     \titlepage
-    \begin{tikzpicture}[remember picture, overlay]
-%        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
-%            {\includegraphics[width=13mm]{LogoPUNCH}};
-        \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
-            {\includegraphics[width=10mm]{CC-BY}};
-        \node[anchor=south, font=\small, text=BGLIGHT]
-            (Axel) at (license.north)
-            {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
-    \end{tikzpicture}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}{Outline of the talk}
