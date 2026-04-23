@@ -34,8 +34,8 @@
 %Append code to put more information on titlepage
 \appto\titlepage{%
     \begin{tikzpicture}[remember picture, overlay]
-        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
-            {\includegraphics[width=13mm]{LogoPUNCH}};
+%        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
+%            {\includegraphics[width=13mm]{LogoPUNCH}};
         \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
             {\includegraphics[width=10mm]{CC-BY}};
         \node[anchor=south, font=\small, text=BGLIGHT]
@@ -45,9 +45,9 @@
 
 %===============================================================%
 \title{Introduction to Git}
-\date{23 May 2024}
+\date{28 April 2026}
 \author{Alessandro Sciarra}
-\institute{CRC-TR\,211~--~Software Development Center\\[1mm] {PUNCH Young Academy -- PUNCH4NFDI}}
+\institute{CRC-TR\,211~--~Software Development Center}%\\[1mm] {PUNCH Young Academy -- PUNCH4NFDI}}
 \titlegraphic{\includegraphics[width=16mm]{LogoCRC}}
 \titlepagelogo{\includegraphics[width=25mm]{LogoGoethe}}
 %===============================================================%
@@ -449,7 +449,7 @@
                   \PP{$\circ$} & \texttt{man git-<command>}    & e.g. & \texttt{man git-config}    \\
               \end{tabular}}
         \item List of commands on the \URL[PB]{https://git-scm.com/docs}{official reference}
-        \item Ask Google
+        \item Ask Google or your favourite AI
     \end{enumerate}
     \medskip
     \PrepareURLsymbol[PQ]
@@ -794,6 +794,7 @@
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{What else can I easily explore?}
+        \setlength{\itemsep}{5pt}
     \begin{itemize}
         \item Stage all tracked modified files at once\\[1mm]
               \begin{minipage}{\linewidth}
@@ -827,7 +828,30 @@
                   \end{lstlisting}
               \end{minipage}
     \end{itemize}
+    \PrepareURLsymbol[ALERT]
     \FrameRemark{$^\star$ If you want a friend to correct your mistyped last command \textbf{in general} in the terminal, check-out \URL*{https://github.com/nvbn/thefuck}{this hilarious project}.}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\AlertFrame{This is obsolete, code agents take over!}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}{Should code agents commit what they do?}
+    \vspace{-3mm}
+    \begin{columns}[c]
+        \begin{column}{0.615\textwidth}
+            \begin{varblock}{alert}[\textwidth]{Should I do all of this by hand?}
+                \begin{enumerate}
+                    \item Probably.
+                    \item Committing is the best moment to review code changes.
+                    \item \textbf{You} are the author of your AI code agent output.
+                \end{enumerate}
+            \end{varblock}
+        \end{column}
+                    \item Knowing how Git works opens up for possibilities\ \then e.g.\ use of staging area.
+        \begin{column}{0.38\textwidth}
+            \vspace{6mm}
+            \includegraphics[width=\textwidth]{Git-AI-agent}
+        \end{column}
+    \end{columns}
 \end{frame}
 %===============================================================%
 
