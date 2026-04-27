@@ -36,20 +36,20 @@
 %Append code to put more information on titlepage
 \appto\titlepage{%
     \begin{tikzpicture}[remember picture, overlay]
-        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
-        {\includegraphics[width=13mm]{LogoPUNCH}};
+        %\node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
+        %    {\includegraphics[width=13mm]{LogoPUNCH}};
         \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
-        {\includegraphics[width=10mm]{CC-BY}};
+            {\includegraphics[width=10mm]{CC-BY}};
         \node[anchor=south, font=\small, text=BGLIGHT]
-        (Axel) at (license.north) {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
+            (Axel) at (license.north) {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
     \end{tikzpicture}
 }
 
 %===============================================================%
 \title{Let's Git together}
-\date{23 May 2024}
+\date{5 May 2026}
 \author{Alessandro Sciarra}
-\institute{CRC-TR\,211~--~Software Development Center\\[1mm] {PUNCH Young Academy -- PUNCH4NFDI}}
+\institute{CRC-TR\,211~--~Software Development Center}%\\[1mm] {PUNCH Young Academy -- PUNCH4NFDI}}
 \titlegraphic{\includegraphics[width=16mm]{LogoCRC}}
 \titlepagelogo{\includegraphics[width=25mm]{LogoGoethe}}
 %===============================================================%
@@ -436,23 +436,27 @@
 \AlertFrame{Live example!}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}<0>[plain, noframenumbering, label=Wow]{}
-    \centering
+    % Apparently the includemedia command affects the slide page
+    % and therefore we place other content first.
+    \PrepareURLsymbol[PB]
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[font=\small, visible on=<1>] at ($(current page.center)!0.75!(current page.south)$) {
+            The Git prompt I use in my \textbf{Bash} terminal is a customization of \URL*{https://github.com/magicmonty/bash-git-prompt}{this one}!
+        };
+    \end{tikzpicture}
     \vfill
+    \begin{center}
+        \includemedia[
+            width=0.6\paperwidth,
+            totalheight=0.6\paperheight,
+            activate=pageopen,
+            addresource=../Figures/Wow.mp4]{\includegraphics[width=0.6\paperwidth]{Wow-cover}}{VPlayer.swf}
+    \end{center}
     \vfill
-    \includemedia[width=0.6\paperwidth,
-                  totalheight=0.6\paperheight,
-                  activate=pageopen,
-                  addresource=../Figures/Wow.mp4]{\includegraphics[width=0.6\paperwidth]{Wow-cover}}{VPlayer.swf}
-    \vfill
-    \begin{onlyenv}<1>
-        \small
-        \uncover<1>{The Git prompt I use in my \textbf{Bash} terminal is a customization of \URL[PB]{https://github.com/magicmonty/bash-git-prompt}{this one}!}
-    \end{onlyenv}
     \vfill
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \againframe<1>[plain]{Wow}
-
 %===============================================================%
 
 
@@ -465,7 +469,7 @@
     \begin{lstlisting}[style=MyBash, xleftmargin=-1mm, xrightmargin=-1mm]
         # Clone the repository of this course
         $ ls
-        $ git clone git@github.com:AxelKrypton/Git-crash-course.git
+        $ git clone https://github.com/AxelKrypton/Git-crash-course.git
         |+Cloning into 'Git-crash-course'...
         remote: Enumerating objects: 82, done.
         remote: Counting objects: 100% (66/66), done.
@@ -476,9 +480,15 @@
         $ ls
         @|\ttc{Blue}{Git-crash-course}|@
     \end{lstlisting}
+    \vspace{2mm}
     \begin{varblock}{}[0.75\textwidth]{}
         The local repository is aware of the remote one!
     \end{varblock}
+    \PrepareURLsymbol[PB]
+    \FrameRemark{
+        Usually, you can clone a repository using either a HTTPS or an SSH URL.
+        See e.g.\ \URL*{https://docs.github.com/en/get-started/git-basics/about-remote-repositories}{GitHub documentation} for more insights about these alternatives.
+    }
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \begin{frame}[fragile]{Git remote}
@@ -486,14 +496,14 @@
     \begin{varblock}{}[0.6\textwidth]{}
         In the local repository, the remote one is (by default) referred as \textbf{origin}
     \end{varblock}
-    \begin{lstlisting}[style=MyBash, xleftmargin=-1mm, xrightmargin=-1mm]
+    \begin{lstlisting}[style=MyBash, xleftmargin=-3mm, xrightmargin=-3mm]
         # Check out the remote information
         $ cd Git-crash-course
         $ git remote
         |+origin+|
         $ git remote -v
-        |+origin    git@github.com:AxelKrypton/Git-crash-course.git (fetch)
-        origin    git@github.com:AxelKrypton/Git-crash-course.git (push)+|
+        |+origin  https://github.com/AxelKrypton/Git-crash-course.git (fetch)
+        origin  https://github.com/AxelKrypton/Git-crash-course.git (push)+|
         $ git remote rename origin GitHub
         $ git remote
         |+GitHub+|
