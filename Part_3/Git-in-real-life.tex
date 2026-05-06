@@ -103,20 +103,20 @@
 %Append code to put more information on titlepage
 \appto\titlepage{%
     \begin{tikzpicture}[remember picture, overlay]
-        \node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
-        {\includegraphics[width=13mm]{LogoPUNCH}};
+        %\node[anchor=south, inner ysep=4pt] at ($(current page.south)!0.58!(current page.south east)+(0mm,1mm)$)
+        %    {\includegraphics[width=13mm]{LogoPUNCH}};
         \node[anchor=south, inner ysep=0pt] (license) at ($(current page.south)+(0mm,4mm)$)
-        {\includegraphics[width=10mm]{CC-BY}};
+            {\includegraphics[width=10mm]{CC-BY}};
         \node[anchor=south, font=\small, text=BGLIGHT]
-        (Axel) at (license.north) {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
+            (Axel) at (license.north) {\href{https://github.com/AxelKrypton}{\faGithub\,AxelKrypton}};
     \end{tikzpicture}
 }
 
 %===============================================================%
 \title{Git in real life}
-\date{24 May 2024}
+\date{12 May 2026}
 \author{Alessandro Sciarra}
-\institute{CRC-TR\,211~--~Software Development Center\\[1mm] {PUNCH Young Academy -- PUNCH4NFDI}}
+\institute{CRC-TR\,211~--~Software Development Center}%\\[1mm] {PUNCH Young Academy -- PUNCH4NFDI}}
 \titlegraphic{\includegraphics[width=16mm]{LogoCRC}}
 \titlepagelogo{\includegraphics[width=25mm]{LogoGoethe}}
 %===============================================================%
@@ -677,7 +677,9 @@
     \begin{tikzpicture}[remember picture, overlay]
         \node[anchor=south west, font=\Large, text=PT, visible on=<7>] at ($(current page.south)+(13mm,8mm)$) {History changed!};
     \end{tikzpicture}
+    \PrepareURLsymbol[PB]
     \FrameRemark<3,6-7>{\texttt{HEAD\textasciitilde 5} means the fifth ancestor of \;\texttt{HEAD}\;, but you could use any SHA1. Refer to e.g.\ \URL*{https://stackoverflow.com/a/2222920/14967071}{this SO answer} for more information.}
+    \FrameRemark<4-5>{Depending on your Git version or \URL*{https://stackoverflow.com/a/32038985}{your Git configuration}, this might appear slightly different.}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \newsavebox{\savedTikZ}
@@ -870,11 +872,11 @@
 
 
 %===============================================================%
-\AlertFrame{
+\AlertFrame{%
     \begin{tabular}{cc}
-        \multicolumn{2}{c}{Summary so far}\\[5mm]
+        \multicolumn{2}{c}{Summary so far:}\\[5mm]
         \includegraphics[height=3cm]{Spiderman} &
-        \includegraphics[height=3cm, clip, trim=0 5mm 0 3mm]{MatrixRebase} \\[55mm]
+        \includegraphics[height=3cm, clip, trim=0 5mm 0 3mm]{MatrixRebase}\\[6mm]
     \end{tabular}
 }
 %===============================================================%
@@ -1280,8 +1282,7 @@
 \AlertFrame{%
     \begin{tabular}{c}
         \includegraphics[width=3cm, clip, trim=0 50mm 0 20mm]{ConfusedMeme}\\
-        But, wait, everything by hand?!\\[0.55\textheight]
-        ~
+        But, wait, everything by hand?!\\[12mm]
     \end{tabular}
 }
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
@@ -1384,6 +1385,29 @@
     \end{varblock}
 \end{frame}
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
+\begin{frame}[fragile]{Git evolves steadily}{Just to mention few news}
+    \vspace{-2mm}
+    \begin{enumerate}
+        \item In version 2.54 Git introduced\\
+              \begin{lstlisting}[style=MyBash, aboveskip=3mm, xrightmargin=15mm,
+                                 moredelim={[is][\color{basic-color}]{|+}{+|}}]
+                  # Like 'reword' action of interactive rebase
+                  |+git history reword <commit>+|
+                  # Handier version than 'edit' in interactive rebase
+                  |+git history split <commit>+|
+              \end{lstlisting}
+        \item In the same version Git introduced config-based hooks\\
+              \begin{lstlisting}[style=MyBash, aboveskip=3mm, xrightmargin=15mm,
+                                 moredelim={[is][\color{basic-color}]{|+}{+|}}]
+                  [hook "linter"]
+                      event = pre-commit
+                      |+command = ~/path/to/your/linter [options]+|
+              \end{lstlisting}
+        \item Git version 3.0 is planned for later this year\\
+              \then \PP{new repositories will use \texttt{sha256} algorithm by default!}
+    \end{enumerate}
+\end{frame}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~%
 \tikzset{
     opacityOv/.style args={#1on#2}{%
         alt=#2{opacity=#1,text opacity=#1}{}
@@ -1464,8 +1488,8 @@
 \begin{frame}{Thanks for listening and remember}
     \begin{varblock}{alert}[\textwidth]{In case of fire:}
         \begin{enumerate}
-            \item \bash|git switch -c dfjaskjdsgk|
-            \item \bash|git commit -am 'fvfsdavg'|
+            \item \bash|git add -A|
+            \item \bash|git commit -m 'fvfsdavg'|
             \item \bash|git push|
             \item Exit the building
         \end{enumerate}
